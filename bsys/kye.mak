@@ -1,6 +1,7 @@
 KYE_C_NAMES:=MAIN
 KYE_C_SRCS:=$(patsubst %,${SRCDIR}%.C,${KYE_C_NAMES})
 KYE_C_OBJS:=$(patsubst %,${BUILDDIR}%.OBJ,${KYE_C_NAMES})
+KYE_C_HEADERS:=$(wildcard ${SRCDIR}*.H)
 
 # fastbioslogo, startbanner: remove ads at startup
 # joysticktype=none: SDL gamepad detection is a notorious source of startup delay, skip it
@@ -31,7 +32,7 @@ ${BUILDDIR} ${OUTDIR}: | prepare-bcp30af
 ${OUTDIR}KYE.EXE &: ${BUILDDIR}BUILDDOS.BAT | ${OUTDIR} ${BUILDDIR}
 	env SDL_VIDEODRIVER=dummy LIBGL_ALWAYS_SOFTWARE=yes dosbox-x ${DBXFLAGS} -c "ctty lpt1" -c "mount d ." -c "D:\\BUILD\\BUILDDOS.BAT" -exit 2>/dev/null
 
-${BUILDDIR}BUILDDOS.BAT: ${KYE_C_SRCS} $(wildcard ./bsys/prepdos-*.sh) | ${BUILDDIR}
+${BUILDDIR}BUILDDOS.BAT: ${KYE_C_SRCS} ${KYE_C_HEADERS} $(wildcard ./bsys/prepdos-*.sh) | ${BUILDDIR}
 	rm $@ || true
 	echo "" > $@.tmp || (rm $@.tmp && false)
 	./bsys/prepdos-init.sh >> $@.tmp || (rm $@.tmp && false)
