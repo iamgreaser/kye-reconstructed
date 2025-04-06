@@ -1,0 +1,11 @@
+# project output files
+/build/
+/out/
+
+# tool generation output files
+/target/
+/osdisks/
+
+# sourced from elsewhere
+/packages/
+

@@ -1,0 +1,56 @@
+installation order: DOS, Windows, C PDS (in 5.25" drive on 86Box), Win SDK
+c:\c600\bin\new-vars.bat is a sample autoexec.bat file for MS C PDS 6.00, for OS2RM and DOS only
+c:\c600\bin\new-conf.sys is a sample config.sys file for MS C PDS 6.00, for DOS only, these are minimum limits
+mouse driver in c:\c600\bin\mouse.com, don't use the older mouse.sys
+
+c:\c600\init\tools.ini exists
+c:\c600\init\tools.pre is a sample for PWB
+
+c:\c600\bin has himem.sys, ramdrive.sys, smartdrv.sys
+use ramdrive.sys for ramdisks and smartdrv.sys for disk caching, everything else may be dodge w/ himem.sys
+
+win 3.0 sdk requires tools.ini changes:
+[pwb-pwbc]
+WINLIBS: EXPLICIT
+and one of these under there
+if DLL libs requested:
+WINDLLLIBS: EXPLICIT
+if DLL libs not requested:
+WINDLLLIBS: NONE
+
+if MS C installed first and tools.pre copied to tools.ini, then the SDK is installed, it sorts that out for you.
+
+SDK notes:
+PATH needs C:\WINDEV
+INCLUDE needs C:\WINDEV\INCLUDE (first path)
+LINK needs /NOD along with Windows lib names
+LIB needs C:\WINDEV\LIB (first path)
+
+see C:\WINDEV\README.TXT for more notes
+
+CVW has a bug with VGA.DRV on some VGA BIOS versions which gives screwy gfx when returning to Windows desktop
+check Debug Files 2 for VGA.DRV then copy it to WINDOWS\SYSTEM\ (remember to back the borked driver up!)
+
+C:\WINDEV\TIPS.TXT:
+
+PWB release builds default to /EXE (pack executable file), which must be removed
+
+...
+
+ok, turns out it's actually using Borland C++ or something.
+assuming version 2.0.
+
+that needs config.sys FILES=20
+and autoexec.bat PATH=C:\BORLANDC\BIN;...
+
+if using bcc directly, it can make a Win 2.x exe, and Win 3.0 complains.
+use the bc IDE instead.
+
+...
+
+it could potentially be BC++ 3.0 (1991), which i've shoved into C:\BC30,
+and will be using for the time being,
+because *that* has a Windows IDE.
+
+BC++ 3.1 seems too late (1992).
+
