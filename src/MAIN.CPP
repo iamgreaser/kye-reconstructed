@@ -1,0 +1,2716 @@
+// vim: set syntax=cpp :
+#include <windows.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#include "resdefs.h"
+#include "kyetypes.h"
+
+// DS:0000 16 bytes unused
+// DS:0010 seems to be standard runtime
+// DS:0029 "Borland C++ - Copyright 1991 Borland Intl."
+// DS:0054 8 bytes 0xFF, seemingly unused?
+int g_mouse_captured; // DS:005C
+int g_key_pressed; // DS:005E
+// DS:0060: Menu strings
+
+// char // DS:0087
+// DS:0088: A mix of strings incl. editor menu strings
+
+int g_level_complete = 0; // DS:019E
+char g_levelset_fname[256] = "default.kye"; // DS:01A0
+int g_levelidx = 1; // DS:02A0
+int g_levelcount = 1; // DS:02A2
+int g_tile_under_kye = T_EMPTY; // DS:02A4
+int g_tile_lx = TILE_LX; // DS:02A6
+int g_tile_ly = TILE_LY; // DS:02A8
+int g_kye_target_cx; // DS:02AA
+int g_kye_target_cy; // DS:02AC
+int g_kye_needs_update; // DS:02B0
+
+// int // DS:02B2
+int g_kye_fizzle_in = 0; // DS:02B4
+int g_kye_injured; // DS:02B6
+int g_kye_lives = 3; // DS:02B8
+int g_actor_count; // DS:02BA
+// int // DS:02BC
+int g_tick_counter; // DS:02BE
+
+// This map is at DS:02C0
+tileconv_map_entry_s TILECONV_MAP[] = {
+  {0, 0x0000, ' '},
+
+  {3, 0x0000, 'K'},
+
+  {1, T_WALL1, '1'},
+  {1, T_WALL2, '2'},
+  {1, T_WALL3, '3'},
+  {1, T_WALL4, '4'},
+  {1, T_WALL5, '5'},
+  {1, T_WALL6, '6'},
+  {1, T_WALL7, '7'},
+  {1, T_WALL8, '8'},
+  {1, T_WALL9, '9'},
+  {1, T_EARTH, 'e'},
+  {1, T_DIAMOND, '*'},
+  {1, T_DOOR_W_E, 'f'},
+  {1, T_DOOR_E_W, 'g'},
+  {1, T_DOOR_N_S, 'h'},
+  {1, T_DOOR_S_N, 'i'},
+
+  {2, T_SBLOCK, 'b'},
+  {2, T_SLIDER_N, 'u'},
+  {2, T_SLIDER_S, 'd'},
+  {2, T_SLIDER_W, 'l'},
+  {2, T_SLIDER_E, 'r'},
+  {2, T_STICKY_V, 's'},
+  {2, T_STICKY_H, 'S'},
+  {2, T_BOUNCER_N, 'U'},
+  {2, T_BOUNCER_S, 'D'},
+  {2, T_BOUNCER_W, 'L'},
+  {2, T_BOUNCER_E, 'R'},
+  {2, T_ROCKY_N, '^'},
+  {2, T_ROCKY_S, 'v'},
+  {2, T_ROCKY_W, '<'},
+  {2, T_ROCKY_E, '>'},
+  {2, T_B_TWISTER, 'T'},
+  {2, T_B_GNASHER, 'E'},
+  {2, T_B_BLOB, 'C'},
+  {2, T_B_VIRUS, '~'},
+  {2, T_B_SPIKE, '['},
+  {2, T_ROT_A, 'a'},
+  {2, T_ROT_C, 'c'},
+  {2, T_RBLOCK, 'B'},
+  {2, T_AUTOSLIDER1, 'A'},
+  {2, T_AUTOSLIDER2, 'A'},
+  {2, T_AUTOSLIDER3, 'A'},
+  {2, T_AUTOSLIDER4, 'A'},
+  {2, T_AUTOROCKY1, 'F'},
+  {2, T_AUTOROCKY2, 'F'},
+  {2, T_AUTOROCKY3, 'F'},
+  {2, T_AUTOROCKY4, 'F'},
+  {2, T_BLACKY1, 'H'},
+  {2, T_BLACKY2, 'H'},
+  {2, T_TIMER_9, 'w'},
+  {2, T_TIMER_8, 'x'},
+  {2, T_TIMER_7, 'y'},
+  {2, T_TIMER_6, 'z'},
+  {2, T_TIMER_5, '{'},
+  {2, T_TIMER_4, '|'},
+  {2, T_TIMER_3, '}'},
+  {2, T_TIMER_2, '}'},
+  {2, T_TIMER_1, '}'},
+  {2, T_TIMER_0, '}'},
+
+  // TODO! --GM
+  {-1, 0, 0},
+};
+
+int g_is_in_editor; // DS:03F2
+// DS:03F4 contains strings.
+
+// char // DS:0427
+// DS:0428 contains strings.
+
+// char // DS:0443
+// DS:0444 contains strings.
+
+int g_has_maintimer; // DS:0458
+// DS:045A contains strings.
+
+// DS:050C pertains to some kind of file open dialogue?
+
+// int // DS:06A9 == 0x5C
+// DS:06AB contains strings.
+
+// This map is at DS:06B8
+// TODO: Editor entity spec --GM
+// DS:0D38 = 0x000A
+// DS:0D3A = 0x0000
+// DS:0D3C contains at least one string...
+
+// const int g_CIRCLE_X[4]; // DS:0D5A
+// const int g_CIRCLE_Y[4]; // DS:0D62
+int g_door_anim_flag; // DS:0D6A
+
+int g_level_tiles[LEVEL_LX][LEVEL_LY]; // DS:127E
+actor_s g_actors[MAX_ACTORS]; // DS:172E
+// DS:29EE
+// DS:29F0
+int g_kye_spawn_cy; // DS:29F2
+int g_kye_spawn_cx; // DS:29F4
+int g_kye_main_cy; // DS:29F6
+int g_kye_main_cx; // DS:29F8
+// TODO: Confirm sizes --GM
+char g_level_hint[80]; // DS:29FA
+char g_level_congrats[80]; // DS:2A4A
+char g_level_name[80]; // DS:2A9A
+// DS:2AEA
+
+HBITMAP g_hbmpWall; // DS:2B4E
+HBITMAP g_hbmpBlock; // DS:2B50
+HBITMAP g_hbmpKye; // DS:2B52
+HPEN g_hpenBlue;  // DS:2B54
+HPEN g_hpenWhite; // DS:2B56
+HPEN g_hpenBlack; // DS:2B58
+HPEN g_saved_hpen; // DS:2B5A
+HBRUSH g_hbrRed;   // DS:2B5C
+HBRUSH g_hbrGreen; // DS:2B5E
+HBRUSH g_hbrBlue;  // DS:2B60
+HBRUSH g_hbrWhite; // DS:2B62
+HBRUSH g_hbrBlack; // DS:2B64
+
+RECT g_r_maincli; // DS:2B68
+RECT g_r_status_left; // DS:2B70
+RECT g_r_status_right; // DS:2B78
+RECT g_r_playfield; // DS:2B80
+RECT g_r_mainfrm; // DS:2B88
+char g_dialog_text[160]; // DS:2B90 TODO CONFIRM SIZE
+char g_statusmsg[256]; // DS:2C30 TODO CONFIRM SIZE
+WORD g_maintimer; // DS:2D30
+HCURSOR g_hcCross; // DS:2D32
+HCURSOR g_hcArrow; // DS:2D34
+PAINTSTRUCT g_paint; // DS:2D36
+int g_has_maindc; // DS:2D56
+HDC g_maindc; // DS:2D58
+HANDLE g_hInstance; // DS:2D5A
+HWND g_mainwnd; // DS:2D5C
+
+void repaint_main_playfield(void);
+void actual_main_paint(void);
+void tick_game(void);
+void main_paint(HWND hWnd);
+void on_key_press(HWND hWnd, WORD wParam);
+void update_edit_menu_item(void);
+int main_wm_command(HWND hWnd, WORD wParam);
+LONG FAR PASCAL _export WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam);
+int PASCAL _export WinMain(HANDLE hInstance,
+			   HANDLE hPrevInstance,
+			   LPSTR lpCmdLine,
+			   int nCmdShow);
+void msgbox_error(char *m1, char *m2);
+void init_brushes_and_stuff(void);
+void deinit_brushes_and_stuff(void);
+void compute_window_geometry(void);
+void set_status_msg(const char *msg);
+int FAR PASCAL _export DLG_OK_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
+void show_charity_dialog(void);
+void update_window_title(void);
+void acquire_main_dc(void);
+void release_main_dc(void);
+void init_timer(void);
+void deinit_timer(void);
+int convert_char_to_internal(int *subgroup_out, int *internal_type_out, char external_char_in);
+void clear_level(void);
+void process_loaded_level(void);
+void read_line(FILE *fp, char *buf, int max_len);
+void read_level(FILE *fp, file_level_s *lvl);
+int create_actor(int type, int cx, int cy);
+void mark_actor_for_deletion(int ai);
+void garbage_collect_actors(void);
+void load_level_row(int cy, const char *rowstr);
+int registration_check(const char *cmdline);
+void load_level(int levelidx);
+void delete_and_draw_unacting_tile(int cx, int cy);
+void draw_actor(HDC dst_dc, HDC src_dc, int ai);
+void repaint_all_actors(void);
+void draw_wall(int cx, int cy, HDC dc);
+void repaint_all_walls(void);
+void draw_fizzled_kye(int fizzle_level);
+void repaint_status_left(void);
+void move_actor(int ai, int newx, int newy);
+int apply_sticky_blocks(int ai);
+int actor_held_by_sticky_block(int ai);
+void respawn_kye(void);
+int try_killing_adjacent_kye(int ai);
+void tick_all_timer_blocks(void);
+int try_enter_blacky(int ai, int cx, int cy);
+void tick_game_state(void);
+void count_all_diamonds(void);
+void repaint_kye(int fizzle_mode);
+void move_kye(int dx, int dy);
+void try_move_kye(int dx, int dy);
+void tick_kye(void);
+void animate_diamonds(void);
+void animate_doors(void);
+void animate_autospawners(void);
+void animate_blackies(void);
+void animate_monsters(void);
+void animate_everything(void);
+
+// CS:016A
+void repaint_main_playfield(void) {
+  if (g_is_in_editor == 0) {
+    repaint_all_walls();
+    repaint_all_actors();
+    if (g_kye_fizzle_in) {
+      g_kye_fizzle_in = 0;
+      repaint_kye(1);
+    } else {
+      repaint_kye(0);
+    }
+  } else if (g_is_in_editor == 1) {
+    repaint_all_walls();
+    repaint_all_actors();
+    repaint_kye(0);
+  }
+}
+
+// CS:01AB
+void actual_main_paint(void) {
+  // Need 2 bytes on stack
+  int statusmsg_slen; // BP/FE: BP-0x02
+  // BP-0x00
+
+  g_saved_hpen = SelectObject(g_maindc, g_hpenBlack);
+  MoveTo(g_maindc, g_r_status_left.left, g_r_status_right.top-1);
+  LineTo(g_maindc, g_r_status_right.right, g_r_status_right.top-1);
+  MoveTo(g_maindc, g_r_status_left.right+1, g_r_status_left.top);
+  LineTo(g_maindc, g_r_status_left.right+1, g_r_status_left.bottom);
+
+  repaint_status_left();
+
+  SelectObject(g_maindc, g_hpenWhite);
+  statusmsg_slen = strlen(g_statusmsg);
+  Rectangle(
+    g_maindc,
+    g_r_status_right.left,
+    g_r_status_right.top,
+    g_r_status_right.right,
+    g_r_status_right.bottom);
+  SelectObject(g_maindc, g_hpenBlack);
+  TextOut(g_maindc,
+    g_r_status_right.left+4,
+    g_r_status_right.top,
+    g_statusmsg, statusmsg_slen);
+
+  SelectObject(g_maindc, g_saved_hpen);
+
+  repaint_main_playfield();
+}
+
+// CS:0284
+void tick_game(void) {
+  g_has_maintimer = 0;
+  acquire_main_dc();
+
+  if (g_kye_needs_update != 0) {
+    tick_kye();
+  }
+
+  if (g_level_complete == 0) {
+    tick_game_state();
+    if (g_kye_lives < 0) {
+      repaint_kye(2);
+      delete_and_draw_unacting_tile(g_kye_main_cx, g_kye_main_cx);
+      // CS:14BA();
+      // DS:02B2 = 0;
+      load_level(g_levelidx);
+      set_status_msg(g_level_hint);
+      InvalidateRect(g_mainwnd, NULL, TRUE);
+      UpdateWindow(g_mainwnd);
+    } else if (g_kye_injured != 0) {
+      tick_kye();
+    }
+  } else {
+    if (g_levelidx < g_levelcount) {
+      // CS:1358();
+      g_levelidx += 1;
+    } else {
+      // CS:16A9();
+      g_levelidx = 1;
+    }
+    load_level(g_levelidx);
+    // CS:1416();
+    // DS:02B2 = 0;
+    set_status_msg(g_level_hint);
+    InvalidateRect(g_mainwnd, NULL, TRUE);
+    UpdateWindow(g_mainwnd);
+  }
+
+  release_main_dc();
+  g_has_maintimer = 1;
+}
+
+// CS:035C cdecl near
+void main_paint(HWND hWnd) {
+  if (g_has_maindc != 0) {
+    release_main_dc();
+  }
+  // BUG: BeginPaint result not checked for null handle
+  g_maindc = BeginPaint(hWnd, &g_paint);
+  g_has_maindc = 1;
+  compute_window_geometry();
+  actual_main_paint();
+  ReleaseDC(hWnd, g_maindc);
+  g_has_maindc = 0;
+  EndPaint(hWnd, &g_paint);
+}
+
+// CS:0573
+void on_key_press(HWND hWnd, WORD wParam) {
+  (void)hWnd;
+
+  if (g_is_in_editor != 0) return;
+
+  switch(wParam) {
+  case VK_PRIOR:
+    g_kye_target_cx = g_kye_main_cx + 1;
+    g_kye_target_cy = g_kye_main_cy - 1;
+    g_kye_needs_update = 1;
+    tick_game();
+    animate_everything();
+    return;
+  case VK_NEXT:
+    g_kye_target_cx = g_kye_main_cx + 1;
+    g_kye_target_cy = g_kye_main_cy + 1;
+    g_kye_needs_update = 1;
+    tick_game();
+    animate_everything();
+    return;
+  case VK_END:
+    g_kye_target_cx = g_kye_main_cx - 1;
+    g_kye_target_cy = g_kye_main_cy + 1;
+    g_kye_needs_update = 1;
+    tick_game();
+    animate_everything();
+    return;
+  case VK_HOME:
+    g_kye_target_cx = g_kye_main_cx - 1;
+    g_kye_target_cy = g_kye_main_cy - 1;
+    g_kye_needs_update = 1;
+    tick_game();
+    animate_everything();
+    return;
+  case VK_LEFT:
+    g_kye_target_cx = g_kye_main_cx - 1;
+    g_kye_target_cy = g_kye_main_cy;
+    g_kye_needs_update = 1;
+    tick_game();
+    animate_everything();
+    return;
+  case VK_UP:
+    g_kye_target_cx = g_kye_main_cx;
+    g_kye_target_cy = g_kye_main_cy - 1;
+    g_kye_needs_update = 1;
+    tick_game();
+    animate_everything();
+    return;
+  case VK_RIGHT:
+    g_kye_target_cx = g_kye_main_cx + 1;
+    g_kye_target_cy = g_kye_main_cy;
+    g_kye_needs_update = 1;
+    tick_game();
+    animate_everything();
+    return;
+  case VK_DOWN:
+    g_kye_target_cx = g_kye_main_cx;
+    g_kye_target_cy = g_kye_main_cy + 1;
+    g_kye_needs_update = 1;
+    tick_game();
+    animate_everything();
+    return;
+  }
+}
+
+// CS:06AC
+void update_edit_menu_item(void) {
+  // TODO CHECK OPTIMISATIONS --GM
+  HMENU menu; // DX
+  menu = GetMenu(g_mainwnd);
+  if (g_levelcount == 1) {
+    EnableMenuItem(menu, IDC_LEVEL_EDIT, MF_ENABLED);
+    return;
+  }
+  EnableMenuItem(menu, IDC_LEVEL_EDIT, MF_GRAYED);
+}
+
+// CS:06D6
+int main_wm_command(HWND hWnd, WORD wParam) {
+  // Needs 0x50 bytes of stack (BP/B0)
+
+  HMENU menu; // SI
+
+  switch (wParam) {
+  case IDC_GAME_NEW:
+    g_levelidx = 1;
+    load_level(1);
+    // DS:02B2 = 0;
+    set_status_msg(g_level_hint);
+    InvalidateRect(hWnd, NULL, TRUE);
+    UpdateWindow(hWnd);
+    return 1;
+
+  case IDC_GAME_EXIT:
+    PostQuitMessage(0);
+    return 1;
+
+  case IDC_LEVEL_RESTART:
+    if (g_is_in_editor == 0) {
+      load_level(g_levelidx);
+      set_status_msg(g_level_hint);
+      // DS:02B2 = 0;
+      InvalidateRect(hWnd, NULL, TRUE);
+      UpdateWindow(hWnd);
+    } else {
+      // Actually "Abort edit"
+      g_is_in_editor = 0;
+      // CS:5119();
+      menu = GetMenu(g_mainwnd);
+      ModifyMenu(menu,
+	IDC_LEVEL_EDIT,
+	MF_BYCOMMAND,
+	IDC_LEVEL_EDIT,
+	"&Edit"); // DS:0060
+      ModifyMenu(menu,
+	IDC_LEVEL_GOTO,
+	MF_BYCOMMAND,
+	IDC_LEVEL_GOTO,
+	"&Goto level..."); // DS:0066
+      ModifyMenu(menu,
+	IDC_LEVEL_FILE,
+	MF_BYCOMMAND,
+	IDC_LEVEL_FILE,
+	"&File"); // DS:0075
+      ModifyMenu(menu,
+	IDC_LEVEL_RESTART,
+	MF_BYCOMMAND,
+	IDC_LEVEL_RESTART,
+	"&Restart"); // DS:007E
+      EnableMenuItem(menu, IDC_GAME_NEW, MF_BYCOMMAND|MF_ENABLED);
+      DrawMenuBar(hWnd);
+      load_level(g_levelidx);
+      set_status_msg(g_level_hint);
+      // DS:02B2 = 0;
+      g_has_maintimer = 1;
+      InvalidateRect(hWnd, NULL, TRUE);
+      UpdateWindow(hWnd);
+      update_window_title();
+    }
+    return 1;
+
+  case IDC_LEVEL_GOTO:
+    if (g_is_in_editor == 0) {
+      g_has_maintimer = 0;
+      strcpy(g_dialog_text, "");
+      // CS:15C0();
+      strupr(g_dialog_text);
+      // if (CS:1FC5() < 1) {
+      //
+      // } else {
+      // }
+      // HACK: Advance level anyway --GM
+      g_level_complete = 1;
+
+    } else {
+      // Actually "Edit Hint"
+      // TODO! --GM
+    }
+    return 1;
+
+  case IDC_LEVEL_FILE:
+    // TODO! --GM
+    return 1;
+
+  case IDC_LEVEL_EDIT:
+    if (g_is_in_editor == 0) {
+      g_levelidx = 1;
+      load_level(1);
+      if (g_levelcount < 2) {
+	g_is_in_editor = 1;
+	g_has_maintimer = 0;
+	// CS:501F();
+	menu = GetMenu(g_mainwnd);
+	ModifyMenu(menu,
+	  IDC_LEVEL_EDIT,
+	  MF_BYCOMMAND,
+	  IDC_LEVEL_EDIT,
+	  "&Run"); // DS:0113
+	ModifyMenu(menu,
+	  IDC_LEVEL_RESTART,
+	  MF_BYCOMMAND,
+	  IDC_LEVEL_RESTART,
+	  "&Abort Edit"); // DS:0118
+	ModifyMenu(menu,
+	  IDC_LEVEL_GOTO,
+	  MF_BYCOMMAND,
+	  IDC_LEVEL_GOTO,
+	  "Edit &Hint"); // DS:0124
+	ModifyMenu(menu,
+	  IDC_LEVEL_FILE,
+	  MF_BYCOMMAND,
+	  IDC_LEVEL_FILE,
+	  "Edit &Name"); // DS:012F
+	EnableMenuItem(menu, IDC_GAME_NEW, MF_BYCOMMAND|MF_GRAYED);
+	DrawMenuBar(hWnd);
+	InvalidateRect(hWnd, NULL, TRUE);
+	UpdateWindow(hWnd);
+	update_window_title();
+      } else {
+	msgbox_error("Cannot edit multi-level files.", // DS:00C8
+	    "Load a single level file.(eg. template.kye)"); // DS:00E7
+      }
+    } else {
+      g_is_in_editor = 0;
+      // CS:5119();
+      menu = GetMenu(g_mainwnd);
+      ModifyMenu(menu,
+	IDC_LEVEL_EDIT,
+	MF_BYCOMMAND,
+	IDC_LEVEL_EDIT,
+	"&Edit"); // DS:013A
+      ModifyMenu(menu,
+	IDC_LEVEL_GOTO,
+	MF_BYCOMMAND,
+	IDC_LEVEL_GOTO,
+	"&Goto level..."); // DS:0140
+      ModifyMenu(menu,
+	IDC_LEVEL_FILE,
+	MF_BYCOMMAND,
+	IDC_LEVEL_FILE,
+	"&File"); // DS:014F
+      ModifyMenu(menu,
+	IDC_LEVEL_RESTART,
+	MF_BYCOMMAND,
+	IDC_LEVEL_RESTART,
+	"&Restart"); // DS:0158
+      EnableMenuItem(menu, IDC_GAME_NEW, MF_BYCOMMAND|MF_ENABLED);
+      DrawMenuBar(hWnd);
+      // CS:2241();
+      load_level(g_levelidx);
+      set_status_msg(g_level_hint);
+      // DS:02B2 = 0;
+      g_has_maintimer = 1;
+      InvalidateRect(hWnd, NULL, TRUE);
+      UpdateWindow(hWnd);
+      update_window_title();
+    }
+    return 1;
+
+  case IDC_HELP_ABOUT:
+    show_charity_dialog();
+    return 1;
+  }
+  return 0;
+}
+
+// CS:0C19
+LONG FAR PASCAL _export WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
+  // The compiler does some funky less-than/greater-than optimisation,
+  // instead of using a LUT.
+  // Maybe it was aiming to work nicely on a 486?
+  // That was a thing when Win 3.0 came out.
+
+  // TODO: Most of these are dummies... --GM
+  // TODO: Handle the special-case no-ops of WM_SIZE and WM_CREATE --GM
+  switch(msg) {
+  case WM_COMMAND:
+    return main_wm_command(hWnd, wParam);
+  case WM_PAINT:
+    main_paint(hWnd);
+    break;
+  case WM_DESTROY:
+    deinit_brushes_and_stuff();
+    PostQuitMessage(0);
+    break;
+  case WM_KEYDOWN:
+    g_key_pressed = 1;
+    on_key_press(hWnd, wParam);
+    break;
+  case WM_KEYUP:
+    g_key_pressed = 0;
+    break;
+  case WM_LBUTTONUP:
+    // CS:0432(hWnd, lParam);
+    break;
+  case WM_TIMER:
+    // BUG: (?) Handling of this flag is dubious.
+    if (g_has_maintimer) {
+      tick_game();
+      animate_everything();
+      g_has_maintimer = 1;
+    }
+    break;
+  case WM_MOUSEMOVE:
+    // CS:04F2(hWnd, lParam);
+    break;
+  case WM_LBUTTONDOWN:
+    // CS:03A3(hWnd, lParam, wParam);
+    break;
+  case WM_LBUTTONDBLCLK:
+    // CS:045F(hWnd, lParam, wParam);
+    break;
+  case WM_RBUTTONDOWN:
+    // CS:0481(hWnd, lParam, wParam);
+    break;
+  default:
+    return DefWindowProc(hWnd, msg, wParam, lParam);
+  }
+  return 0;
+}
+
+// CS:0D6A
+int PASCAL _export WinMain(HANDLE hInstance,
+			   HANDLE hPrevInstance,
+			   LPSTR lpCmdLine,
+			   int nCmdShow) {
+  // needs 0x60 (96) extra bytes on stack
+  char cmdlinebuf[50]; // /A0 BP-0x60
+  MSG msg; // /D2 BP-0x2A
+  WNDCLASS maincls; // /E4 BP-0x1C
+  HWND mainwnd; // /FE BP-0x02
+  // BP-0x00 - seems to be everything?
+
+  register int si;
+  register char FAR *di;
+
+  for (di = lpCmdLine, si = 0; *di != 0 && si < 50; di++, si++) {
+    cmdlinebuf[si] = *di;
+  }
+  // BUG: Clobbers past buffer on edge case
+  // Ends up being moot in practice,
+  // as the byte in question is a MSG,
+  // which gets written before we next read it.
+  // But still a bug.
+  cmdlinebuf[si] = 0;
+
+  if (!hPrevInstance) {
+    maincls.style = CS_VREDRAW|CS_HREDRAW|CS_DBLCLKS; // 0x000B
+    maincls.lpfnWndProc = WndProc; // CS:0C19
+    maincls.cbClsExtra = 0;
+    maincls.cbWndExtra = 0;
+    maincls.hInstance = hInstance;
+    maincls.hIcon = LoadIcon(hInstance, "IDI_KYE"); // str DS:0x16E
+    maincls.hCursor = NULL;
+    maincls.hbrBackground = GetStockObject(WHITE_BRUSH); // 0x0000
+    maincls.lpszMenuName = "Kye"; // str DS:0176
+    maincls.lpszClassName = "Kye"; // str DS:017A
+    if (!RegisterClass(&maincls)) {
+      // BUG: Returns success on failure
+      return 0;
+    }
+  }
+  mainwnd = CreateWindow(
+    "Kye", // DS:017E
+    "Kye", // DS:0182
+    WS_MINIMIZEBOX|WS_SYSMENU|WS_DLGFRAME|WS_SYSMENU, // 0x00CA0000
+    50, // CW_USEDEFAULT would be better of course
+    50, // Ditto... and yes, it *is* in Windows 3.0.
+    // BUG: Different-sized window borders break things.
+    // - Windows 3.1 JP edition has a bad time with this.
+    // - Wine with large fonts completely gobbles the status bar.
+    //   - Speaking of Wine, 16-bit code runs really nicely on 64-bit OSes.
+    //     - Hey Microsoft, have you tried not sucking? No? OK then.
+    1+480+1, // 482
+    320+59,  // 379 - TODO work out status bar + NC geometry --GM
+    NULL,
+    NULL,
+    hInstance,
+    NULL);
+  if (!mainwnd) {
+    // BUG: Returns success on failure
+    return 0;
+  }
+  g_hInstance = hInstance;
+  g_mainwnd = mainwnd;
+  g_has_maindc = 0;
+  g_is_in_editor = 0;
+  g_mouse_captured = 0;
+
+  g_hcArrow = LoadCursor(NULL, IDC_ARROW);
+  g_hcCross = LoadCursor(NULL, IDC_CROSS);
+
+  update_window_title();
+  ShowWindow(mainwnd, nCmdShow);
+
+  init_brushes_and_stuff();
+  acquire_main_dc();
+  compute_window_geometry();
+  release_main_dc();
+
+  srand(time(NULL));
+
+  init_timer();
+  OpenSound(); // SOUND by ordinal, Ordinal 1?
+  g_tick_counter = 0;
+  clear_level();
+
+  if (!registration_check(cmdlinebuf)) {
+    // TODO: Make "this appeal" appear --GM
+    strcpy(g_levelset_fname, "border.kye"); // DS:0186
+    load_level(g_levelidx);
+    set_status_msg(g_level_hint);
+    update_edit_menu_item();
+    // DS:02B2 = 0x0000;
+    InvalidateRect(mainwnd, NULL, TRUE);
+    UpdateWindow(mainwnd);
+    show_charity_dialog();
+  }
+
+  strcpy(g_levelset_fname, "default.kye"); // DS:0191
+  load_level(g_levelidx);
+  set_status_msg(g_level_hint);
+  update_edit_menu_item();
+  // DS:02B2 = 0x0000;
+  InvalidateRect(mainwnd, NULL, TRUE);
+  UpdateWindow(mainwnd);
+  while (GetMessage(&msg, NULL, 0, 0)) {
+    TranslateMessage(&msg);
+    DispatchMessage(&msg);
+  }
+
+  // FIXME TEMPORARY FOR DEBUG --GM
+  MessageBox(NULL, "Performing clean exit!", "K", MB_ICONINFORMATION);
+
+  deinit_timer();
+  CloseSound(); // SOUND by ordinal, Ordinal 2?
+  return msg.wParam;
+}
+
+// CS:1005
+void msgbox_error(char *m1, char *m2) {
+  MessageBox(g_mainwnd, m2, m1, MB_ICONEXCLAMATION);
+}
+
+// CS:101D
+void init_brushes_and_stuff(void) {
+  g_hbrBlack = CreateSolidBrush(RGB(0x00,0x00,0x00));
+  g_hbrWhite = CreateSolidBrush(RGB(0xFF,0xFF,0xFF));
+  g_hbrBlue  = CreateSolidBrush(RGB(0x00,0x00,0xFF));
+  g_hbrGreen = CreateSolidBrush(RGB(0x00,0xFF,0x00));
+  g_hbrRed   = CreateSolidBrush(RGB(0xFF,0x00,0x00));
+  g_hpenBlack = CreatePen(PS_SOLID, 1, RGB(0x00,0x00,0x00));
+  g_hpenWhite = CreatePen(PS_SOLID, 1, RGB(0xFF,0xFF,0xFF));
+  g_hpenBlue  = CreatePen(PS_SOLID, 1, RGB(0x00,0x00,0xFF));
+  g_hbmpKye   = LoadBitmap(g_hInstance, "kye");   // DS:03F4
+  g_hbmpBlock = LoadBitmap(g_hInstance, "block"); // DS:03F8
+  g_hbmpWall  = LoadBitmap(g_hInstance, "wall");  // DS:03FE
+}
+
+// CS:10C0
+void deinit_brushes_and_stuff(void) {
+  DeleteObject(g_hbrBlack);
+  DeleteObject(g_hbrWhite);
+  DeleteObject(g_hbrBlue);
+  DeleteObject(g_hbrGreen);
+  DeleteObject(g_hbrRed);
+  DeleteObject(g_hpenBlack);
+  DeleteObject(g_hpenWhite);
+  DeleteObject(g_hpenBlue);
+  DeleteObject(g_hbmpKye);
+  DeleteObject(g_hbmpBlock);
+  DeleteObject(g_hbmpWall);
+}
+
+// CS:1124
+void compute_window_geometry(void) {
+  GetWindowRect(g_mainwnd, &g_r_mainfrm);
+  GetClientRect(g_mainwnd, &g_r_maincli);
+
+  // SI = 16 as a constant used twice for optimisation
+  // However, we do this plus 1 in each case?
+  int textheight = 16;
+  SetRect(
+    &g_r_playfield,
+    g_r_maincli.left,
+    g_r_maincli.top,
+    g_r_maincli.left+480,
+    g_r_maincli.top+320);
+  SetRect(
+    &g_r_status_left,
+    g_r_maincli.left,
+    g_r_playfield.bottom+1,
+    g_r_maincli.left+300,
+    g_r_playfield.bottom+textheight+1);
+  SetRect(
+    &g_r_status_right,
+    g_r_status_left.right+2,
+    g_r_playfield.bottom+1,
+    g_r_playfield.right,
+    g_r_playfield.bottom+textheight+1);
+}
+
+// CS:11C4
+void set_status_msg(const char *msg) {
+  // almost BUG: Rect invalidated before updating drawing info
+  // Probably fine on 3.x, but Win32 might care.
+  InvalidateRect(g_mainwnd, &g_r_status_right, FALSE);
+  strcpy(g_statusmsg, msg);
+  // OPTIMISER NOTE: REP MOVSW / ADC CX,CX / REP MOVSB
+}
+
+// CS:15FD
+int FAR PASCAL _export DLG_OK_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
+  (void)lParam;
+  switch (msg) {
+  case WM_CLOSE:
+    EndDialog(hDlg, 0);
+    return 1;
+  case WM_INITDIALOG:
+    // TODO: Name the items --GM
+    SetFocus(GetDlgItem(hDlg, 1));
+    return 0;
+  case WM_COMMAND:
+    // TODO: Name the items --GM
+    if (wParam == 1) {
+      EndDialog(hDlg, 0);
+      return 1;
+    }
+    return 0;
+  default:
+    return 0;
+  }
+}
+
+// CS:166C
+void show_charity_dialog(void) {
+  FARPROC dlgproc;
+
+  // BUG: Failure not checked
+  dlgproc = MakeProcInstance((FARPROC)DLG_OK_FUNC, g_hInstance);
+  DialogBox(g_hInstance, "DLG_WHAT", g_mainwnd, dlgproc); // DS:0431
+  FreeProcInstance(dlgproc);
+}
+
+// CS:17BD
+void update_window_title(void) {
+  // needs 0x82 (130) extra bytes on stack
+  char title[128]; // /7E BP-0x82
+  //int unk00; // /FE BP-0x02
+  // BP-0x00
+
+  // TODO dubious, also seems stuff got inlined --GM
+  strcpy(title, "Kye"); // DS:0444
+  if (strlen(g_levelset_fname) > 0) {
+    strcat(title, " - ["); // DS:0448
+    strcat(title, g_levelset_fname);
+    strcat(title, "]"); // DS:044D
+  }
+  if (g_is_in_editor) {
+    strcat(title, " (Edit) "); // DS:044F
+  }
+  SetWindowText(g_mainwnd, title);
+}
+
+// CS:186C
+void acquire_main_dc(void) {
+  if (!g_has_maindc) {
+    g_maindc = GetDC(g_mainwnd);
+    g_has_maindc = 1;
+  }
+}
+
+// CS:1886
+void release_main_dc(void) {
+  if (g_has_maindc) {
+    ReleaseDC(g_mainwnd, g_maindc);
+    g_has_maindc = 0;
+  }
+}
+
+// CS:18C9
+void init_timer(void) {
+  g_maintimer = SetTimer(g_mainwnd, 0, 100, NULL);
+  g_has_maintimer = 1;
+}
+
+// CS:18E4
+void deinit_timer(void) {
+  // BUG: Checks against handle, but only clears the "has handle" flag.
+  if (g_maintimer) {
+    KillTimer(g_mainwnd, 0);
+  }
+  g_has_maintimer = 0;
+}
+
+// CS:18FE
+int convert_char_to_internal(int *subgroup_out, int *internal_type_out, char external_char_in) {
+  int i; // CX
+
+  for (i = 0; TILECONV_MAP[i].subgroup != -1; i++) {
+    if (TILECONV_MAP[i].external_char == external_char_in) {
+      *subgroup_out = TILECONV_MAP[i].subgroup;
+      *internal_type_out = TILECONV_MAP[i].internal_type;
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
+// CS:1986
+void clear_level(void) {
+  // NOTE: Levels are stored transposed.
+  // TODO: Check optimisation! This put a lot of stuff into registers. --GM
+  int x, y;
+
+  g_actor_count = 0;
+  strcpy(g_level_name, "EMPTY"); // DS:045A
+  strcpy(g_level_congrats, "message"); // DS:0460
+  strcpy(g_level_hint, "No level data"); // DS:0468
+
+  for (y = 0; y < LEVEL_LY; y++) {
+    for (x = 0; x < LEVEL_LX; x++) {
+      g_level_tiles[x][y] = T_WALL5;
+    }
+  }
+  for (y = 1; y < LEVEL_LY-1; y++) {
+    for (x = 1; x < LEVEL_LX-1; x++) {
+      g_level_tiles[x][y] = T_EMPTY;
+    }
+  }
+  g_level_tiles[2][1] = T_WALL5;
+  g_level_tiles[1][2] = T_WALL5;
+  g_level_tiles[2][2] = T_WALL3;
+  g_kye_main_cx = 3;
+  g_kye_main_cy = 3;
+  g_kye_spawn_cx = 3;
+  g_kye_spawn_cy = 3;
+  g_level_tiles[3][3] = T_KYE;
+  g_level_tiles[1][1] = T_DIAMOND;
+  g_tile_under_kye = T_EMPTY;
+}
+
+// CS:1A37
+void process_loaded_level(void) {
+  // needs 4 extra bytes on stack
+  // BP/FC = ?
+  // BP/FE = column counter
+  // FIXME revisit for optimisations, this most likely won't match --GM
+
+  // SI = tile pointer
+  int cx; // DI
+  int cy; // DX
+  int found; // CX
+
+  int tile;
+
+  // Ensure at least one diamond exists.
+  found = 0;
+  for (cx = 0; cx < LEVEL_LX; cx++) {
+    for (cy = 0; cy < LEVEL_LY; cy++) {
+      if (g_level_tiles[cx][cy] == T_DIAMOND) {
+	found = 1;
+	goto done_diamond_search;
+      }
+    }
+  }
+done_diamond_search:
+  if (!found) {
+    // Nothing exists? Place a diamond.
+    g_level_tiles[1][1] = T_DIAMOND;
+  }
+
+  // Ensure exactly one Kye exists.
+  found = 0;
+  for (cx = 0; cx < LEVEL_LX; cx++) {
+    for (cy = 0; cy < LEVEL_LY; cy++) {
+      if (g_level_tiles[cx][cy] == T_KYE) {
+	found = 1;
+	goto done_kye_search;
+      }
+    }
+  }
+done_kye_search:
+  // Nothing exists, or two Kyes on the board? Place a Kye.
+  // (load_level_row sets cx,cy)
+  if ((!found) || cx != g_kye_main_cx || cy != g_kye_main_cy) {
+    g_kye_main_cx = 3;
+    g_kye_main_cy = 3;
+    g_kye_spawn_cx = 3;
+    g_kye_spawn_cy = 3;
+    g_level_tiles[3][3] = T_KYE;
+  }
+
+  // Ensure borders have walls
+  // TODO: Verify order of check --GM
+  for (cx = 0; cx < LEVEL_LX; cx++) {
+    tile = g_level_tiles[cx][0];
+    if (!(tile >= T_WALL9 && tile <= T_WALL1)) {
+      g_level_tiles[cx][0] = T_WALL5;
+    }
+  }
+  for (cx = 0; cx < LEVEL_LX; cx++) {
+    tile = g_level_tiles[cx][LEVEL_LY-1];
+    if (!(tile >= T_WALL9 && tile <= T_WALL1)) {
+      g_level_tiles[cx][LEVEL_LY-1] = T_WALL5;
+    }
+  }
+  for (cy = 0; cy < LEVEL_LY; cy++) {
+    tile = g_level_tiles[0][cy];
+    if (!(tile >= T_WALL9 && tile <= T_WALL1)) {
+      g_level_tiles[0][cy] = T_WALL5;
+    }
+  }
+  for (cy = 0; cy < LEVEL_LY; cy++) {
+    tile = g_level_tiles[LEVEL_LX-1][cy];
+    if (!(tile >= T_WALL9 && tile <= T_WALL1)) {
+      g_level_tiles[LEVEL_LX-1][cy] = T_WALL5;
+    }
+  }
+
+  // Finally, clean up our actors list!
+  garbage_collect_actors();
+}
+
+// CS:1B6C
+void read_line(FILE *fp, char *buf, int max_len) {
+  // TODO CHECK OPTIMISATIONS --GM
+  // needs 0x100 (256) extra bytes on stack
+  char linebuf[256]; // BP/FF00
+  // BP+0x000
+
+  int i;
+
+  buf[0] = 0;
+  fgets(linebuf, 255, fp);
+
+  for (i = 0;
+       linebuf[i] != 0
+	 && i < max_len
+	 && linebuf[i] != '\n'
+	 && linebuf[i] != '\r';
+       i++) {
+    buf[i] = linebuf[i];
+  }
+  buf[i] = 0;
+}
+
+// CS:1BBE
+void read_level(FILE *fp, file_level_s *lvl) {
+  int cy; // register SI
+
+  read_line(fp, lvl->name, 35-2);
+  read_line(fp, lvl->hint, 85-2);
+  read_line(fp, lvl->congrats, 85-2);
+  for (cy = 0; cy < LEVEL_LY; cy++) {
+    read_line(fp, lvl->rows[cy], LEVEL_LX+3-2);
+  }
+}
+
+// CS:1CD2
+int create_actor(int type, int cx, int cy) {
+  if (g_actor_count < MAX_ACTORS) {
+    // CX = tile
+    // SI = cx
+    // DI = cy
+    g_level_tiles[cx][cy] = g_actor_count;
+    g_actors[g_actor_count].type = type;
+    g_actors[g_actor_count].cx = cx;
+    g_actors[g_actor_count].cy = cy;
+    g_actors[g_actor_count].var0 = 0;
+    g_actor_count++;
+    return g_actor_count - 1;
+  } else {
+    return -1;
+  }
+}
+
+// CS:1D40
+void mark_actor_for_deletion(int ai) {
+  g_actors[ai].type = T_DEAD_ACTOR;
+}
+
+// CS:1D51
+void garbage_collect_actors(void) {
+  // FIXME THIS IS NOT HOW IT'S IMPLEMENTED,
+  // BUT THE ACTUAL DECOMP/DISASM HURTS TO READ --GM
+  // this implementation is O(n) worst case.
+  // the real implementation appears to be O(n^2) worst case.
+
+  int ai;
+  int deleted;
+
+  ai = 0;
+  deleted = 0;
+  for (ai = 0; ai < g_actor_count; ai++) {
+    if (g_actors[ai].type == T_DEAD_ACTOR) {
+      deleted += 1;
+    } else if (deleted != 0) {
+      g_level_tiles[g_actors[ai].cx][g_actors[ai].cy] -= deleted;
+      memcpy(&g_actors[ai-deleted], &g_actors[ai], sizeof(g_actors[0]));
+    }
+  }
+  g_actor_count -= deleted;
+}
+
+// CS:1DF3
+void load_level_row(int cy, const char *rowstr) {
+  // TODO CHECK OPTIMISATIONS --GM
+  // needs 0x8 extra bytes on stack
+  const char *str_ptr; // BP/F8 BP-0x08
+  int internal_type; // BP/FA BP-0x06
+  int subgroup; // BP/FC BP-0x04
+  int ai; // BP/FE BP-0x02
+  // BP-0x00
+
+  // registers
+  int cx; // SI
+  int *tileptr; // DI
+
+  if (cy >= LEVEL_LY) return;
+
+  // Clear row
+  for (cx = 0; cx < LEVEL_LX; cx++) {
+    g_level_tiles[cx][cy] = T_EMPTY;
+  }
+
+  for (cx = 0, str_ptr = rowstr, tileptr = &g_level_tiles[0][cy];
+       (*str_ptr) != 0;
+       str_ptr++, tileptr += LEVEL_LY, cx++) {
+
+    if (cx >= LEVEL_LX) return;
+    if (convert_char_to_internal(&subgroup, &internal_type, *str_ptr)) {
+      switch (subgroup) {
+	case 0:
+	  *tileptr = T_EMPTY;
+	  break;
+	case 1:
+	  *tileptr = internal_type;
+	  break;
+	case 2:
+	  switch(internal_type) {
+	  case T_B_TWISTER:
+	  case T_B_GNASHER:
+	  case T_B_BLOB:
+	  case T_B_VIRUS:
+	  case T_B_SPIKE:
+	    ai = create_actor(internal_type, cx, cy);
+	    // BUG: Failure (-1) not checked
+	    // Mathematically it won't happen, but I like hygiene. --GM
+	    // TODO: Decipher this 32-bit-int mess --GM
+	    //g_actors[ai].var0 = rand()<<2;
+	    (void)ai;
+	    // 0x00008000L, CS:6231(0x8000, 0)<<2;
+	    break;
+	  case T_AUTOSLIDER1:
+	    create_actor((cx % 4) + T_AUTOSLIDER1, cx, cy);
+	    break;
+	  case T_AUTOROCKY1:
+	    create_actor((cx % 4) + T_AUTOROCKY1, cx, cy);
+	    break;
+	  default:
+	    create_actor(internal_type, cx, cy);
+	    break;
+	  }
+	  break;
+	case 3:
+	  *tileptr = T_KYE;
+	  g_kye_main_cy = cy;
+	  g_kye_spawn_cy = cy;
+	  g_kye_spawn_cx = cx;
+	  g_kye_main_cx = cx;
+	  break;
+      }
+    }
+  }
+}
+
+// CS:2088
+int registration_check(const char *cmdline) {
+  // If you want to use this, give 10 GBP to a childrens charity.
+  // It skips border.kye and the "please consider donating" screen.
+  if (cmdline[0] != 'd') return 0;
+  if (cmdline[1] != 'i') return 0;
+  if (cmdline[2] != 'g') return 0;
+  if (cmdline[3] != 'g') return 0;
+  if (cmdline[4] != 'e') return 0;
+  if (cmdline[5] != 'r') return 0;
+  return 1;
+}
+
+// CS:20D6
+void load_level(int levelidx) {
+  // needs 0x3DC (988) extra bytes on stack
+  char buf80a[80]; // BP/FC24
+  file_level_s lvl; // BP/FC74
+  FILE *fp; // BP/FFFE BP-0x002
+  // BP-0x000
+
+  int i;
+
+  if (g_levelset_fname[0]) {
+    fp = fopen(g_levelset_fname, "r"); // DS:0478
+    if (!fp) {
+      msgbox_error("Cannot open file: ", g_levelset_fname); // DS:047A
+      clear_level();
+      g_levelset_fname[0] = 0;
+      return;
+    }
+    fseek(fp, 0, SEEK_SET); // FIXME CONFIRM --GM
+    read_line(fp, buf80a, 80-1);
+    g_levelcount = atol(buf80a);
+    g_level_complete = 0;
+    g_kye_needs_update = 0;
+    g_kye_fizzle_in = 1;
+    g_kye_injured = 0;
+    g_kye_lives = 3;
+    g_tile_under_kye = T_EMPTY;
+    if ((levelidx < 1) || (levelidx > g_levelcount)) {
+      levelidx = 1;
+    }
+
+    // TODO CONFIRM OPTIMISATION, this might not be a thing --GM
+    for (i = 0; i < levelidx; i++) {
+      read_level(fp, &lvl);
+    }
+    fclose(fp);
+    g_actor_count = 0;
+    strcpy(g_level_name, lvl.name);
+    strcpy(g_level_congrats, lvl.congrats);
+    strcpy(g_level_hint, lvl.hint);
+    for (i = 0; i < LEVEL_LY; i++) {
+      load_level_row(i, lvl.rows[i]);
+    }
+    process_loaded_level();
+  }
+}
+
+// CS:2370
+void delete_and_draw_unacting_tile(int cx, int cy) {
+  // SI = cx
+  // DI = cy
+  int px; // BX
+  int py; // CX
+
+  g_level_tiles[cx][cy] = T_EMPTY;
+  // BUG: Previous pen not saved
+  SelectObject(g_maindc, g_hpenWhite);
+  px = (cx * g_tile_lx) + g_r_playfield.left;
+  py = (cy * g_tile_ly) + g_r_playfield.top;
+  Rectangle(
+    g_maindc,
+    px,
+    py,
+    px + g_tile_lx,
+    py + g_tile_ly);
+}
+
+// CS:23D2
+void draw_actor(HDC dst_dc, HDC src_dc, int ai) {
+  int dst_py; // BP/FC
+  int dst_px; // BP/FE
+
+  // SI = ai
+  int type; // CX
+  int src_py; // DX
+  int src_px; // DI
+
+  type = g_actors[ai].type;
+  dst_px = g_actors[ai].cx * g_tile_lx;
+  dst_py = g_actors[ai].cy * g_tile_ly;
+
+  if (type < 23) {
+    src_px = type * TILE_LX;
+    src_py = 0;
+  } else {
+    src_px = (type - 23) * TILE_LX;
+    src_py = 4 * TILE_LY;
+  }
+
+  switch (type) {
+  case T_B_TWISTER:
+  case T_B_GNASHER:
+  case T_B_BLOB:
+  case T_B_VIRUS:
+  case T_B_SPIKE:
+    src_py = g_actors[ai].var0 * TILE_LY;
+    break;
+  default:
+    if (type >= T_TIMER_0 && type <= T_TIMER_9) {
+      src_px = (type - T_TIMER_0) * TILE_LX;
+      src_py = 1 * TILE_LY;
+    }
+    break;
+  }
+  BitBlt(
+    dst_dc,
+    dst_px, dst_py,
+    TILE_LX, TILE_LY,
+    src_dc,
+    src_px, src_py,
+    SRCCOPY);
+}
+
+// CS:247F
+void repaint_all_actors(void) {
+  HDC dc; // DI
+  int ai; // SI
+
+  // BUG: DC not checked for null handle
+  dc = CreateCompatibleDC(g_maindc);
+  SelectObject(dc, g_hbmpBlock);
+  for (ai = 0; ai < g_actor_count; ai++) {
+    draw_actor(g_maindc, dc, ai);
+  }
+  DeleteDC(dc);
+}
+
+// CS:24BA
+void draw_wall(int cx, int cy, HDC dc) {
+  // TODO CHECK OPTIMISATIONS - stack needs work --GM
+  // General arrangement:
+  // SI = x
+  // CX = y
+  int tile;
+  tile = g_level_tiles[cx][cy];
+
+  // These types are negative numbers, T_WALL1 > T_WALL9
+  if (tile <= T_WALL1 && tile >= T_WALL9) {
+    // Draw actual wall
+    BitBlt(
+      g_maindc,
+      cx * g_tile_lx,
+      cy * g_tile_ly,
+      TILE_LX, TILE_LY, // Yes, this is hardcoded somehow.
+      dc,
+      (3+(T_WALL1-tile)) * TILE_LX,
+      0 * TILE_LY,
+      SRCCOPY);
+
+  } else if (tile == T_EARTH) {
+    BitBlt(
+      g_maindc,
+      cx * g_tile_lx,
+      cy * g_tile_ly,
+      TILE_LX, TILE_LY,
+      dc,
+      0 * TILE_LX, 0 * TILE_LY,
+      SRCCOPY);
+
+  } else if (tile == T_DIAMOND) {
+    BitBlt(
+      g_maindc,
+      cx * g_tile_lx,
+      cy * g_tile_ly,
+      TILE_LX, TILE_LY,
+      dc,
+      12 * TILE_LX, 0 * TILE_LY,
+      SRCCOPY);
+
+  } else if (tile == T_DOOR_W_E || tile == T_DOOR_E_W) {
+    BitBlt(
+      g_maindc,
+      cx * g_tile_lx,
+      cy * g_tile_ly,
+      TILE_LX, TILE_LY,
+      dc,
+      14 * TILE_LX, 0 * TILE_LY,
+      SRCCOPY);
+
+  } else if (tile == T_DOOR_N_S || tile == T_DOOR_S_N) {
+    BitBlt(
+      g_maindc,
+      cx * g_tile_lx,
+      cy * g_tile_ly,
+      TILE_LX, TILE_LY,
+      dc,
+      13 * TILE_LX, 0 * TILE_LY,
+      SRCCOPY);
+  }
+}
+
+// CS:2665
+void repaint_all_walls(void) {
+  HDC dc; // BP/FE BP-0x02
+  // BP-0x00
+
+  int cx; // DI
+  int cy; // SI
+
+  // BUG: DC not checked for null handle
+  dc = CreateCompatibleDC(g_maindc);
+  SelectObject(dc, g_hbmpWall);
+  for (cx = 0; cx < LEVEL_LX; cx++) {
+    for (cy = 0; cy < LEVEL_LY; cy++) {
+      draw_wall(cx, cy, dc);
+    }
+  }
+  DeleteDC(dc);
+}
+// CS:26AA
+void draw_fizzled_kye(int fizzle_level){
+  // TODO! --GM
+  (void)fizzle_level;
+}
+
+// CS:2847
+void repaint_status_left(void) {
+  // stack needs 0x6C bytes (BP/94)
+  //char textbuf[25]; // BP/94
+  // TODO: Find actual length --GM
+  char textbuf[32];
+  // BP/AD
+  // int *ent1; // BP/FA
+  int px; // BP/FC
+  HDC dc; // BP/FE
+
+  int i; // SI
+  int diamonds; // CX
+  int cx, cy; // not really mapped to anything?
+
+  switch (g_is_in_editor) {
+    case 0: {
+      // 2862
+      SelectObject(g_maindc, g_hpenWhite);
+      Rectangle(
+	g_maindc,
+	g_r_status_left.left,
+	g_r_status_left.top,
+	g_r_status_left.left + 70,
+	g_r_status_left.top + 17);
+      dc = CreateCompatibleDC(g_maindc);
+      SelectObject(dc, g_hbmpKye);
+      for (px = 0, i = 0; i < g_kye_lives; px += TILE_LX + 4, i++) {
+	BitBlt(
+	  g_maindc,
+	  g_r_status_left.left + px + 1,
+	  g_r_status_left.top + 1,
+	  TILE_LX, TILE_LY,
+	  dc,
+	  0, 0,
+	  SRCCOPY);
+      }
+      DeleteDC(dc);
+
+      SelectObject(g_maindc, g_hpenBlack);
+      sprintf(textbuf, "Level:  %d   ", g_levelidx); // DS:04B8
+      TextOut(g_maindc,
+	g_r_status_left.left + 80,
+	g_r_status_left.top,
+	textbuf,
+	strlen(textbuf));
+
+      diamonds = 0;
+      for (cx = 0; cx < LEVEL_LX; cx++) {
+	for (cy = 0; cy < LEVEL_LY; cy++) {
+	  if (g_level_tiles[cx][cy] == T_DIAMOND) {
+	    diamonds++;
+	  }
+	}
+      }
+      sprintf(textbuf, "Diamonds left:  %d   ", diamonds);
+      TextOut(g_maindc,
+	g_r_status_left.left + 160,
+	g_r_status_left.top,
+	textbuf,
+	strlen(textbuf));
+    } break;
+
+    case 1: {
+      // 299B
+      // TODO! --GM
+    } break;
+
+    default:
+      break;
+  }
+}
+
+// CS:3006
+void move_actor(int ai, int newx, int newy) {
+  HDC dc; // DI
+
+  // SI = ai
+
+  dc = CreateCompatibleDC(g_maindc);
+  // BUG: dc not checked for failure
+  SelectObject(dc, g_hbmpBlock);
+  // BUG: old object not saved
+  delete_and_draw_unacting_tile(
+    g_actors[ai].cx,
+    g_actors[ai].cy);
+  g_actors[ai].cx = newx;
+  g_actors[ai].cy = newy;
+  g_level_tiles[newx][newy] = ai;
+  draw_actor(g_maindc, dc, ai);
+  DeleteDC(dc);
+}
+
+// CS:3084
+int apply_sticky_blocks(int ai) {
+  // need 0x4 bytes of stack (BP/FC)
+  int result; // BP/FC
+  int cx; // BP/FE
+
+  int cy; // CX
+
+  result = 0;
+  cx = g_actors[ai].cx;
+  cy = g_actors[ai].cy;
+  if (g_level_tiles[cx][cy+1] == T_EMPTY
+      && g_level_tiles[cx][cy+2] >= 0
+      && g_actors[g_level_tiles[cx][cy+2]].type == T_STICKY_V) {
+    move_actor(ai, cx, cy+1);
+    result = 1;
+  } else if (g_level_tiles[cx][cy-1] == T_EMPTY
+      && g_level_tiles[cx][cy-2] >= 0
+      && g_actors[g_level_tiles[cx][cy-2]].type == T_STICKY_V) {
+    move_actor(ai, cx, cy-1);
+    result = 1;
+  } else if (g_level_tiles[cx+1][cy] == T_EMPTY
+      && g_level_tiles[cx+2][cy] >= 0
+      && g_actors[g_level_tiles[cx+2][cy]].type == T_STICKY_H) {
+    move_actor(ai, cx+1, cy);
+    result = 1;
+  } else if (g_level_tiles[cx-1][cy] == T_EMPTY
+      && g_level_tiles[cx-2][cy] >= 0
+      && g_actors[g_level_tiles[cx-2][cy]].type == T_STICKY_H) {
+    move_actor(ai, cx-1, cy);
+    result = 1;
+  }
+
+  return result;
+}
+
+// CS:31AC
+int actor_held_by_sticky_block(int ai) {
+  // need 0x2 bytes of stack
+  int cx; // BP/FE
+
+  int cy; // SI
+  int result; // CX
+
+  result = 0;
+  cx = g_actors[ai].cx;
+  cy = g_actors[ai].cy;
+
+  if (g_level_tiles[cx][cy+1] >= 0
+      && g_actors[g_level_tiles[cx][cy+1]].type == T_STICKY_V) {
+    result = 1;
+  } else if (g_level_tiles[cx][cy-1] >= 0
+      && g_actors[g_level_tiles[cx][cy-1]].type == T_STICKY_V) {
+    result = 1;
+  } else if (g_level_tiles[cx+1][cy] >= 0
+      && g_actors[g_level_tiles[cx+1][cy]].type == T_STICKY_H) {
+    result = 1;
+  } else if (g_level_tiles[cx-1][cy] >= 0
+      && g_actors[g_level_tiles[cx-1][cy]].type == T_STICKY_H) {
+    result = 1;
+  }
+
+  return result;
+}
+
+// CS:3374
+void respawn_kye(void) {
+  // Stack: 0x0A bytes
+  int cy1; // BP/F6
+  int cx1; // BP/F8
+  int cy0; // BP/FA
+  int cx0; // BP/FC
+  int radius; // BP/FE
+
+  int rad2; // SI
+  int i; // CX
+
+  g_kye_injured = 1;
+  g_kye_target_cx = g_kye_spawn_cx;
+  g_kye_target_cy = g_kye_spawn_cy;
+
+  // Spiral out if spawn blocked
+  if (g_level_tiles[g_kye_spawn_cx][g_kye_spawn_cy] != T_EMPTY) {
+    for (radius = 1,
+	cx0 = g_kye_spawn_cx - 1,
+	cy0 = g_kye_spawn_cy + 1,
+	rad2 = 2,
+	cx1 = g_kye_spawn_cx + 1,
+	cy1 = g_kye_spawn_cy - 1;
+	radius <= 4; cx0--, cy0++, rad2 += 2, cx1--, cy1++, radius++) {
+
+      g_kye_target_cx = cx0;
+      g_kye_target_cy = cy0;
+      for (i = 0; i < rad2; g_kye_target_cx++, i++) {
+	if (g_level_tiles[g_kye_target_cx][g_kye_target_cy] == T_EMPTY) {
+	  return;
+	}
+      }
+      g_kye_target_cx = cx1;
+      g_kye_target_cy = cy0;
+      for (i = 0; i < rad2; g_kye_target_cy--, i++) {
+	if (g_level_tiles[g_kye_target_cx][g_kye_target_cy] == T_EMPTY) {
+	  return;
+	}
+      }
+      g_kye_target_cx = cx1;
+      g_kye_target_cy = cy1;
+      for (i = 0; i < rad2; g_kye_target_cx--, i++) {
+	if (g_level_tiles[g_kye_target_cx][g_kye_target_cy] == T_EMPTY) {
+	  return;
+	}
+      }
+      g_kye_target_cx = cx0;
+      g_kye_target_cy = cy1;
+      for (i = 0; i < rad2; g_kye_target_cy++, i++) {
+	if (g_level_tiles[g_kye_target_cx][g_kye_target_cy] == T_EMPTY) {
+	  return;
+	}
+      }
+    }
+
+    // Respawn in-place
+    g_kye_target_cx = g_kye_main_cx;
+    g_kye_target_cy = g_kye_main_cy;
+  }
+}
+
+// CS:34ED
+int try_killing_adjacent_kye(int ai) {
+  // stack: 0x02 bytes
+  int cx; // BP/FE
+
+  int cy; // CX
+  int result; // SI
+
+  cx = g_actors[ai].cx;
+  cy = g_actors[ai].cy;
+  result = (g_level_tiles[cx][cy+1] == T_KYE
+      || g_level_tiles[cx][cy-1] == T_KYE
+      || g_level_tiles[cx-1][cy] == T_KYE
+      || g_level_tiles[cx+1][cy] == T_KYE);
+
+  if (result) {
+    g_kye_lives--;
+    respawn_kye();
+    repaint_status_left();
+  }
+  return result;
+}
+
+// CS:3562
+void tick_all_timer_blocks(void) {
+  int ai; // SI
+  int cx; // DX
+  int cy; // CX
+
+  if (g_tick_counter % 30 == 0) {
+    for (ai = 0; ai < g_actor_count; ai++) {
+      if (g_actors[ai].type >= T_TIMER_0
+	  && g_actors[ai].type <= T_TIMER_9) {
+	//
+	cx = g_actors[ai].cx;
+	cy = g_actors[ai].cy;
+	if (g_actors[ai].type > T_TIMER_0) {
+	  g_actors[ai].type--;
+	  move_actor(ai, cx, cy);
+	} else {
+	  delete_and_draw_unacting_tile(cx, cy);
+	  mark_actor_for_deletion(ai);
+	}
+      }
+    }
+  }
+  garbage_collect_actors();
+}
+
+// CS:35EA
+int try_enter_blacky(int ai, int cx, int cy) {
+  // stack: 0x06 bytes
+  // BP/FA = tile row ptr
+  int src_cy; // BP/FC
+  int src_cx; // BP/FE
+
+  int dst_ai; // DX?
+  // SI = ai
+  // DI = cx
+  // CX = cy
+
+  if (g_level_tiles[cx][cy] >= 0) {
+   dst_ai = g_level_tiles[cx][cy];
+   if (g_actors[dst_ai].type == T_BLACKY1) {
+     src_cx = g_actors[ai].cx;
+     src_cy = g_actors[ai].cy;
+     g_actors[dst_ai].type = T_BLACKY2;
+     g_actors[dst_ai].var0 = 0;
+     move_actor(dst_ai, cx, cy);
+     delete_and_draw_unacting_tile(src_cx, src_cy);
+     mark_actor_for_deletion(ai);
+     return 1;
+   }
+  }
+
+  return 0;
+}
+
+// CS:3684
+void tick_game_state(void) {
+  // stack: 0x12 bytes
+  int newy; // BP/EE
+  actor_s *actor; // BP/F0
+  int unkFFF2; // BP/F2
+  // BP/F4
+  int dy; // BP/FA
+  int cy; // BP/FC
+  int cx; // BP/FE
+  // BP-0x00
+
+  int ai; // SI
+  int other; // DI - other tile type
+  int dx; // DI
+  int newx; // CX
+
+  // TODO: Work out how this actually goes --GM
+  int slide_left;
+  int slide_right;
+
+  // BUG: Counter wraparound is not seamless.
+  // We cover 32001 different values.
+  // If left alone, this takes less than an hour.
+  // A counter wraparound breaks DEFAULT.KYE's COUNTERS level,
+  // as the bouncer at the bottom steps ahead a bit too early.
+  g_tick_counter++;
+  if (g_tick_counter > 32000) {
+    g_tick_counter = 0;
+  }
+
+  tick_all_timer_blocks();
+  for (ai = 0, unkFFF2 = 0, actor = &g_actors[0];
+      ai < g_actor_count;
+      ai++, actor++, unkFFF2 += 8) {
+    //
+    cx = actor->cx;
+    cy = actor->cy;
+    switch(actor->type) {
+    case T_SBLOCK:
+    case T_ROT_A:
+    case T_ROT_C:
+    case T_RBLOCK:
+    case T_AUTOSLIDER1:
+    case T_AUTOSLIDER2:
+    case T_AUTOSLIDER3:
+    case T_AUTOSLIDER4:
+      apply_sticky_blocks(ai);
+      break;
+
+    // BUG: North-facing sliders do not redraw on rotation.
+    case T_SLIDER_N:
+      if ((!apply_sticky_blocks(ai))
+	  && (!actor_held_by_sticky_block(ai))) {
+	other = g_level_tiles[cx][cy-1];
+	if (other == T_EMPTY) {
+	  move_actor(ai, cx, cy-1);
+	} else {
+	  if (!try_enter_blacky(ai, cx, cy-1)) {
+	    if (other >= 0 && g_actors[other].type == T_ROT_A) {
+	      actor->type = T_SLIDER_E;
+	      // BUG: This needs to redraw the actor!
+	    } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+	      actor->type = T_SLIDER_W;
+	      // BUG: This needs to redraw the actor!
+	    }
+	  }
+	}
+      }
+      break;
+
+    case T_SLIDER_S:
+      if ((!apply_sticky_blocks(ai))
+	  && (!actor_held_by_sticky_block(ai))) {
+	other = g_level_tiles[cx][cy+1];
+	if (other == T_EMPTY) {
+	  move_actor(ai, cx, cy+1);
+	} else {
+	  if (!try_enter_blacky(ai, cx, cy+1)) {
+	    if (other >= 0 && g_actors[other].type == T_ROT_A) {
+	      actor->type = T_SLIDER_W;
+	      move_actor(ai, cx, cy);
+	    } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+	      actor->type = T_SLIDER_E;
+	      move_actor(ai, cx, cy);
+	    }
+	  }
+	}
+      }
+      break;
+
+    case T_SLIDER_W:
+      if ((!apply_sticky_blocks(ai))
+	  && (!actor_held_by_sticky_block(ai))) {
+	other = g_level_tiles[cx-1][cy];
+	if (other == T_EMPTY) {
+	  move_actor(ai, cx-1, cy);
+	} else {
+	  if (!try_enter_blacky(ai, cx-1, cy)) {
+	    if (other >= 0 && g_actors[other].type == T_ROT_A) {
+	      actor->type = T_SLIDER_N;
+	      move_actor(ai, cx, cy);
+	    } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+	      actor->type = T_SLIDER_S;
+	      move_actor(ai, cx, cy);
+	    }
+	  }
+	}
+      }
+      break;
+
+    case T_SLIDER_E:
+      if ((!apply_sticky_blocks(ai))
+	  && (!actor_held_by_sticky_block(ai))) {
+	other = g_level_tiles[cx+1][cy];
+	if (other == T_EMPTY) {
+	  move_actor(ai, cx+1, cy);
+	} else {
+	  if (!try_enter_blacky(ai, cx+1, cy)) {
+	    if (other >= 0 && g_actors[other].type == T_ROT_A) {
+	      actor->type = T_SLIDER_S;
+	      move_actor(ai, cx, cy);
+	    } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+	      actor->type = T_SLIDER_N;
+	      move_actor(ai, cx, cy);
+	    }
+	  }
+	}
+      }
+      break;
+
+    case T_STICKY_V:
+      if (g_level_tiles[cx][cy+1] == T_EMPTY
+	  && g_level_tiles[cx][cy+2] == T_KYE) {
+	move_actor(ai, cx, cy+1);
+      } else if (g_level_tiles[cx][cy-1] == T_EMPTY
+	  && g_level_tiles[cx][cy-2] == T_KYE) {
+	move_actor(ai, cx, cy-1);
+      } else if (g_level_tiles[cx+1][cy] == T_EMPTY
+	  && g_level_tiles[cx+2][cy] >= 1
+	  && g_actors[g_level_tiles[cx+2][cy]].type == T_STICKY_H) {
+	move_actor(ai, cx+1, cy);
+      } else if (g_level_tiles[cx-1][cy] == T_EMPTY
+	  && g_level_tiles[cx-2][cy] >= 1
+	  && g_actors[g_level_tiles[cx-2][cy]].type == T_STICKY_H) {
+	move_actor(ai, cx-1, cy);
+      }
+      break;
+
+    case T_STICKY_H:
+      if (g_level_tiles[cx+1][cy] == T_EMPTY
+	  && g_level_tiles[cx+2][cy] == T_KYE) {
+	move_actor(ai, cx+1, cy);
+      } else if (g_level_tiles[cx-1][cy] == T_EMPTY
+	  && g_level_tiles[cx-2][cy] == T_KYE) {
+	move_actor(ai, cx-1, cy);
+      } else if (g_level_tiles[cx][cy+1] == T_EMPTY
+	  && g_level_tiles[cx][cy+2] >= 1
+	  && g_actors[g_level_tiles[cx][cy+2]].type == T_STICKY_V) {
+	move_actor(ai, cx, cy+1);
+      } else if (g_level_tiles[cx][cy-1] == T_EMPTY
+	  && g_level_tiles[cx][cy-2] >= 1
+	  && g_actors[g_level_tiles[cx][cy-2]].type == T_STICKY_V) {
+	move_actor(ai, cx, cy-1);
+      }
+      break;
+
+    case T_BOUNCER_N:
+      if (g_tick_counter % 5 == 0
+	  && (!apply_sticky_blocks(ai))
+	  && (!actor_held_by_sticky_block(ai))) {
+	//
+	if (g_level_tiles[cx][cy-1] == T_EMPTY) {
+	  move_actor(ai, cx, cy-1);
+	} else if (!try_enter_blacky(ai, cx, cy-1)) {
+	  actor->type = T_BOUNCER_S;
+	  move_actor(ai, cx, cy);
+	  if (g_level_tiles[cx][cy-1] >= 0) {
+	    other = g_level_tiles[cx][cy-1];
+	    cx = g_actors[other].cx;
+	    cy = g_actors[other].cy - 1;
+	    if (g_level_tiles[cx][cy] == T_EMPTY
+		|| (g_level_tiles[cx][cy] >= 0
+		  && g_actors[g_level_tiles[cx][cy]].type == T_BLACKY1)) {
+	      //
+	      if (!try_enter_blacky(other, cx, cy)) {
+		move_actor(other, cx, cy);
+	      }
+	    }
+	  }
+	}
+      }
+      break;
+
+    case T_BOUNCER_S:
+      if (g_tick_counter % 5 == 0
+	  && (!apply_sticky_blocks(ai))
+	  && (!actor_held_by_sticky_block(ai))) {
+	//
+	if (g_level_tiles[cx][cy+1] == T_EMPTY) {
+	  move_actor(ai, cx, cy+1);
+	} else if (!try_enter_blacky(ai, cx, cy+1)) {
+	  actor->type = T_BOUNCER_N;
+	  move_actor(ai, cx, cy);
+	  if (g_level_tiles[cx][cy+1] >= 0) {
+	    other = g_level_tiles[cx][cy+1];
+	    cx = g_actors[other].cx;
+	    cy = g_actors[other].cy + 1;
+	    if (g_level_tiles[cx][cy] == T_EMPTY
+		|| (g_level_tiles[cx][cy] >= 0
+		  && g_actors[g_level_tiles[cx][cy]].type == T_BLACKY1)) {
+	      //
+	      if (!try_enter_blacky(other, cx, cy)) {
+		move_actor(other, cx, cy);
+	      }
+	    }
+	  }
+	}
+      }
+      break;
+
+    case T_BOUNCER_W:
+      if (g_tick_counter % 5 == 0
+	  && (!apply_sticky_blocks(ai))
+	  && (!actor_held_by_sticky_block(ai))) {
+	//
+	if (g_level_tiles[cx-1][cy] == T_EMPTY) {
+	  move_actor(ai, cx-1, cy);
+	} else if (!try_enter_blacky(ai, cx-1, cy)) {
+	  actor->type = T_BOUNCER_E;
+	  move_actor(ai, cx, cy);
+	  if (g_level_tiles[cx-1][cy] >= 0) {
+	    other = g_level_tiles[cx-1][cy];
+	    cx = g_actors[other].cx - 1;
+	    cy = g_actors[other].cy;
+	    if (g_level_tiles[cx][cy] == T_EMPTY
+		|| (g_level_tiles[cx][cy] >= 0
+		  && g_actors[g_level_tiles[cx][cy]].type == T_BLACKY1)) {
+	      //
+	      if (!try_enter_blacky(other, cx, cy)) {
+		move_actor(other, cx, cy);
+	      }
+	    }
+	  }
+	}
+      }
+      break;
+
+    case T_BOUNCER_E:
+      if (g_tick_counter % 5 == 0
+	  && (!apply_sticky_blocks(ai))
+	  && (!actor_held_by_sticky_block(ai))) {
+	//
+	if (g_level_tiles[cx+1][cy] == T_EMPTY) {
+	  move_actor(ai, cx+1, cy);
+	} else if (!try_enter_blacky(ai, cx+1, cy)) {
+	  actor->type = T_BOUNCER_W;
+	  move_actor(ai, cx, cy);
+	  if (g_level_tiles[cx+1][cy] >= 0) {
+	    other = g_level_tiles[cx+1][cy];
+	    cx = g_actors[other].cx + 1;
+	    cy = g_actors[other].cy;
+	    if (g_level_tiles[cx][cy] == T_EMPTY
+		|| (g_level_tiles[cx][cy] >= 0
+		  && g_actors[g_level_tiles[cx][cy]].type == T_BLACKY1)) {
+	      //
+	      if (!try_enter_blacky(other, cx, cy)) {
+		move_actor(other, cx, cy);
+	      }
+	    }
+	  }
+	}
+      }
+      break;
+
+    case T_ROCKY_N:
+      if ((!apply_sticky_blocks(ai))
+	  && (!actor_held_by_sticky_block(ai))) {
+	other = g_level_tiles[cx][cy-1];
+	if (other == T_EMPTY) {
+	  move_actor(ai, cx, cy-1);
+	} else {
+	  if (!try_enter_blacky(ai, cx, cy-1)) {
+	    // FIXME this is coded differently --GM
+	    slide_left = slide_right = 0;
+	    if (other >= 0
+		&& g_actors[other].type >= T_ROCKY_N
+		&& g_actors[other].type <= T_ROCKY_E) {
+	      slide_left = slide_right = 1;
+	    } else if (other >= 0
+		&& g_actors[other].type == T_RBLOCK) {
+	      slide_left = slide_right = 1;
+	    } else if (other == T_WALL2) {
+	      slide_left = slide_right = 1;
+	    } else if (other == T_WALL1 || other == T_WALL4) {
+	      slide_left = 1;
+	    } else if (other == T_WALL3 || other == T_WALL6) {
+	      slide_right = 1;
+	    }
+	    slide_left = slide_left && g_level_tiles[cx-1][cy] == T_EMPTY;
+	    slide_right = slide_right && g_level_tiles[cx+1][cy] == T_EMPTY;
+	    slide_left = slide_left && g_level_tiles[cx-1][cy-1] == T_EMPTY;
+	    slide_right = slide_right && g_level_tiles[cx+1][cy-1] == T_EMPTY;
+
+	    if (slide_left && slide_right) {
+	      // TODO understand rand() usage --GM
+	      move_actor(ai, cx + 1 - (2*(rand()%2)), cy - 1);
+	    } else if (slide_right) {
+	      move_actor(ai, cx + 1, cy - 1);
+	    } else if (slide_left) {
+	      move_actor(ai, cx - 1, cy - 1);
+	    } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
+	      actor->type = T_ROCKY_E;
+	      move_actor(ai, cx, cy);
+	    } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+	      actor->type = T_ROCKY_W;
+	      move_actor(ai, cx, cy);
+	    }
+	  }
+	}
+      }
+      break;
+
+    case T_ROCKY_S:
+      if ((!apply_sticky_blocks(ai))
+	  && (!actor_held_by_sticky_block(ai))) {
+	other = g_level_tiles[cx][cy+1];
+	if (other == T_EMPTY) {
+	  move_actor(ai, cx, cy+1);
+	} else {
+	  if (!try_enter_blacky(ai, cx, cy+1)) {
+	    // FIXME this is coded differently --GM
+	    slide_left = slide_right = 0;
+	    if (other >= 0
+		&& g_actors[other].type >= T_ROCKY_N
+		&& g_actors[other].type <= T_ROCKY_E) {
+	      slide_left = slide_right = 1;
+	    } else if (other >= 0
+		&& g_actors[other].type == T_RBLOCK) {
+	      slide_left = slide_right = 1;
+	    } else if (other == T_WALL8) {
+	      slide_left = slide_right = 1;
+	    } else if (other == T_WALL9 || other == T_WALL6) {
+	      slide_left = 1;
+	    } else if (other == T_WALL7 || other == T_WALL4) {
+	      slide_right = 1;
+	    }
+	    slide_left = slide_left && g_level_tiles[cx+1][cy] == T_EMPTY;
+	    slide_right = slide_right && g_level_tiles[cx-1][cy] == T_EMPTY;
+	    slide_left = slide_left && g_level_tiles[cx+1][cy+1] == T_EMPTY;
+	    slide_right = slide_right && g_level_tiles[cx-1][cy+1] == T_EMPTY;
+
+	    if (slide_left && slide_right) {
+	      // TODO understand rand() usage --GM
+	      move_actor(ai, cx + 1 - (2*(rand()%2)), cy + 1);
+	    } else if (slide_right) {
+	      move_actor(ai, cx - 1, cy + 1);
+	    } else if (slide_left) {
+	      move_actor(ai, cx + 1, cy + 1);
+	    } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
+	      actor->type = T_ROCKY_W;
+	      move_actor(ai, cx, cy);
+	    } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+	      actor->type = T_ROCKY_E;
+	      move_actor(ai, cx, cy);
+	    }
+	  }
+	}
+      }
+      break;
+
+    case T_ROCKY_W:
+      if ((!apply_sticky_blocks(ai))
+	  && (!actor_held_by_sticky_block(ai))) {
+	other = g_level_tiles[cx-1][cy];
+	if (other == T_EMPTY) {
+	  move_actor(ai, cx-1, cy);
+	} else {
+	  if (!try_enter_blacky(ai, cx-1, cy)) {
+	    // FIXME this is coded differently --GM
+	    slide_left = slide_right = 0;
+	    if (other >= 0
+		&& g_actors[other].type >= T_ROCKY_N
+		&& g_actors[other].type <= T_ROCKY_E) {
+	      slide_left = slide_right = 1;
+	    } else if (other >= 0
+		&& g_actors[other].type == T_RBLOCK) {
+	      slide_left = slide_right = 1;
+	    } else if (other == T_WALL6) {
+	      slide_left = slide_right = 1;
+	    } else if (other == T_WALL3 || other == T_WALL2) {
+	      slide_left = 1;
+	    } else if (other == T_WALL9 || other == T_WALL8) {
+	      slide_right = 1;
+	    }
+	    slide_left = slide_left && g_level_tiles[cx][cy+1] == T_EMPTY;
+	    slide_right = slide_right && g_level_tiles[cx][cy-1] == T_EMPTY;
+	    slide_left = slide_left && g_level_tiles[cx-1][cy+1] == T_EMPTY;
+	    slide_right = slide_right && g_level_tiles[cx-1][cy-1] == T_EMPTY;
+
+	    if (slide_left && slide_right) {
+	      // TODO understand rand() usage --GM
+	      move_actor(ai, cx - 1, cy + 1 - (2*(rand()%2)));
+	    } else if (slide_right) {
+	      move_actor(ai, cx - 1, cy - 1);
+	    } else if (slide_left) {
+	      move_actor(ai, cx - 1, cy + 1);
+	    } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
+	      actor->type = T_ROCKY_N;
+	      move_actor(ai, cx, cy);
+	    } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+	      actor->type = T_ROCKY_S;
+	      move_actor(ai, cx, cy);
+	    }
+	  }
+	}
+      }
+      break;
+
+    case T_ROCKY_E:
+      if ((!apply_sticky_blocks(ai))
+	  && (!actor_held_by_sticky_block(ai))) {
+	other = g_level_tiles[cx+1][cy];
+	if (other == T_EMPTY) {
+	  move_actor(ai, cx+1, cy);
+	} else {
+	  if (!try_enter_blacky(ai, cx+1, cy)) {
+	    // FIXME this is coded differently --GM
+	    slide_left = slide_right = 0;
+	    if (other >= 0
+		&& g_actors[other].type >= T_ROCKY_N
+		&& g_actors[other].type <= T_ROCKY_E) {
+	      slide_left = slide_right = 1;
+	    } else if (other >= 0
+		&& g_actors[other].type == T_RBLOCK) {
+	      slide_left = slide_right = 1;
+	    } else if (other == T_WALL4) {
+	      slide_left = slide_right = 1;
+	    } else if (other == T_WALL7 || other == T_WALL8) {
+	      slide_left = 1;
+	    } else if (other == T_WALL1 || other == T_WALL2) {
+	      slide_right = 1;
+	    }
+	    slide_left = slide_left && g_level_tiles[cx][cy-1] == T_EMPTY;
+	    slide_right = slide_right && g_level_tiles[cx][cy+1] == T_EMPTY;
+	    slide_left = slide_left && g_level_tiles[cx+1][cy-1] == T_EMPTY;
+	    slide_right = slide_right && g_level_tiles[cx+1][cy+1] == T_EMPTY;
+
+	    if (slide_left && slide_right) {
+	      // TODO understand rand() usage --GM
+	      move_actor(ai, cx + 1, cy + 1 - (2*(rand()%2)));
+	    } else if (slide_right) {
+	      move_actor(ai, cx + 1, cy + 1);
+	    } else if (slide_left) {
+	      move_actor(ai, cx + 1, cy - 1);
+	    } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
+	      actor->type = T_ROCKY_S;
+	      move_actor(ai, cx, cy);
+	    } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+	      actor->type = T_ROCKY_N;
+	      move_actor(ai, cx, cy);
+	    }
+	  }
+	}
+      }
+      break;
+
+    case T_B_TWISTER:
+    case T_B_GNASHER:
+    case T_B_BLOB:
+    case T_B_VIRUS:
+    case T_B_SPIKE:
+      // BUG: If a monster kills kye on its tick, it loses that tick
+      if ((!try_killing_adjacent_kye(ai)) && g_tick_counter % 3 == 0) {
+	dx = 0;
+	dy = 0;
+	if (!apply_sticky_blocks(ai)) {
+	  if (!actor_held_by_sticky_block(ai)) {
+
+	    // Apply direction
+	    newx = cx + dx;
+	    newy = cy + dy;
+	    if (g_level_tiles[cx][cy] == T_EMPTY
+		|| g_level_tiles[cx][cy] == T_BLACKY1) {
+	      cx = newx;
+	      cy = newy;
+	    }
+	  }
+	  if (!try_enter_blacky(ai, cx, cy)) {
+	    move_actor(ai, cx, cy);
+	  }
+	}
+      }
+      break;
+
+    case T_TIMER_0:
+    case T_TIMER_1:
+    case T_TIMER_2:
+    case T_TIMER_3:
+    case T_TIMER_4:
+    case T_TIMER_5:
+    case T_TIMER_6:
+    case T_TIMER_7:
+    case T_TIMER_8:
+    case T_TIMER_9:
+      apply_sticky_blocks(ai);
+      break;
+    }
+  }
+  garbage_collect_actors();
+}
+// ends at CS:49F2 after 1 byte of padding
+
+// CS:5128
+void count_all_diamonds(void) {
+  // needs 0x2 bytes of stack
+  // BP/FE - running row pointer
+
+  int diamonds; // CX
+  int cy; // DX
+  int cx; // DI
+
+  diamonds = 0;
+  for (cx = 0; cx < LEVEL_LX; cx++) {
+    for (cy = 0; cy < LEVEL_LY; cy++) {
+      if (g_level_tiles[cx][cy] == T_DIAMOND) {
+	diamonds++;
+      }
+    }
+  }
+  if (diamonds == 0) {
+    g_level_complete = 1;
+  }
+}
+
+// CS:525D
+void repaint_kye(int fizzle_mode) {
+  int py; // BP/FC
+  int px; // BP/FE
+
+  int i; // SI, first
+  HDC dc; // SI, second
+
+  if (fizzle_mode == 1) {
+    for (i = TILE_LX*TILE_LY; i >= 0; i -= TILE_LY) {
+      draw_fizzled_kye(i);
+    }
+  } else if (fizzle_mode == 2) {
+    for (i = 0; i < TILE_LX*TILE_LY; i += TILE_LY) {
+      draw_fizzled_kye(i);
+    }
+    return;
+  }
+
+  dc = CreateCompatibleDC(g_maindc);
+  // BUG: dc not checked for null handle on creation
+  px = g_kye_main_cx * g_tile_lx;
+  py = g_kye_main_cy * g_tile_ly;
+  SelectObject(dc, g_hbmpKye);
+  BitBlt(
+    g_maindc,
+    px, py,
+    TILE_LX, TILE_LY,
+    dc,
+    0, 0,
+    SRCCOPY);
+
+  DeleteDC(dc);
+}
+
+// CS:52EA
+void move_kye(int dx, int dy) {
+  // int // BP/FE
+
+  HDC dc; // SI
+
+  if (g_tile_under_kye == T_EMPTY) {
+    delete_and_draw_unacting_tile(g_kye_main_cx, g_kye_main_cy);
+  } else {
+    g_level_tiles[g_kye_main_cx][g_kye_main_cy] = g_tile_under_kye;
+    dc = CreateCompatibleDC(g_maindc);
+    // BUG: dc not checked for failure
+    SelectObject(dc, g_hbmpWall);
+    draw_wall(g_kye_main_cx, g_kye_main_cy, dc);
+    DeleteDC(dc);
+  }
+  g_kye_main_cx += dx;
+  g_kye_main_cy += dy;
+  g_tile_under_kye = g_level_tiles[g_kye_main_cx][g_kye_main_cy];
+  g_level_tiles[g_kye_main_cx][g_kye_main_cy] = T_KYE;
+  repaint_kye(0);
+}
+
+// CS:5395
+void try_move_kye(int dx, int dy) {
+  // Stack: 0x2E bytes (BP/D2 start)
+  int dy2; // BP/D2
+  int dx2; // BP/D4
+  // BP/D6 - pointer premultiplier
+  // BP/D8
+  int circle_y[4] = {0,1,0,-1}; // BP/DA const from DS:0D62
+  int circle_x[4] = {1,0,-1,0}; // BP/E2 const from DS:0D5A
+  // BP/EA
+  // BP/EC
+  int didmove; // BP/EE
+  int pushy; // BP/F0
+  int pushx; // BP/F2
+  int newx; // BP/F4
+  // int // BP/F6
+  int blocked; // BP/F8
+  // BP/FA
+  int ai; // BP/FC
+  // BP/FE
+  // BP+0x00
+  int newy; // CX
+
+  // DX = dx;
+  // BX = dy;
+  didmove = 0;
+  blocked = 0;
+  // BP/F6 = 0x0000;
+  // DI = dx;
+  // SI = dy;
+  newx = g_kye_main_cx + dx;
+  newy = g_kye_main_cy + dy;
+
+  // Check if diagonal is valid
+  if (dx != 0 && dy != 0) {
+    blocked = !(g_level_tiles[newx][g_kye_main_cy] == T_EMPTY
+	     && g_level_tiles[g_kye_main_cx][newy] == T_EMPTY);
+    if (blocked) {
+      // TODO: Fix diagonal movement fallback --GM
+      // if (DS:02B2 != 0) {
+      //   if (g_level_tiles[newx][g_kye_main_cy] == T_EMPTY) {
+      //     dy = 0;
+      //     newy = g_kye_main_cy;
+      //     blocked = 0;
+      //   } else if (g_level_tiles[g_kye_main_cx][newy]) {
+      //     dx = 0;
+      //     newx = g_kye_main_cx;
+      //     blocked = 0;
+      //   }
+      // }
+    }
+  }
+
+  if (!blocked) {
+    // TODO: Handle all the special things --GM
+    switch(g_level_tiles[newx][newy]) {
+    case T_EMPTY:
+      move_kye(dx, dy);
+      didmove = 1;
+      break;
+    case T_EARTH:
+      move_kye(dx, dy);
+      g_tile_under_kye = T_EMPTY;
+      didmove = 1;
+      break;
+    case T_DIAMOND:
+      move_kye(dx, dy);
+      g_tile_under_kye = T_EMPTY;
+      didmove = 1;
+      count_all_diamonds();
+      repaint_status_left();
+      break;
+
+    // These don't set didmove.
+    // There may be a reason for it...
+    case T_DOOR_W_E:
+      if (dy == 0 && dx == 1) {
+	move_kye(1, 0);
+      }
+      break;
+    case T_DOOR_E_W:
+      if (dy == 0 && dx == -1) {
+	move_kye(-1, 0);
+      }
+      break;
+    case T_DOOR_N_S:
+      if (dy == 1 && dx == 0) {
+	move_kye(0, 1);
+      }
+      break;
+    case T_DOOR_S_N:
+      if (dy == -1 && dx == 0) {
+	move_kye(0, -1);
+      }
+      break;
+
+    // Then we get into actor handling...
+    default:
+      if (g_level_tiles[newx][newy] >= 0) {
+	ai = g_level_tiles[newx][newy];
+	switch (g_actors[ai].type) {
+	  case T_BLACKY1:
+	    g_kye_lives--;
+	    respawn_kye();
+	    repaint_status_left();
+	    return;
+	  case T_BLACKY2:
+	    return;
+	}
+	pushx = g_actors[ai].cx + dx;
+	pushy = g_actors[ai].cy + dy;
+	if (dx != 0 && dy != 0) {
+	  // TODO: Diagonal handling --GM
+	} else {
+	  // FIXME THIS IS NOT HOW DIAGONALS ARE CHECKED --GM
+	  if (g_level_tiles[pushx][pushy] == T_EMPTY) {
+	    // FIXME: this checks one more boolean --GM
+	    move_actor(ai, pushx, pushy);
+	    move_kye(dx, dy);
+	    // FIXME: this sets a boolean --GM
+	  } else if (g_level_tiles[pushx][pushy] >= 0
+	      && g_actors[g_level_tiles[pushx][pushy]].type == T_BLACKY1) {
+	    // FIXME: this checks one more boolean --GM
+	    // POTENTIAL BUG: If try_enter_blacky fails then this breaks.
+	    // An actor will clobber an actor, or Kye will clobber an actor.
+	    if (!try_enter_blacky(ai, pushx, pushy)) {
+	      move_actor(ai, pushx, pushy);
+	    }
+	    move_kye(dx, dy);
+	  }
+	}
+      }
+    }
+  }
+  // TODO: Handle the weird thing here --GM
+  // (this uses circle_x, circle_y to detect various movements?)
+  // if (DS:02B2 != 0 && !didmove) {
+  //   ...
+  // }
+}
+
+// CS:57F5
+void tick_kye(void) {
+  int dx; // AX
+  int dy; // DX
+
+  if (g_kye_injured != 0) {
+    repaint_kye(2);
+    delete_and_draw_unacting_tile(g_kye_main_cx, g_kye_main_cy);
+    g_kye_main_cx = g_kye_target_cx;
+    g_kye_main_cy = g_kye_target_cy;
+    g_level_tiles[g_kye_target_cx][g_kye_target_cy] = T_KYE;
+    repaint_kye(1);
+    g_kye_injured = 0;
+    return;
+  }
+
+  if ((g_kye_target_cx != g_kye_main_cx)
+      || (g_kye_target_cy != g_kye_main_cy)) {
+    if (g_kye_target_cx < g_kye_main_cx) {
+      dx = -1;
+    } else if (g_kye_target_cx > g_kye_main_cx) {
+      dx = 1;
+    } else {
+      dx = 0;
+    }
+    if (g_kye_target_cy < g_kye_main_cy) {
+      dy = -1;
+    } else if (g_kye_target_cy > g_kye_main_cy) {
+      dy = 1;
+    } else {
+      dy = 0;
+    }
+    try_move_kye(dx, dy);
+  }
+}
+
+// CS:5898
+void animate_diamonds(void) {
+  // Stack 0x0E (BP/F2)
+  HDC dc; // BP/F4
+  int src_py; // BP/F6
+  int src_px; // BP/F8
+  int py; // BP/FA
+  int px; // BP/FC
+  int cx; // BP/FE
+
+  int cy; // SI
+
+  if (g_tick_counter % 10 == 0) {
+    dc = CreateCompatibleDC(g_maindc);
+    SelectObject(dc, g_hbmpWall);
+    for (cx = 0; cx < LEVEL_LX; cx++) {
+      for (cy = 0; cy < LEVEL_LY; cy++) {
+	if (g_level_tiles[cx][cy] == T_DIAMOND) {
+	  px = cx * g_tile_lx;
+	  py = cy * g_tile_ly;
+	  src_px = 12 * TILE_LX;
+	  src_py = 0 * TILE_LY;
+	  // TODO: Work out how rand() is used --GM
+	  if (rand() % 2 == 0) {
+	    src_py = 1 * TILE_LY;
+	  }
+	  BitBlt(g_maindc,
+	    px, py,
+	    TILE_LX, TILE_LY,
+	    dc,
+	    src_px, src_py,
+	    SRCCOPY);
+	}
+      }
+    }
+
+    DeleteDC(dc);
+  }
+}
+
+// CS:5961
+void animate_doors(void) {
+  // stack: 0x08 bytes (/F8)
+  // BP/F8
+  HDC dc; // BP/FA
+  int src_py; // BP/FC
+  int cx; // BP/FE
+
+  int cy; // DI
+  int px; // BX
+  int py; // DX (somehow unused as such)
+
+  if (g_tick_counter % 4 == 0) {
+    dc = CreateCompatibleDC(g_maindc);
+    SelectObject(dc, g_hbmpWall);
+
+    if (g_door_anim_flag) {
+      src_py = 0 * TILE_LY;
+      g_door_anim_flag = 0;
+    } else {
+      src_py = 1 * TILE_LY;
+      g_door_anim_flag = 1;
+    }
+
+    for (cx = 0; cx < LEVEL_LX; cx++) {
+      for (cy = 0; cy < LEVEL_LY; cy++) {
+	switch(g_level_tiles[cx][cy]) {
+	case T_DOOR_E_W:
+	case T_DOOR_W_E:
+	  px = cx * g_tile_lx;
+	  py = cy * g_tile_ly;
+	  BitBlt(g_maindc,
+	    px, py,
+	    TILE_LX, TILE_LY,
+	    dc,
+	    14 * TILE_LX, src_py,
+	    SRCCOPY);
+	  break;
+	case T_DOOR_N_S:
+	case T_DOOR_S_N:
+	  px = cx * g_tile_lx;
+	  py = cy * g_tile_ly;
+	  BitBlt(g_maindc,
+	    px, py,
+	    TILE_LX, TILE_LY,
+	    dc,
+	    13 * TILE_LX, src_py,
+	    SRCCOPY);
+	  break;
+	}
+      }
+    }
+
+    DeleteDC(dc);
+  }
+}
+
+// CS:5A54
+void animate_autospawners(void) {
+  // TODO! --GM
+}
+
+// CS:5C8A
+void animate_blackies(void) {
+  // stack: 0x08 bytes (/F8)
+  // BP/F8
+  HDC dc; // BP/FA
+  int py; // BP/FC
+  int i; // BP/FE
+
+  int px; // CX
+  int src_py; // DX
+
+  // DI = actor table offset
+  // BP/F8 = actor ptr
+  // SI = actor->var0 ptr
+
+  if (g_tick_counter % 5 == 0) {
+    dc = CreateCompatibleDC(g_maindc);
+    SelectObject(dc, g_hbmpBlock);
+    for (i = 0; i < g_actor_count; i++) {
+      switch (g_actors[i].type) {
+      case T_BLACKY1:
+	px = g_actors[i].cx * g_tile_lx;
+	py = g_actors[i].cy * g_tile_ly;
+	src_py = (g_actors[i].var0 * TILE_LY) + (4 * TILE_LY);
+	BitBlt(g_maindc,
+	  px, py,
+	  TILE_LX, TILE_LY,
+	  dc,
+	  8 * TILE_LX,
+	  src_py,
+	  SRCCOPY);
+	g_actors[i].var0 = (g_actors[i].var0 + 1) % 4;
+	break;
+      case T_BLACKY2:
+	px = g_actors[i].cx * g_tile_lx;
+	py = g_actors[i].cy * g_tile_ly;
+	src_py = (g_actors[i].var0 * TILE_LY) + (4 * TILE_LY);
+	BitBlt(g_maindc,
+	  px, py,
+	  TILE_LX, TILE_LY,
+	  dc,
+	  9 * TILE_LX,
+	  src_py,
+	  SRCCOPY);
+	if (g_actors[i].var0 == 3) {
+	  g_actors[i].type = T_BLACKY1;
+	}
+	g_actors[i].var0 = (g_actors[i].var0 + 1) % 4;
+	break;
+      }
+    }
+    DeleteDC(dc);
+  }
+}
+
+// CS:5D9C
+void animate_monsters(void) {
+  // needs 0x8 bytes of stack (/F8)
+  int actor_type; // BP/F8
+  HDC dc; // BP/FA
+  int py; // BP/FC
+  int i; // BP/FE
+
+  int px; // CX
+  int src_px; // DX
+  int src_py; // BX
+  // SI = i*sizeof(g_actors[i]);
+  // DI = running counter for &g_actors[i].var0;
+
+  if (g_tick_counter % 3 == 0) {
+    dc = CreateCompatibleDC(g_maindc);
+    SelectObject(dc, g_hbmpBlock);
+    for (i = 0; i < g_actor_count; i++) {
+      actor_type = g_actors[i].type;
+      switch (actor_type) {
+      case T_B_TWISTER:
+      case T_B_GNASHER:
+      case T_B_BLOB:
+      case T_B_VIRUS:
+      case T_B_SPIKE:
+	px = g_actors[i].cx * g_tile_lx;
+	py = g_actors[i].cy * g_tile_ly;
+	src_px = actor_type * TILE_LX;
+	src_py = g_actors[i].var0 * TILE_LY;
+	BitBlt(g_maindc,
+	  px, py,
+	  TILE_LX, TILE_LY,
+	  dc,
+	  src_px, src_py,
+	  SRCCOPY);
+	g_actors[i].var0 = (g_actors[i].var0 + 1) % 4;
+	break;
+      }
+    }
+
+    DeleteDC(dc);
+  }
+}
+
+// CS:5E61
+void animate_everything(void) {
+  animate_monsters();
+  animate_diamonds();
+  animate_doors();
+  animate_autospawners();
+  animate_blackies();
+}

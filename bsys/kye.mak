@@ -1,5 +1,5 @@
 KYE_C_NAMES:=MAIN
-KYE_C_SRCS:=$(patsubst %,${SRCDIR}%.C,${KYE_C_NAMES})
+KYE_C_SRCS:=$(patsubst %,${SRCDIR}%.CPP,${KYE_C_NAMES})
 KYE_C_OBJS:=$(patsubst %,${BUILDDIR}%.OBJ,${KYE_C_NAMES})
 KYE_C_HEADERS:=$(wildcard ${SRCDIR}*.H)
 
