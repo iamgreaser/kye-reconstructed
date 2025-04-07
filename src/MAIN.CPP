@@ -976,10 +976,16 @@ void repaint_all_walls(void) {
   }
   DeleteDC(dc);
 }
+
 // CS:26AA
 void draw_fizzled_kye(int fizzle_level){
   // TODO! --GM
   (void)fizzle_level;
+}
+
+// CS:2791
+void cs_2791(int cx, int cy) {
+  // TODO! --GM
 }
 
 // CS:2847
@@ -1792,6 +1798,11 @@ void tick_game_state(void) {
   garbage_collect_actors();
 }
 // ends at CS:49F2 after 1 byte of padding
+
+// CS:4B7A
+void cs_4B7A(int cx, int cy) {
+  // TODO! --GM
+}
 
 // CS:5128
 void count_all_diamonds(void) {

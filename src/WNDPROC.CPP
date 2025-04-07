@@ -126,7 +126,7 @@ void main_paint(HWND hWnd) {
   EndPaint(hWnd, &g_paint);
 }
 
-// CS:03A3 - MISMATCH FIXME: Needs more code? --GM
+// CS:03A3 - ***CODE MATCH!***
 void main_wm_lbuttondown(HWND hWnd, LONG lParam, WORD wParam) {
   int x; // SI
   int y; // DI
@@ -135,7 +135,6 @@ void main_wm_lbuttondown(HWND hWnd, LONG lParam, WORD wParam) {
   if (mouse_is_in_playfield(lParam)) {
     switch (g_is_in_editor) {
     case 0:
-      // MISMATCH FIXME: There's meant to be more code here --GM
       tick_game();
       x = x / g_tile_lx;
       y = y / g_tile_ly;
@@ -148,9 +147,9 @@ void main_wm_lbuttondown(HWND hWnd, LONG lParam, WORD wParam) {
     case 1:
       x = x / g_tile_lx;
       y = y / g_tile_ly;
-      // CS:4B7A();
+      cs_4B7A(x, y);
       acquire_main_dc();
-      // CS:2791(x, y);
+      cs_2791(x, y);
       repaint_status_left();
       release_main_dc();
       break;
@@ -158,7 +157,7 @@ void main_wm_lbuttondown(HWND hWnd, LONG lParam, WORD wParam) {
   }
 }
 
-// CS:0432
+// CS:0432 - MISMATCH FIXME: This function needs a prologue and epilogue, not sure why --GM
 void main_wm_lbuttonup(void) {
   if (g_mouse_captured) {
     ReleaseCapture();
