@@ -2,6 +2,7 @@
 // DS:0010 seems to be standard runtime
 // DS:0029 "Borland C++ - Copyright 1991 Borland Intl."
 // DS:0054 8 bytes 0xFF, seemingly unused?
+// current map: 0002:0054       _g_mouse_captured
 extern int g_mouse_captured; // DS:005C
 extern int g_key_pressed; // DS:005E
 // DS:0060: Menu strings
