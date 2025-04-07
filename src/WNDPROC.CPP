@@ -157,26 +157,32 @@ void main_wm_lbuttondown(HWND hWnd, LONG lParam, WORD wParam) {
   }
 }
 
-// CS:0432 - MISMATCH FIXME: This function needs a prologue and epilogue, not sure why --GM
-void main_wm_lbuttonup(void) {
+// CS:0432 - ***CODE MATCH!***
+void main_wm_lbuttonup(HWND hWnd, LONG lParam) {
   if (g_mouse_captured) {
     ReleaseCapture();
     g_mouse_captured = 0;
   }
 
-  if (g_is_in_editor == 0) {
+  switch (g_is_in_editor) {
+  case 0:
     g_kye_needs_update = 0;
     g_moving_by_mouse = 0;
     clear_kye_mouse_ghost();
+    break;
   }
 }
 
-// CS:045F
+// CS:045F - ***CODE MATCH!***
 void main_wm_lbuttondblclick(HWND hWnd, LONG lParam, WORD wParam) {
   // VESTIGAL BUG: This does nothing but acquires and releases g_maindc.
   if (mouse_is_in_playfield(lParam)) {
-    acquire_main_dc();
-    release_main_dc();
+    switch(g_is_in_editor) {
+    case 0:
+      acquire_main_dc();
+      release_main_dc();
+      break;
+    }
   }
 }
 
@@ -513,7 +519,7 @@ LONG FAR PASCAL _export WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
     g_key_pressed = 0;
     break;
   case WM_LBUTTONUP:
-    main_wm_lbuttonup();
+    main_wm_lbuttonup(hWnd, lParam);
     break;
   case WM_TIMER:
     // BUG: (?) Handling of this flag is dubious.

@@ -1,10 +1,11 @@
 
+// WNDPROC.CPP
 void repaint_main_playfield(void);
 void actual_main_paint(void);
 void tick_game(void);
 void main_paint(HWND hWnd);
 void main_wm_lbuttondown(HWND hWnd, LONG lParam, WORD wParam);
-void main_wm_lbuttonup(void);
+void main_wm_lbuttonup(HWND hWnd, LONG lParam);
 void main_wm_lbuttondblclick(HWND hWnd, LONG lParam, WORD wParam);
 void main_wm_rbuttondown(HWND hWnd, LONG lParam, WORD wParam);
 void main_wm_mousemove(HWND hWnd, LONG lParam);
@@ -12,6 +13,8 @@ void on_key_press(HWND hWnd, WORD wParam);
 void update_edit_menu_item(void);
 int main_wm_command(HWND hWnd, WORD wParam);
 LONG FAR PASCAL _export WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam);
+
+// MAIN.CPP
 int PASCAL _export WinMain(HANDLE hInstance,
                            HANDLE hPrevInstance,
                            LPSTR lpCmdLine,
