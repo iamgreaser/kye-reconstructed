@@ -14,9 +14,11 @@
 int g_mouse_captured;
 int g_key_pressed;
 
-// CS:016A - SIZE CORRECT
+// CS:016A - ***CODE MATCH!***
+// requirements, somewhat: -k- -G -O2 -1 -W -ms
 void repaint_main_playfield(void) {
-  if (g_is_in_editor == 0) {
+  switch (g_is_in_editor) {
+  case 0:
     repaint_all_walls();
     repaint_all_actors();
     if (g_kye_fizzle_in) {
@@ -25,19 +27,18 @@ void repaint_main_playfield(void) {
     } else {
       repaint_kye(0);
     }
-  } else if (g_is_in_editor == 1) {
+    return; // FIXME: Double-RET in output --GM
+  case 1:
     repaint_all_walls();
     repaint_all_actors();
     repaint_kye(0);
+    break;
   }
 }
 
-// CS:01AB - FIXME WRONG SIZE
+// CS:01AB - ***CODE MATCH!***
 void actual_main_paint(void) {
-  // MISMATCH FIXME: PUSH DI / POP DI missing due to not unrolling strlen() --GM
-  // Need 2 bytes on stack
-  int statusmsg_slen; // BP/FE: BP-0x02
-  // BP-0x00
+  int statusmsg_slen;
 
   g_saved_hpen = SelectObject(g_maindc, g_hpenBlack);
   MoveTo(g_maindc, g_r_status_left.left, g_r_status_right.top-1);
@@ -48,7 +49,7 @@ void actual_main_paint(void) {
   repaint_status_left();
 
   SelectObject(g_maindc, g_hpenWhite);
-  statusmsg_slen = strlen(g_statusmsg); // MISMATCH FIXME: This needs to unroll --GM
+  statusmsg_slen = strlen(g_statusmsg);
   Rectangle(
     g_maindc,
     g_r_status_right.left,
@@ -65,7 +66,6 @@ void actual_main_paint(void) {
 
   repaint_main_playfield();
 }
-// current map: 0001:027D       tick_game()
 
 // CS:0284
 void tick_game(void) {

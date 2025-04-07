@@ -736,7 +736,7 @@ void load_level_row(int cy, const char *rowstr) {
   }
 }
 
-// CS:2088
+// CS:2088 - ***CODE MATCH!***
 int registration_check(const char *cmdline) {
   // If you want to use this, give 10 GBP to a childrens charity.
   // It skips border.kye and the "please consider donating" screen.
