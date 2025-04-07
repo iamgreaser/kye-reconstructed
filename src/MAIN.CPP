@@ -185,6 +185,8 @@ void tick_game(void);
 void main_paint(HWND hWnd);
 void main_wm_lbuttondown(HWND hWnd, LONG lParam, WORD wParam);
 void main_wm_lbuttonup(void);
+void main_wm_lbuttondblclick(HWND hWnd, LONG lParam, WORD wParam);
+void main_wm_rbuttondown(HWND hWnd, LONG lParam, WORD wParam);
 void main_wm_mousemove(HWND hWnd, LONG lParam);
 void on_key_press(HWND hWnd, WORD wParam);
 void update_edit_menu_item(void);
@@ -399,6 +401,44 @@ void main_wm_lbuttonup(void) {
     g_kye_needs_update = 0;
     g_moving_by_mouse = 0;
     clear_kye_mouse_ghost();
+  }
+}
+
+// CS:045F
+void main_wm_lbuttondblclick(HWND hWnd, LONG lParam, WORD wParam) {
+  // VESTIGAL BUG: This does nothing but acquires and releases g_maindc.
+  if (mouse_is_in_playfield(lParam)) {
+    acquire_main_dc();
+    release_main_dc();
+  }
+}
+
+// CS:0481
+void main_wm_rbuttondown(HWND hWnd, LONG lParam, WORD wParam) {
+  // stack: 0x04 bytes
+  int py; // BP/FC
+  int px; // BP/FE
+
+  int cx; // SI
+  int cy; // DI
+
+  px = LOWORD(lParam);
+  py = HIWORD(lParam);
+  if (mouse_is_in_playfield(lParam)) {
+    if (g_is_in_editor == 0) {
+      if (g_moving_by_mouse) {
+        g_moving_by_mouse = 0;
+        clear_kye_mouse_ghost();
+      } else {
+        cx = px / g_tile_lx;
+        cy = py / g_tile_ly;
+        update_kye_mouse_target(cx, cy);
+        g_kye_target_cx = cx;
+        g_kye_target_cy = cy;
+        g_kye_needs_update = 1;
+        g_moving_by_mouse = 1;
+      }
+    }
   }
 }
 
@@ -723,10 +763,10 @@ LONG FAR PASCAL _export WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
     main_wm_lbuttondown(hWnd, lParam, wParam);
     break;
   case WM_LBUTTONDBLCLK:
-    // CS:045F(hWnd, lParam, wParam);
+    main_wm_lbuttondblclick(hWnd, lParam, wParam);
     break;
   case WM_RBUTTONDOWN:
-    // CS:0481(hWnd, lParam, wParam);
+    main_wm_rbuttondown(hWnd, lParam, wParam);
     break;
   default:
     return DefWindowProc(hWnd, msg, wParam, lParam);
