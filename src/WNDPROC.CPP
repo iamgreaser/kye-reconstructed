@@ -186,11 +186,11 @@ void main_wm_lbuttondblclick(HWND hWnd, LONG lParam, WORD wParam) {
   }
 }
 
-// CS:0481
+// CS:0481 - ***CODE MATCH!***
 void main_wm_rbuttondown(HWND hWnd, LONG lParam, WORD wParam) {
   // stack: 0x04 bytes
-  int py; // BP/FC
   int px; // BP/FE
+  int py; // BP/FC
 
   int cx; // SI
   int cy; // DI
@@ -198,7 +198,8 @@ void main_wm_rbuttondown(HWND hWnd, LONG lParam, WORD wParam) {
   px = LOWORD(lParam);
   py = HIWORD(lParam);
   if (mouse_is_in_playfield(lParam)) {
-    if (g_is_in_editor == 0) {
+    switch (g_is_in_editor) {
+    case 0:
       if (g_moving_by_mouse) {
         g_moving_by_mouse = 0;
         clear_kye_mouse_ghost();
@@ -211,15 +212,16 @@ void main_wm_rbuttondown(HWND hWnd, LONG lParam, WORD wParam) {
         g_kye_needs_update = 1;
         g_moving_by_mouse = 1;
       }
+      break;
     }
   }
 }
 
-// CS:04F2
+// CS:04F2 - ***CODE MATCH!***
 void main_wm_mousemove(HWND hWnd, LONG lParam) {
   // stack: 0x04 bytes
-  int py; // BP/FC
   int px; // BP/FE
+  int py; // BP/FC
 
   int cx; // SI
   int cy; // DI
@@ -227,7 +229,8 @@ void main_wm_mousemove(HWND hWnd, LONG lParam) {
   px = LOWORD(lParam);
   py = HIWORD(lParam);
   if (mouse_is_in_playfield(lParam)) {
-    if (g_is_in_editor == 0) {
+    switch (g_is_in_editor) {
+    case 0:
       SetCursor(g_hcArrow);
       cx = px / g_tile_lx;
       cy = py / g_tile_ly;
@@ -237,8 +240,10 @@ void main_wm_mousemove(HWND hWnd, LONG lParam) {
         g_kye_target_cy = cy;
         g_kye_needs_update = 1;
       }
-    } else {
+      break;
+    default:
       SetCursor(g_hcArrow);
+      break;
     }
   } else {
     SetCursor(g_hcArrow);
