@@ -257,62 +257,62 @@ void on_key_press(HWND hWnd, WORD wParam) {
   if (g_is_in_editor != 0) return;
 
   switch(wParam) {
-  case VK_PRIOR:
-    g_kye_target_cx = g_kye_main_cx + 1;
-    g_kye_target_cy = g_kye_main_cy - 1;
-    g_kye_needs_update = 1;
-    tick_game();
-    animate_everything();
-    return;
-  case VK_NEXT:
-    g_kye_target_cx = g_kye_main_cx + 1;
-    g_kye_target_cy = g_kye_main_cy + 1;
-    g_kye_needs_update = 1;
-    tick_game();
-    animate_everything();
-    return;
-  case VK_END:
-    g_kye_target_cx = g_kye_main_cx - 1;
-    g_kye_target_cy = g_kye_main_cy + 1;
-    g_kye_needs_update = 1;
-    tick_game();
-    animate_everything();
-    return;
-  case VK_HOME:
-    g_kye_target_cx = g_kye_main_cx - 1;
-    g_kye_target_cy = g_kye_main_cy - 1;
-    g_kye_needs_update = 1;
-    tick_game();
-    animate_everything();
-    return;
   case VK_LEFT:
     g_kye_target_cx = g_kye_main_cx - 1;
     g_kye_target_cy = g_kye_main_cy;
     g_kye_needs_update = 1;
     tick_game();
     animate_everything();
-    return;
-  case VK_UP:
-    g_kye_target_cx = g_kye_main_cx;
-    g_kye_target_cy = g_kye_main_cy - 1;
-    g_kye_needs_update = 1;
-    tick_game();
-    animate_everything();
-    return;
+    break;
   case VK_RIGHT:
     g_kye_target_cx = g_kye_main_cx + 1;
     g_kye_target_cy = g_kye_main_cy;
     g_kye_needs_update = 1;
     tick_game();
     animate_everything();
-    return;
+    break;
+  case VK_UP:
+    g_kye_target_cx = g_kye_main_cx;
+    g_kye_target_cy = g_kye_main_cy - 1;
+    g_kye_needs_update = 1;
+    tick_game();
+    animate_everything();
+    break;
   case VK_DOWN:
     g_kye_target_cx = g_kye_main_cx;
     g_kye_target_cy = g_kye_main_cy + 1;
     g_kye_needs_update = 1;
     tick_game();
     animate_everything();
-    return;
+    break;
+  case VK_HOME:
+    g_kye_target_cx = g_kye_main_cx - 1;
+    g_kye_target_cy = g_kye_main_cy - 1;
+    g_kye_needs_update = 1;
+    tick_game();
+    animate_everything();
+    break;
+  case VK_END:
+    g_kye_target_cx = g_kye_main_cx - 1;
+    g_kye_target_cy = g_kye_main_cy + 1;
+    g_kye_needs_update = 1;
+    tick_game();
+    animate_everything();
+    break;
+  case VK_PRIOR:
+    g_kye_target_cx = g_kye_main_cx + 1;
+    g_kye_target_cy = g_kye_main_cy - 1;
+    g_kye_needs_update = 1;
+    tick_game();
+    animate_everything();
+    break;
+  case VK_NEXT:
+    g_kye_target_cx = g_kye_main_cx + 1;
+    g_kye_target_cy = g_kye_main_cy + 1;
+    g_kye_needs_update = 1;
+    tick_game();
+    animate_everything();
+    break;
   }
 }
 
