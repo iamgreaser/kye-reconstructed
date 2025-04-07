@@ -64,6 +64,8 @@ void tick_all_timer_blocks(void);
 int try_enter_blacky(int ai, int cx, int cy);
 void tick_game_state(void);
 void cs_4B7A(int cx, int cy);
+int cs_501F(void);
+int cs_5119(void);
 void count_all_diamonds(void);
 void draw_kye_mouse_ghost(void);
 void clear_kye_mouse_ghost(void);

@@ -1804,6 +1804,20 @@ void cs_4B7A(int cx, int cy) {
   // TODO! --GM
 }
 
+// CS:501F
+int cs_501F(void) {
+  // TODO: Optionally register + open the editor tools window --GM
+  // TODO: Show the editor tools window --GM
+  return 1;
+}
+
+// CS:5119
+int cs_5119(void) {
+  // TODO: Hide the editor tools window --GM
+  // ShowWindow(DS:2E90, SW_HIDE);
+  return 1;
+}
+
 // CS:5128
 void count_all_diamonds(void) {
   // needs 0x2 bytes of stack

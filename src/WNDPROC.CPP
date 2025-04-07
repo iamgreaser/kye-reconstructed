@@ -344,6 +344,10 @@ int main_wm_command(HWND hWnd, WORD wParam) {
   HMENU menu; // SI
 
   switch (wParam) {
+  case IDC_GAME_EXIT:
+    PostQuitMessage(0);
+    return 1;
+
   case IDC_GAME_NEW:
     g_levelidx = 1;
     load_level(1);
@@ -351,10 +355,6 @@ int main_wm_command(HWND hWnd, WORD wParam) {
     set_status_msg(g_level_hint);
     InvalidateRect(hWnd, NULL, TRUE);
     UpdateWindow(hWnd);
-    return 1;
-
-  case IDC_GAME_EXIT:
-    PostQuitMessage(0);
     return 1;
 
   case IDC_LEVEL_RESTART:
@@ -367,7 +367,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
     } else {
       // Actually "Abort edit"
       g_is_in_editor = 0;
-      // CS:5119();
+      cs_5119();
       menu = GetMenu(g_mainwnd);
       ModifyMenu(menu,
         IDC_LEVEL_EDIT,
@@ -418,6 +418,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
       // Actually "Edit Hint"
       // TODO! --GM
     }
+    g_has_maintimer = 1;
     return 1;
 
   case IDC_LEVEL_FILE:
@@ -431,7 +432,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
       if (g_levelcount < 2) {
         g_is_in_editor = 1;
         g_has_maintimer = 0;
-        // CS:501F();
+        cs_501F();
         menu = GetMenu(g_mainwnd);
         ModifyMenu(menu,
           IDC_LEVEL_EDIT,
@@ -464,7 +465,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
       }
     } else {
       g_is_in_editor = 0;
-      // CS:5119();
+      cs_5119();
       menu = GetMenu(g_mainwnd);
       ModifyMenu(menu,
         IDC_LEVEL_EDIT,
