@@ -360,15 +360,15 @@ int main_wm_command(HWND hWnd, WORD wParam) {
         IDC_LEVEL_GOTO,
         "&Goto level..."); // DS:0066
       ModifyMenu(menu,
-        IDC_LEVEL_FILE,
+        IDC_LEVEL_RESTART,
         MF_BYCOMMAND,
-        IDC_LEVEL_FILE,
-        "&File"); // DS:0075
+        IDC_LEVEL_RESTART,
+        "&Restart"); // DS:0075
       ModifyMenu(menu,
-        IDC_LEVEL_RESTART,
+        IDC_LEVEL_FILE,
         MF_BYCOMMAND,
-        IDC_LEVEL_RESTART,
-        "&Restart"); // DS:007E
+        IDC_LEVEL_FILE,
+        "&File..."); // DS:007E
       EnableMenuItem(menu, IDC_GAME_NEW, MF_BYCOMMAND|MF_ENABLED);
       DrawMenuBar(hWnd);
       load_level(g_levelidx);
