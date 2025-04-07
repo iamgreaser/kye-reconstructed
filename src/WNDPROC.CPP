@@ -68,7 +68,7 @@ void actual_main_paint(void) {
   repaint_main_playfield();
 }
 
-// CS:0284
+// CS:0284 - ***CODE MATCH!***
 void tick_game(void) {
   g_has_maintimer = 0;
   acquire_main_dc();
@@ -77,12 +77,26 @@ void tick_game(void) {
     tick_kye();
   }
 
-  if (g_level_complete == 0) {
+  if (g_level_complete != 0) {
+    if (g_levelidx >= g_levelcount) {
+      show_last_level_ending();
+      g_levelidx = 1;
+    } else {
+      show_level_done();
+      g_levelidx = g_levelidx + 1;
+    }
+    load_level(g_levelidx);
+    show_next_level_name();
+    g_moving_by_mouse = 0;
+    set_status_msg(g_level_hint);
+    InvalidateRect(g_mainwnd, NULL, TRUE);
+    UpdateWindow(g_mainwnd);
+  } else {
     tick_game_state();
     if (g_kye_lives < 0) {
       repaint_kye(2);
-      delete_and_draw_unacting_tile(g_kye_main_cx, g_kye_main_cx);
-      // CS:14BA();
+      delete_and_draw_unacting_tile(g_kye_main_cx, g_kye_main_cy);
+      show_game_over();
       g_moving_by_mouse = 0;
       load_level(g_levelidx);
       set_status_msg(g_level_hint);
@@ -91,27 +105,13 @@ void tick_game(void) {
     } else if (g_kye_injured != 0) {
       tick_kye();
     }
-  } else {
-    if (g_levelidx < g_levelcount) {
-      // CS:1358();
-      g_levelidx += 1;
-    } else {
-      // CS:16A9();
-      g_levelidx = 1;
-    }
-    load_level(g_levelidx);
-    // CS:1416();
-    g_moving_by_mouse = 0;
-    set_status_msg(g_level_hint);
-    InvalidateRect(g_mainwnd, NULL, TRUE);
-    UpdateWindow(g_mainwnd);
   }
 
   release_main_dc();
   g_has_maintimer = 1;
 }
 
-// CS:035C cdecl near
+// CS:035C cdecl near - ***CODE MATCH!***
 void main_paint(HWND hWnd) {
   if (g_has_maindc != 0) {
     release_main_dc();
@@ -126,7 +126,7 @@ void main_paint(HWND hWnd) {
   EndPaint(hWnd, &g_paint);
 }
 
-// CS:03A3
+// CS:03A3 - MISMATCH FIXME: Needs more code? --GM
 void main_wm_lbuttondown(HWND hWnd, LONG lParam, WORD wParam) {
   int x; // SI
   int y; // DI
@@ -135,6 +135,7 @@ void main_wm_lbuttondown(HWND hWnd, LONG lParam, WORD wParam) {
   if (mouse_is_in_playfield(lParam)) {
     switch (g_is_in_editor) {
     case 0:
+      // MISMATCH FIXME: There's meant to be more code here --GM
       tick_game();
       x = x / g_tile_lx;
       y = y / g_tile_ly;

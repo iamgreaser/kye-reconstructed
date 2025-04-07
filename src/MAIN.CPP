@@ -369,6 +369,21 @@ void set_status_msg(const char *msg) {
   // OPTIMISER NOTE: REP MOVSW / ADC CX,CX / REP MOVSB
 }
 
+// CS:1358
+void show_level_done(void) {
+  // TODO! --GM
+}
+
+// CS:1416
+void show_next_level_name(void) {
+  // TODO! --GM
+}
+
+// CS:14BA
+void show_game_over(void) {
+  // TODO! --GM
+}
+
 // CS:15FD
 int FAR PASCAL _export DLG_OK_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
   (void)lParam;
@@ -401,6 +416,9 @@ void show_charity_dialog(void) {
   DialogBox(g_hInstance, "DLG_WHAT", g_mainwnd, dlgproc); // DS:0431
   FreeProcInstance(dlgproc);
 }
+
+// CS:16A9
+void show_last_level_ending(void) {}
 
 // CS:17BD
 void update_window_title(void) {
