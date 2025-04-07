@@ -325,10 +325,10 @@ void on_key_press(HWND hWnd, WORD wParam) {
   }
 }
 
-// CS:06AC
+// CS:06AC - ***CODE MATCH!***
 void update_edit_menu_item(void) {
-  // TODO CHECK OPTIMISATIONS --GM
   HMENU menu; // DX
+
   menu = GetMenu(g_mainwnd);
   if (g_levelcount == 1) {
     EnableMenuItem(menu, IDC_LEVEL_EDIT, MF_ENABLED);
@@ -337,7 +337,7 @@ void update_edit_menu_item(void) {
   EnableMenuItem(menu, IDC_LEVEL_EDIT, MF_GRAYED);
 }
 
-// CS:06D6
+// CS:06D6 - MISMATCH FIXME: ...there is definitely not enough implemented yet --GM
 int main_wm_command(HWND hWnd, WORD wParam) {
   // Needs 0x50 bytes of stack (BP/B0)
 
@@ -506,24 +506,30 @@ int main_wm_command(HWND hWnd, WORD wParam) {
   return 0;
 }
 
-// CS:0C19
+// CS:0C19 - ***CODE MATCH!***
 LONG FAR PASCAL _export WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
   // The compiler does some funky less-than/greater-than optimisation,
   // instead of using a LUT.
   // Maybe it was aiming to work nicely on a 486?
   // That was a thing when Win 3.0 came out.
 
-  // TODO: Most of these are dummies... --GM
-  // TODO: Handle the special-case no-ops of WM_SIZE and WM_CREATE --GM
   switch(msg) {
   case WM_COMMAND:
     return main_wm_command(hWnd, wParam);
-  case WM_PAINT:
-    main_paint(hWnd);
+  case WM_LBUTTONDOWN:
+    main_wm_lbuttondown(hWnd, lParam, wParam);
     break;
-  case WM_DESTROY:
-    deinit_brushes_and_stuff();
-    PostQuitMessage(0);
+  case WM_LBUTTONUP:
+    main_wm_lbuttonup(hWnd, lParam);
+    break;
+  case WM_LBUTTONDBLCLK:
+    main_wm_lbuttondblclick(hWnd, lParam, wParam);
+    break;
+  case WM_RBUTTONDOWN:
+    main_wm_rbuttondown(hWnd, lParam, wParam);
+    break;
+  case WM_MOUSEMOVE:
+    main_wm_mousemove(hWnd, lParam);
     break;
   case WM_KEYDOWN:
     g_key_pressed = 1;
@@ -532,8 +538,12 @@ LONG FAR PASCAL _export WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
   case WM_KEYUP:
     g_key_pressed = 0;
     break;
-  case WM_LBUTTONUP:
-    main_wm_lbuttonup(hWnd, lParam);
+  case WM_PAINT:
+    main_paint(hWnd);
+    break;
+  case WM_DESTROY:
+    deinit_brushes_and_stuff();
+    PostQuitMessage(0);
     break;
   case WM_TIMER:
     // BUG: (?) Handling of this flag is dubious.
@@ -543,17 +553,10 @@ LONG FAR PASCAL _export WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
       g_has_maintimer = 1;
     }
     break;
-  case WM_MOUSEMOVE:
-    main_wm_mousemove(hWnd, lParam);
-    break;
-  case WM_LBUTTONDOWN:
-    main_wm_lbuttondown(hWnd, lParam, wParam);
-    break;
-  case WM_LBUTTONDBLCLK:
-    main_wm_lbuttondblclick(hWnd, lParam, wParam);
-    break;
-  case WM_RBUTTONDOWN:
-    main_wm_rbuttondown(hWnd, lParam, wParam);
+
+  case WM_SIZE:
+    return DefWindowProc(hWnd, msg, wParam, lParam);
+  case WM_CREATE:
     break;
   default:
     return DefWindowProc(hWnd, msg, wParam, lParam);
