@@ -27,10 +27,11 @@ int g_levelcount = 1; // DS:02A2
 int g_tile_under_kye = T_EMPTY; // DS:02A4
 int g_tile_lx = TILE_LX; // DS:02A6
 int g_tile_ly = TILE_LY; // DS:02A8
-int g_kye_target_cx; // DS:02AA
-int g_kye_target_cy; // DS:02AC
+int g_02AA = 0; // DS:02AA -- TODO! --GM
+int g_kye_target_cx; // DS:02AC
+int g_kye_target_cy; // DS:02AE
 int g_kye_needs_update; // DS:02B0
-int g_02B2 = 0; // DS:02B2 - TODO! --GM
+int g_moving_by_mouse = 0; // DS:02B2
 int g_kye_fizzle_in = 0; // DS:02B4
 int g_kye_injured; // DS:02B6
 int g_kye_lives = 3; // DS:02B8
@@ -137,8 +138,8 @@ int g_door_anim_flag; // DS:0D6A
 
 int g_level_tiles[LEVEL_LX][LEVEL_LY]; // DS:127E
 actor_s g_actors[MAX_ACTORS]; // DS:172E
-// DS:29EE
-// DS:29F0
+int g_kye_mouse_cy; // DS:29EE
+int g_kye_mouse_cx; // DS:29F0
 int g_kye_spawn_cy; // DS:29F2
 int g_kye_spawn_cx; // DS:29F4
 int g_kye_main_cy; // DS:29F6
@@ -182,6 +183,8 @@ void repaint_main_playfield(void);
 void actual_main_paint(void);
 void tick_game(void);
 void main_paint(HWND hWnd);
+void main_wm_lbuttondown(HWND hWnd, LONG lParam, WORD wParam);
+void main_wm_lbuttonup(void);
 void on_key_press(HWND hWnd, WORD wParam);
 void update_edit_menu_item(void);
 int main_wm_command(HWND hWnd, WORD wParam);
@@ -194,6 +197,7 @@ void msgbox_error(char *m1, char *m2);
 void init_brushes_and_stuff(void);
 void deinit_brushes_and_stuff(void);
 void compute_window_geometry(void);
+int mouse_is_in_playfield(LONG lParam);
 void set_status_msg(const char *msg);
 int FAR PASCAL _export DLG_OK_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
 void show_charity_dialog(void);
@@ -229,6 +233,9 @@ void tick_all_timer_blocks(void);
 int try_enter_blacky(int ai, int cx, int cy);
 void tick_game_state(void);
 void count_all_diamonds(void);
+void draw_kye_mouse_ghost(void);
+void clear_kye_mouse_ghost(void);
+void update_kye_mouse_target(int cx, int cy);
 void repaint_kye(int fizzle_mode);
 void move_kye(int dx, int dy);
 void try_move_kye(int dx, int dy);
@@ -306,7 +313,7 @@ void tick_game(void) {
       repaint_kye(2);
       delete_and_draw_unacting_tile(g_kye_main_cx, g_kye_main_cx);
       // CS:14BA();
-      g_02B2 = 0;
+      g_moving_by_mouse = 0;
       load_level(g_levelidx);
       set_status_msg(g_level_hint);
       InvalidateRect(g_mainwnd, NULL, TRUE);
@@ -324,7 +331,7 @@ void tick_game(void) {
     }
     load_level(g_levelidx);
     // CS:1416();
-    g_02B2 = 0;
+    g_moving_by_mouse = 0;
     set_status_msg(g_level_hint);
     InvalidateRect(g_mainwnd, NULL, TRUE);
     UpdateWindow(g_mainwnd);
@@ -347,6 +354,51 @@ void main_paint(HWND hWnd) {
   ReleaseDC(hWnd, g_maindc);
   g_has_maindc = 0;
   EndPaint(hWnd, &g_paint);
+}
+
+// CS:03A3
+void main_wm_lbuttondown(HWND hWnd, LONG lParam, WORD wParam) {
+  int x; // SI
+  int y; // DI
+  x = LOWORD(lParam);
+  y = HIWORD(lParam);
+  if (mouse_is_in_playfield(lParam)) {
+    switch (g_is_in_editor) {
+    case 0:
+      tick_game();
+      x = x / g_tile_lx;
+      y = y / g_tile_ly;
+      update_kye_mouse_target(x, y);
+      g_kye_target_cx = x;
+      g_kye_target_cy = y;
+      g_kye_needs_update = 1;
+      g_moving_by_mouse = 1;
+      break;
+    case 1:
+      x = x / g_tile_lx;
+      y = y / g_tile_ly;
+      // CS:4B7A();
+      acquire_main_dc();
+      // CS:2791(x, y);
+      repaint_status_left();
+      release_main_dc();
+      break;
+    }
+  }
+}
+
+// CS:0432
+void main_wm_lbuttonup(void) {
+  if (g_mouse_captured) {
+    ReleaseCapture();
+    g_mouse_captured = 0;
+  }
+
+  if (g_is_in_editor == 0) {
+    g_kye_needs_update = 0;
+    g_moving_by_mouse = 0;
+    clear_kye_mouse_ghost();
+  }
 }
 
 // CS:0573
@@ -437,7 +489,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
   case IDC_GAME_NEW:
     g_levelidx = 1;
     load_level(1);
-    g_02B2 = 0;
+    g_moving_by_mouse = 0;
     set_status_msg(g_level_hint);
     InvalidateRect(hWnd, NULL, TRUE);
     UpdateWindow(hWnd);
@@ -451,7 +503,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
     if (g_is_in_editor == 0) {
       load_level(g_levelidx);
       set_status_msg(g_level_hint);
-      g_02B2 = 0;
+      g_moving_by_mouse = 0;
       InvalidateRect(hWnd, NULL, TRUE);
       UpdateWindow(hWnd);
     } else {
@@ -483,7 +535,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
       DrawMenuBar(hWnd);
       load_level(g_levelidx);
       set_status_msg(g_level_hint);
-      g_02B2 = 0;
+      g_moving_by_mouse = 0;
       g_has_maintimer = 1;
       InvalidateRect(hWnd, NULL, TRUE);
       UpdateWindow(hWnd);
@@ -581,7 +633,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
       // CS:2241();
       load_level(g_levelidx);
       set_status_msg(g_level_hint);
-      g_02B2 = 0;
+      g_moving_by_mouse = 0;
       g_has_maintimer = 1;
       InvalidateRect(hWnd, NULL, TRUE);
       UpdateWindow(hWnd);
@@ -623,7 +675,7 @@ LONG FAR PASCAL _export WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
     g_key_pressed = 0;
     break;
   case WM_LBUTTONUP:
-    // CS:0432(hWnd, lParam);
+    main_wm_lbuttonup();
     break;
   case WM_TIMER:
     // BUG: (?) Handling of this flag is dubious.
@@ -637,7 +689,7 @@ LONG FAR PASCAL _export WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
     // CS:04F2(hWnd, lParam);
     break;
   case WM_LBUTTONDOWN:
-    // CS:03A3(hWnd, lParam, wParam);
+    main_wm_lbuttondown(hWnd, lParam, wParam);
     break;
   case WM_LBUTTONDBLCLK:
     // CS:045F(hWnd, lParam, wParam);
@@ -743,7 +795,7 @@ int PASCAL _export WinMain(HANDLE hInstance,
     load_level(g_levelidx);
     set_status_msg(g_level_hint);
     update_edit_menu_item();
-    g_02B2 = 0;
+    g_moving_by_mouse = 0;
     InvalidateRect(mainwnd, NULL, TRUE);
     UpdateWindow(mainwnd);
     show_charity_dialog();
@@ -753,7 +805,7 @@ int PASCAL _export WinMain(HANDLE hInstance,
   load_level(g_levelidx);
   set_status_msg(g_level_hint);
   update_edit_menu_item();
-  g_02B2 = 0;
+  g_moving_by_mouse = 0;
   InvalidateRect(mainwnd, NULL, TRUE);
   UpdateWindow(mainwnd);
   while (GetMessage(&msg, NULL, 0, 0)) {
@@ -830,6 +882,16 @@ void compute_window_geometry(void) {
     g_r_playfield.bottom+1,
     g_r_playfield.right,
     g_r_playfield.bottom+textheight+1);
+}
+
+// CS:11A3
+int mouse_is_in_playfield(LONG lParam) {
+  // stack: 0x4 bytes
+  POINT p;
+
+  p.x = LOWORD(lParam);
+  p.y = HIWORD(lParam);
+  return PtInRect(&g_r_playfield, p);
 }
 
 // CS:11C4
@@ -2269,6 +2331,53 @@ void count_all_diamonds(void) {
   }
 }
 
+// CS:5165
+void draw_kye_mouse_ghost(void) {
+  // stack: 0x04 bytes
+  int py; // BP/FC
+  int px; // BP/FE
+
+  HDC dc; // SI
+
+  dc = CreateCompatibleDC(g_maindc);
+  SelectObject(dc, g_hbmpKye);
+  px = g_kye_mouse_cx * g_tile_lx;
+  py = g_kye_mouse_cy * g_tile_ly; // stored value ignored, optimised to use AX
+  BitBlt(g_maindc,
+    px, py,
+    TILE_LX, TILE_LY,
+    dc,
+    1 * TILE_LX, 0 * TILE_LY,
+    SRCCOPY);
+
+  DeleteDC(dc);
+}
+
+// CS:51B9
+void clear_kye_mouse_ghost(void) {
+  if (g_02AA != 0 && g_level_tiles[g_kye_mouse_cx][g_kye_mouse_cy] == T_EMPTY) {
+    delete_and_draw_unacting_tile(g_kye_mouse_cx, g_kye_mouse_cy);
+  }
+  g_02AA = 0;
+}
+
+// CS:51EE
+void update_kye_mouse_target(int cx, int cy) {
+  // SI = cx
+  // DI = cy
+  if (g_02AA == 0 || cx != g_kye_mouse_cx || cy != g_kye_mouse_cy) {
+    clear_kye_mouse_ghost();
+    g_kye_mouse_cx = cx;
+    g_kye_mouse_cy = cy;
+    if (abs(cx - g_kye_main_cx) > 1 || abs(cy - g_kye_main_cy) > 1) {
+      if (g_level_tiles[cx][cy] == T_EMPTY) {
+        draw_kye_mouse_ghost();
+        g_02AA = 1;
+      }
+    }
+  }
+}
+
 // CS:525D
 void repaint_kye(int fizzle_mode) {
   int py; // BP/FC
@@ -2365,7 +2474,7 @@ void try_move_kye(int dx, int dy) {
     blocked = !(g_level_tiles[newx][g_kye_main_cy] == T_EMPTY
              && g_level_tiles[g_kye_main_cx][newy] == T_EMPTY);
     if (blocked) {
-      if (g_02B2 != 0) {
+      if (g_moving_by_mouse != 0) {
         if (g_level_tiles[newx][g_kye_main_cy] == T_EMPTY) {
           dy = 0;
           newy = g_kye_main_cy;
@@ -2462,7 +2571,7 @@ void try_move_kye(int dx, int dy) {
   }
   // TODO: Handle the weird thing here --GM
   // (this uses circle_x, circle_y to detect various movements?)
-  if (g_02B2 != 0 && !didmove) {
+  if (g_moving_by_mouse != 0 && !didmove) {
     // TODO! --GM
   }
 }
