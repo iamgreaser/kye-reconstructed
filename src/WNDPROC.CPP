@@ -250,11 +250,20 @@ void main_wm_mousemove(HWND hWnd, LONG lParam) {
   }
 }
 
-// CS:0573
+// CS:0573 - ***CODE MATCH!***
+// Matching requires -a to NOT be set...?! Otherwise the switch jump table becomes misaligned. Yep, it's a compiler bug!
 void on_key_press(HWND hWnd, WORD wParam) {
   (void)hWnd;
 
   if (g_is_in_editor != 0) return;
+
+  // Not sure why this exists, but it seems to be required for a match.
+  if(wParam != VK_LEFT && wParam != VK_RIGHT
+      && wParam != VK_UP && wParam != VK_DOWN
+      && wParam != VK_HOME && wParam != VK_END
+      && wParam != VK_PRIOR && wParam != VK_NEXT) {
+    return;
+  }
 
   switch(wParam) {
   case VK_LEFT:
