@@ -30,8 +30,7 @@ int g_tile_ly = TILE_LY; // DS:02A8
 int g_kye_target_cx; // DS:02AA
 int g_kye_target_cy; // DS:02AC
 int g_kye_needs_update; // DS:02B0
-
-// int // DS:02B2
+int g_02B2 = 0; // DS:02B2 - TODO! --GM
 int g_kye_fizzle_in = 0; // DS:02B4
 int g_kye_injured; // DS:02B6
 int g_kye_lives = 3; // DS:02B8
@@ -188,9 +187,9 @@ void update_edit_menu_item(void);
 int main_wm_command(HWND hWnd, WORD wParam);
 LONG FAR PASCAL _export WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam);
 int PASCAL _export WinMain(HANDLE hInstance,
-			   HANDLE hPrevInstance,
-			   LPSTR lpCmdLine,
-			   int nCmdShow);
+                           HANDLE hPrevInstance,
+                           LPSTR lpCmdLine,
+                           int nCmdShow);
 void msgbox_error(char *m1, char *m2);
 void init_brushes_and_stuff(void);
 void deinit_brushes_and_stuff(void);
@@ -307,7 +306,7 @@ void tick_game(void) {
       repaint_kye(2);
       delete_and_draw_unacting_tile(g_kye_main_cx, g_kye_main_cx);
       // CS:14BA();
-      // DS:02B2 = 0;
+      g_02B2 = 0;
       load_level(g_levelidx);
       set_status_msg(g_level_hint);
       InvalidateRect(g_mainwnd, NULL, TRUE);
@@ -325,7 +324,7 @@ void tick_game(void) {
     }
     load_level(g_levelidx);
     // CS:1416();
-    // DS:02B2 = 0;
+    g_02B2 = 0;
     set_status_msg(g_level_hint);
     InvalidateRect(g_mainwnd, NULL, TRUE);
     UpdateWindow(g_mainwnd);
@@ -438,7 +437,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
   case IDC_GAME_NEW:
     g_levelidx = 1;
     load_level(1);
-    // DS:02B2 = 0;
+    g_02B2 = 0;
     set_status_msg(g_level_hint);
     InvalidateRect(hWnd, NULL, TRUE);
     UpdateWindow(hWnd);
@@ -452,7 +451,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
     if (g_is_in_editor == 0) {
       load_level(g_levelidx);
       set_status_msg(g_level_hint);
-      // DS:02B2 = 0;
+      g_02B2 = 0;
       InvalidateRect(hWnd, NULL, TRUE);
       UpdateWindow(hWnd);
     } else {
@@ -461,30 +460,30 @@ int main_wm_command(HWND hWnd, WORD wParam) {
       // CS:5119();
       menu = GetMenu(g_mainwnd);
       ModifyMenu(menu,
-	IDC_LEVEL_EDIT,
-	MF_BYCOMMAND,
-	IDC_LEVEL_EDIT,
-	"&Edit"); // DS:0060
+        IDC_LEVEL_EDIT,
+        MF_BYCOMMAND,
+        IDC_LEVEL_EDIT,
+        "&Edit"); // DS:0060
       ModifyMenu(menu,
-	IDC_LEVEL_GOTO,
-	MF_BYCOMMAND,
-	IDC_LEVEL_GOTO,
-	"&Goto level..."); // DS:0066
+        IDC_LEVEL_GOTO,
+        MF_BYCOMMAND,
+        IDC_LEVEL_GOTO,
+        "&Goto level..."); // DS:0066
       ModifyMenu(menu,
-	IDC_LEVEL_FILE,
-	MF_BYCOMMAND,
-	IDC_LEVEL_FILE,
-	"&File"); // DS:0075
+        IDC_LEVEL_FILE,
+        MF_BYCOMMAND,
+        IDC_LEVEL_FILE,
+        "&File"); // DS:0075
       ModifyMenu(menu,
-	IDC_LEVEL_RESTART,
-	MF_BYCOMMAND,
-	IDC_LEVEL_RESTART,
-	"&Restart"); // DS:007E
+        IDC_LEVEL_RESTART,
+        MF_BYCOMMAND,
+        IDC_LEVEL_RESTART,
+        "&Restart"); // DS:007E
       EnableMenuItem(menu, IDC_GAME_NEW, MF_BYCOMMAND|MF_ENABLED);
       DrawMenuBar(hWnd);
       load_level(g_levelidx);
       set_status_msg(g_level_hint);
-      // DS:02B2 = 0;
+      g_02B2 = 0;
       g_has_maintimer = 1;
       InvalidateRect(hWnd, NULL, TRUE);
       UpdateWindow(hWnd);
@@ -520,69 +519,69 @@ int main_wm_command(HWND hWnd, WORD wParam) {
       g_levelidx = 1;
       load_level(1);
       if (g_levelcount < 2) {
-	g_is_in_editor = 1;
-	g_has_maintimer = 0;
-	// CS:501F();
-	menu = GetMenu(g_mainwnd);
-	ModifyMenu(menu,
-	  IDC_LEVEL_EDIT,
-	  MF_BYCOMMAND,
-	  IDC_LEVEL_EDIT,
-	  "&Run"); // DS:0113
-	ModifyMenu(menu,
-	  IDC_LEVEL_RESTART,
-	  MF_BYCOMMAND,
-	  IDC_LEVEL_RESTART,
-	  "&Abort Edit"); // DS:0118
-	ModifyMenu(menu,
-	  IDC_LEVEL_GOTO,
-	  MF_BYCOMMAND,
-	  IDC_LEVEL_GOTO,
-	  "Edit &Hint"); // DS:0124
-	ModifyMenu(menu,
-	  IDC_LEVEL_FILE,
-	  MF_BYCOMMAND,
-	  IDC_LEVEL_FILE,
-	  "Edit &Name"); // DS:012F
-	EnableMenuItem(menu, IDC_GAME_NEW, MF_BYCOMMAND|MF_GRAYED);
-	DrawMenuBar(hWnd);
-	InvalidateRect(hWnd, NULL, TRUE);
-	UpdateWindow(hWnd);
-	update_window_title();
+        g_is_in_editor = 1;
+        g_has_maintimer = 0;
+        // CS:501F();
+        menu = GetMenu(g_mainwnd);
+        ModifyMenu(menu,
+          IDC_LEVEL_EDIT,
+          MF_BYCOMMAND,
+          IDC_LEVEL_EDIT,
+          "&Run"); // DS:0113
+        ModifyMenu(menu,
+          IDC_LEVEL_RESTART,
+          MF_BYCOMMAND,
+          IDC_LEVEL_RESTART,
+          "&Abort Edit"); // DS:0118
+        ModifyMenu(menu,
+          IDC_LEVEL_GOTO,
+          MF_BYCOMMAND,
+          IDC_LEVEL_GOTO,
+          "Edit &Hint"); // DS:0124
+        ModifyMenu(menu,
+          IDC_LEVEL_FILE,
+          MF_BYCOMMAND,
+          IDC_LEVEL_FILE,
+          "Edit &Name"); // DS:012F
+        EnableMenuItem(menu, IDC_GAME_NEW, MF_BYCOMMAND|MF_GRAYED);
+        DrawMenuBar(hWnd);
+        InvalidateRect(hWnd, NULL, TRUE);
+        UpdateWindow(hWnd);
+        update_window_title();
       } else {
-	msgbox_error("Cannot edit multi-level files.", // DS:00C8
-	    "Load a single level file.(eg. template.kye)"); // DS:00E7
+        msgbox_error("Cannot edit multi-level files.", // DS:00C8
+            "Load a single level file.(eg. template.kye)"); // DS:00E7
       }
     } else {
       g_is_in_editor = 0;
       // CS:5119();
       menu = GetMenu(g_mainwnd);
       ModifyMenu(menu,
-	IDC_LEVEL_EDIT,
-	MF_BYCOMMAND,
-	IDC_LEVEL_EDIT,
-	"&Edit"); // DS:013A
+        IDC_LEVEL_EDIT,
+        MF_BYCOMMAND,
+        IDC_LEVEL_EDIT,
+        "&Edit"); // DS:013A
       ModifyMenu(menu,
-	IDC_LEVEL_GOTO,
-	MF_BYCOMMAND,
-	IDC_LEVEL_GOTO,
-	"&Goto level..."); // DS:0140
+        IDC_LEVEL_GOTO,
+        MF_BYCOMMAND,
+        IDC_LEVEL_GOTO,
+        "&Goto level..."); // DS:0140
       ModifyMenu(menu,
-	IDC_LEVEL_FILE,
-	MF_BYCOMMAND,
-	IDC_LEVEL_FILE,
-	"&File"); // DS:014F
+        IDC_LEVEL_FILE,
+        MF_BYCOMMAND,
+        IDC_LEVEL_FILE,
+        "&File"); // DS:014F
       ModifyMenu(menu,
-	IDC_LEVEL_RESTART,
-	MF_BYCOMMAND,
-	IDC_LEVEL_RESTART,
-	"&Restart"); // DS:0158
+        IDC_LEVEL_RESTART,
+        MF_BYCOMMAND,
+        IDC_LEVEL_RESTART,
+        "&Restart"); // DS:0158
       EnableMenuItem(menu, IDC_GAME_NEW, MF_BYCOMMAND|MF_ENABLED);
       DrawMenuBar(hWnd);
       // CS:2241();
       load_level(g_levelidx);
       set_status_msg(g_level_hint);
-      // DS:02B2 = 0;
+      g_02B2 = 0;
       g_has_maintimer = 1;
       InvalidateRect(hWnd, NULL, TRUE);
       UpdateWindow(hWnd);
@@ -654,9 +653,9 @@ LONG FAR PASCAL _export WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
 
 // CS:0D6A
 int PASCAL _export WinMain(HANDLE hInstance,
-			   HANDLE hPrevInstance,
-			   LPSTR lpCmdLine,
-			   int nCmdShow) {
+                           HANDLE hPrevInstance,
+                           LPSTR lpCmdLine,
+                           int nCmdShow) {
   // needs 0x60 (96) extra bytes on stack
   char cmdlinebuf[50]; // /A0 BP-0x60
   MSG msg; // /D2 BP-0x2A
@@ -744,7 +743,7 @@ int PASCAL _export WinMain(HANDLE hInstance,
     load_level(g_levelidx);
     set_status_msg(g_level_hint);
     update_edit_menu_item();
-    // DS:02B2 = 0x0000;
+    g_02B2 = 0;
     InvalidateRect(mainwnd, NULL, TRUE);
     UpdateWindow(mainwnd);
     show_charity_dialog();
@@ -754,7 +753,7 @@ int PASCAL _export WinMain(HANDLE hInstance,
   load_level(g_levelidx);
   set_status_msg(g_level_hint);
   update_edit_menu_item();
-  // DS:02B2 = 0x0000;
+  g_02B2 = 0;
   InvalidateRect(mainwnd, NULL, TRUE);
   UpdateWindow(mainwnd);
   while (GetMessage(&msg, NULL, 0, 0)) {
@@ -993,8 +992,8 @@ void process_loaded_level(void) {
   for (cx = 0; cx < LEVEL_LX; cx++) {
     for (cy = 0; cy < LEVEL_LY; cy++) {
       if (g_level_tiles[cx][cy] == T_DIAMOND) {
-	found = 1;
-	goto done_diamond_search;
+        found = 1;
+        goto done_diamond_search;
       }
     }
   }
@@ -1009,8 +1008,8 @@ done_diamond_search:
   for (cx = 0; cx < LEVEL_LX; cx++) {
     for (cy = 0; cy < LEVEL_LY; cy++) {
       if (g_level_tiles[cx][cy] == T_KYE) {
-	found = 1;
-	goto done_kye_search;
+        found = 1;
+        goto done_kye_search;
       }
     }
   }
@@ -1070,9 +1069,9 @@ void read_line(FILE *fp, char *buf, int max_len) {
 
   for (i = 0;
        linebuf[i] != 0
-	 && i < max_len
-	 && linebuf[i] != '\n'
-	 && linebuf[i] != '\r';
+         && i < max_len
+         && linebuf[i] != '\n'
+         && linebuf[i] != '\r';
        i++) {
     buf[i] = linebuf[i];
   }
@@ -1165,45 +1164,45 @@ void load_level_row(int cy, const char *rowstr) {
     if (cx >= LEVEL_LX) return;
     if (convert_char_to_internal(&subgroup, &internal_type, *str_ptr)) {
       switch (subgroup) {
-	case 0:
-	  *tileptr = T_EMPTY;
-	  break;
-	case 1:
-	  *tileptr = internal_type;
-	  break;
-	case 2:
-	  switch(internal_type) {
-	  case T_B_TWISTER:
-	  case T_B_GNASHER:
-	  case T_B_BLOB:
-	  case T_B_VIRUS:
-	  case T_B_SPIKE:
-	    ai = create_actor(internal_type, cx, cy);
-	    // BUG: Failure (-1) not checked
-	    // Mathematically it won't happen, but I like hygiene. --GM
-	    // TODO: Decipher this 32-bit-int mess --GM
-	    //g_actors[ai].var0 = rand()<<2;
-	    (void)ai;
-	    // 0x00008000L, CS:6231(0x8000, 0)<<2;
-	    break;
-	  case T_AUTOSLIDER1:
-	    create_actor((cx % 4) + T_AUTOSLIDER1, cx, cy);
-	    break;
-	  case T_AUTOROCKY1:
-	    create_actor((cx % 4) + T_AUTOROCKY1, cx, cy);
-	    break;
-	  default:
-	    create_actor(internal_type, cx, cy);
-	    break;
-	  }
-	  break;
-	case 3:
-	  *tileptr = T_KYE;
-	  g_kye_main_cy = cy;
-	  g_kye_spawn_cy = cy;
-	  g_kye_spawn_cx = cx;
-	  g_kye_main_cx = cx;
-	  break;
+        case 0:
+          *tileptr = T_EMPTY;
+          break;
+        case 1:
+          *tileptr = internal_type;
+          break;
+        case 2:
+          switch(internal_type) {
+          case T_B_TWISTER:
+          case T_B_GNASHER:
+          case T_B_BLOB:
+          case T_B_VIRUS:
+          case T_B_SPIKE:
+            ai = create_actor(internal_type, cx, cy);
+            // BUG: Failure (-1) not checked
+            // Mathematically it won't happen, but I like hygiene. --GM
+            // TODO: Decipher this 32-bit-int mess --GM
+            //g_actors[ai].var0 = rand()<<2;
+            (void)ai;
+            // 0x00008000L, CS:6231(0x8000, 0)<<2;
+            break;
+          case T_AUTOSLIDER1:
+            create_actor((cx % 4) + T_AUTOSLIDER1, cx, cy);
+            break;
+          case T_AUTOROCKY1:
+            create_actor((cx % 4) + T_AUTOROCKY1, cx, cy);
+            break;
+          default:
+            create_actor(internal_type, cx, cy);
+            break;
+          }
+          break;
+        case 3:
+          *tileptr = T_KYE;
+          g_kye_main_cy = cy;
+          g_kye_spawn_cy = cy;
+          g_kye_spawn_cx = cx;
+          g_kye_main_cx = cx;
+          break;
       }
     }
   }
@@ -1457,47 +1456,47 @@ void repaint_status_left(void) {
       // 2862
       SelectObject(g_maindc, g_hpenWhite);
       Rectangle(
-	g_maindc,
-	g_r_status_left.left,
-	g_r_status_left.top,
-	g_r_status_left.left + 70,
-	g_r_status_left.top + 17);
+        g_maindc,
+        g_r_status_left.left,
+        g_r_status_left.top,
+        g_r_status_left.left + 70,
+        g_r_status_left.top + 17);
       dc = CreateCompatibleDC(g_maindc);
       SelectObject(dc, g_hbmpKye);
       for (px = 0, i = 0; i < g_kye_lives; px += TILE_LX + 4, i++) {
-	BitBlt(
-	  g_maindc,
-	  g_r_status_left.left + px + 1,
-	  g_r_status_left.top + 1,
-	  TILE_LX, TILE_LY,
-	  dc,
-	  0, 0,
-	  SRCCOPY);
+        BitBlt(
+          g_maindc,
+          g_r_status_left.left + px + 1,
+          g_r_status_left.top + 1,
+          TILE_LX, TILE_LY,
+          dc,
+          0, 0,
+          SRCCOPY);
       }
       DeleteDC(dc);
 
       SelectObject(g_maindc, g_hpenBlack);
       sprintf(textbuf, "Level:  %d   ", g_levelidx); // DS:04B8
       TextOut(g_maindc,
-	g_r_status_left.left + 80,
-	g_r_status_left.top,
-	textbuf,
-	strlen(textbuf));
+        g_r_status_left.left + 80,
+        g_r_status_left.top,
+        textbuf,
+        strlen(textbuf));
 
       diamonds = 0;
       for (cx = 0; cx < LEVEL_LX; cx++) {
-	for (cy = 0; cy < LEVEL_LY; cy++) {
-	  if (g_level_tiles[cx][cy] == T_DIAMOND) {
-	    diamonds++;
-	  }
-	}
+        for (cy = 0; cy < LEVEL_LY; cy++) {
+          if (g_level_tiles[cx][cy] == T_DIAMOND) {
+            diamonds++;
+          }
+        }
       }
       sprintf(textbuf, "Diamonds left:  %d   ", diamonds);
       TextOut(g_maindc,
-	g_r_status_left.left + 160,
-	g_r_status_left.top,
-	textbuf,
-	strlen(textbuf));
+        g_r_status_left.left + 160,
+        g_r_status_left.top,
+        textbuf,
+        strlen(textbuf));
     } break;
 
     case 1: {
@@ -1614,40 +1613,40 @@ void respawn_kye(void) {
   // Spiral out if spawn blocked
   if (g_level_tiles[g_kye_spawn_cx][g_kye_spawn_cy] != T_EMPTY) {
     for (radius = 1,
-	cx0 = g_kye_spawn_cx - 1,
-	cy0 = g_kye_spawn_cy + 1,
-	rad2 = 2,
-	cx1 = g_kye_spawn_cx + 1,
-	cy1 = g_kye_spawn_cy - 1;
-	radius <= 4; cx0--, cy0++, rad2 += 2, cx1--, cy1++, radius++) {
+        cx0 = g_kye_spawn_cx - 1,
+        cy0 = g_kye_spawn_cy + 1,
+        rad2 = 2,
+        cx1 = g_kye_spawn_cx + 1,
+        cy1 = g_kye_spawn_cy - 1;
+        radius <= 4; cx0--, cy0++, rad2 += 2, cx1--, cy1++, radius++) {
 
       g_kye_target_cx = cx0;
       g_kye_target_cy = cy0;
       for (i = 0; i < rad2; g_kye_target_cx++, i++) {
-	if (g_level_tiles[g_kye_target_cx][g_kye_target_cy] == T_EMPTY) {
-	  return;
-	}
+        if (g_level_tiles[g_kye_target_cx][g_kye_target_cy] == T_EMPTY) {
+          return;
+        }
       }
       g_kye_target_cx = cx1;
       g_kye_target_cy = cy0;
       for (i = 0; i < rad2; g_kye_target_cy--, i++) {
-	if (g_level_tiles[g_kye_target_cx][g_kye_target_cy] == T_EMPTY) {
-	  return;
-	}
+        if (g_level_tiles[g_kye_target_cx][g_kye_target_cy] == T_EMPTY) {
+          return;
+        }
       }
       g_kye_target_cx = cx1;
       g_kye_target_cy = cy1;
       for (i = 0; i < rad2; g_kye_target_cx--, i++) {
-	if (g_level_tiles[g_kye_target_cx][g_kye_target_cy] == T_EMPTY) {
-	  return;
-	}
+        if (g_level_tiles[g_kye_target_cx][g_kye_target_cy] == T_EMPTY) {
+          return;
+        }
       }
       g_kye_target_cx = cx0;
       g_kye_target_cy = cy1;
       for (i = 0; i < rad2; g_kye_target_cy++, i++) {
-	if (g_level_tiles[g_kye_target_cx][g_kye_target_cy] == T_EMPTY) {
-	  return;
-	}
+        if (g_level_tiles[g_kye_target_cx][g_kye_target_cy] == T_EMPTY) {
+          return;
+        }
       }
     }
 
@@ -1689,17 +1688,17 @@ void tick_all_timer_blocks(void) {
   if (g_tick_counter % 30 == 0) {
     for (ai = 0; ai < g_actor_count; ai++) {
       if (g_actors[ai].type >= T_TIMER_0
-	  && g_actors[ai].type <= T_TIMER_9) {
-	//
-	cx = g_actors[ai].cx;
-	cy = g_actors[ai].cy;
-	if (g_actors[ai].type > T_TIMER_0) {
-	  g_actors[ai].type--;
-	  move_actor(ai, cx, cy);
-	} else {
-	  delete_and_draw_unacting_tile(cx, cy);
-	  mark_actor_for_deletion(ai);
-	}
+          && g_actors[ai].type <= T_TIMER_9) {
+        //
+        cx = g_actors[ai].cx;
+        cy = g_actors[ai].cy;
+        if (g_actors[ai].type > T_TIMER_0) {
+          g_actors[ai].type--;
+          move_actor(ai, cx, cy);
+        } else {
+          delete_and_draw_unacting_tile(cx, cy);
+          mark_actor_for_deletion(ai);
+        }
       }
     }
   }
@@ -1788,417 +1787,417 @@ void tick_game_state(void) {
     // BUG: North-facing sliders do not redraw on rotation.
     case T_SLIDER_N:
       if ((!apply_sticky_blocks(ai))
-	  && (!actor_held_by_sticky_block(ai))) {
-	other = g_level_tiles[cx][cy-1];
-	if (other == T_EMPTY) {
-	  move_actor(ai, cx, cy-1);
-	} else {
-	  if (!try_enter_blacky(ai, cx, cy-1)) {
-	    if (other >= 0 && g_actors[other].type == T_ROT_A) {
-	      actor->type = T_SLIDER_E;
-	      // BUG: This needs to redraw the actor!
-	    } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
-	      actor->type = T_SLIDER_W;
-	      // BUG: This needs to redraw the actor!
-	    }
-	  }
-	}
+          && (!actor_held_by_sticky_block(ai))) {
+        other = g_level_tiles[cx][cy-1];
+        if (other == T_EMPTY) {
+          move_actor(ai, cx, cy-1);
+        } else {
+          if (!try_enter_blacky(ai, cx, cy-1)) {
+            if (other >= 0 && g_actors[other].type == T_ROT_A) {
+              actor->type = T_SLIDER_E;
+              // BUG: This needs to redraw the actor!
+            } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+              actor->type = T_SLIDER_W;
+              // BUG: This needs to redraw the actor!
+            }
+          }
+        }
       }
       break;
 
     case T_SLIDER_S:
       if ((!apply_sticky_blocks(ai))
-	  && (!actor_held_by_sticky_block(ai))) {
-	other = g_level_tiles[cx][cy+1];
-	if (other == T_EMPTY) {
-	  move_actor(ai, cx, cy+1);
-	} else {
-	  if (!try_enter_blacky(ai, cx, cy+1)) {
-	    if (other >= 0 && g_actors[other].type == T_ROT_A) {
-	      actor->type = T_SLIDER_W;
-	      move_actor(ai, cx, cy);
-	    } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
-	      actor->type = T_SLIDER_E;
-	      move_actor(ai, cx, cy);
-	    }
-	  }
-	}
+          && (!actor_held_by_sticky_block(ai))) {
+        other = g_level_tiles[cx][cy+1];
+        if (other == T_EMPTY) {
+          move_actor(ai, cx, cy+1);
+        } else {
+          if (!try_enter_blacky(ai, cx, cy+1)) {
+            if (other >= 0 && g_actors[other].type == T_ROT_A) {
+              actor->type = T_SLIDER_W;
+              move_actor(ai, cx, cy);
+            } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+              actor->type = T_SLIDER_E;
+              move_actor(ai, cx, cy);
+            }
+          }
+        }
       }
       break;
 
     case T_SLIDER_W:
       if ((!apply_sticky_blocks(ai))
-	  && (!actor_held_by_sticky_block(ai))) {
-	other = g_level_tiles[cx-1][cy];
-	if (other == T_EMPTY) {
-	  move_actor(ai, cx-1, cy);
-	} else {
-	  if (!try_enter_blacky(ai, cx-1, cy)) {
-	    if (other >= 0 && g_actors[other].type == T_ROT_A) {
-	      actor->type = T_SLIDER_N;
-	      move_actor(ai, cx, cy);
-	    } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
-	      actor->type = T_SLIDER_S;
-	      move_actor(ai, cx, cy);
-	    }
-	  }
-	}
+          && (!actor_held_by_sticky_block(ai))) {
+        other = g_level_tiles[cx-1][cy];
+        if (other == T_EMPTY) {
+          move_actor(ai, cx-1, cy);
+        } else {
+          if (!try_enter_blacky(ai, cx-1, cy)) {
+            if (other >= 0 && g_actors[other].type == T_ROT_A) {
+              actor->type = T_SLIDER_N;
+              move_actor(ai, cx, cy);
+            } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+              actor->type = T_SLIDER_S;
+              move_actor(ai, cx, cy);
+            }
+          }
+        }
       }
       break;
 
     case T_SLIDER_E:
       if ((!apply_sticky_blocks(ai))
-	  && (!actor_held_by_sticky_block(ai))) {
-	other = g_level_tiles[cx+1][cy];
-	if (other == T_EMPTY) {
-	  move_actor(ai, cx+1, cy);
-	} else {
-	  if (!try_enter_blacky(ai, cx+1, cy)) {
-	    if (other >= 0 && g_actors[other].type == T_ROT_A) {
-	      actor->type = T_SLIDER_S;
-	      move_actor(ai, cx, cy);
-	    } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
-	      actor->type = T_SLIDER_N;
-	      move_actor(ai, cx, cy);
-	    }
-	  }
-	}
+          && (!actor_held_by_sticky_block(ai))) {
+        other = g_level_tiles[cx+1][cy];
+        if (other == T_EMPTY) {
+          move_actor(ai, cx+1, cy);
+        } else {
+          if (!try_enter_blacky(ai, cx+1, cy)) {
+            if (other >= 0 && g_actors[other].type == T_ROT_A) {
+              actor->type = T_SLIDER_S;
+              move_actor(ai, cx, cy);
+            } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+              actor->type = T_SLIDER_N;
+              move_actor(ai, cx, cy);
+            }
+          }
+        }
       }
       break;
 
     case T_STICKY_V:
       if (g_level_tiles[cx][cy+1] == T_EMPTY
-	  && g_level_tiles[cx][cy+2] == T_KYE) {
-	move_actor(ai, cx, cy+1);
+          && g_level_tiles[cx][cy+2] == T_KYE) {
+        move_actor(ai, cx, cy+1);
       } else if (g_level_tiles[cx][cy-1] == T_EMPTY
-	  && g_level_tiles[cx][cy-2] == T_KYE) {
-	move_actor(ai, cx, cy-1);
+          && g_level_tiles[cx][cy-2] == T_KYE) {
+        move_actor(ai, cx, cy-1);
       } else if (g_level_tiles[cx+1][cy] == T_EMPTY
-	  && g_level_tiles[cx+2][cy] >= 1
-	  && g_actors[g_level_tiles[cx+2][cy]].type == T_STICKY_H) {
-	move_actor(ai, cx+1, cy);
+          && g_level_tiles[cx+2][cy] >= 1
+          && g_actors[g_level_tiles[cx+2][cy]].type == T_STICKY_H) {
+        move_actor(ai, cx+1, cy);
       } else if (g_level_tiles[cx-1][cy] == T_EMPTY
-	  && g_level_tiles[cx-2][cy] >= 1
-	  && g_actors[g_level_tiles[cx-2][cy]].type == T_STICKY_H) {
-	move_actor(ai, cx-1, cy);
+          && g_level_tiles[cx-2][cy] >= 1
+          && g_actors[g_level_tiles[cx-2][cy]].type == T_STICKY_H) {
+        move_actor(ai, cx-1, cy);
       }
       break;
 
     case T_STICKY_H:
       if (g_level_tiles[cx+1][cy] == T_EMPTY
-	  && g_level_tiles[cx+2][cy] == T_KYE) {
-	move_actor(ai, cx+1, cy);
+          && g_level_tiles[cx+2][cy] == T_KYE) {
+        move_actor(ai, cx+1, cy);
       } else if (g_level_tiles[cx-1][cy] == T_EMPTY
-	  && g_level_tiles[cx-2][cy] == T_KYE) {
-	move_actor(ai, cx-1, cy);
+          && g_level_tiles[cx-2][cy] == T_KYE) {
+        move_actor(ai, cx-1, cy);
       } else if (g_level_tiles[cx][cy+1] == T_EMPTY
-	  && g_level_tiles[cx][cy+2] >= 1
-	  && g_actors[g_level_tiles[cx][cy+2]].type == T_STICKY_V) {
-	move_actor(ai, cx, cy+1);
+          && g_level_tiles[cx][cy+2] >= 1
+          && g_actors[g_level_tiles[cx][cy+2]].type == T_STICKY_V) {
+        move_actor(ai, cx, cy+1);
       } else if (g_level_tiles[cx][cy-1] == T_EMPTY
-	  && g_level_tiles[cx][cy-2] >= 1
-	  && g_actors[g_level_tiles[cx][cy-2]].type == T_STICKY_V) {
-	move_actor(ai, cx, cy-1);
+          && g_level_tiles[cx][cy-2] >= 1
+          && g_actors[g_level_tiles[cx][cy-2]].type == T_STICKY_V) {
+        move_actor(ai, cx, cy-1);
       }
       break;
 
     case T_BOUNCER_N:
       if (g_tick_counter % 5 == 0
-	  && (!apply_sticky_blocks(ai))
-	  && (!actor_held_by_sticky_block(ai))) {
-	//
-	if (g_level_tiles[cx][cy-1] == T_EMPTY) {
-	  move_actor(ai, cx, cy-1);
-	} else if (!try_enter_blacky(ai, cx, cy-1)) {
-	  actor->type = T_BOUNCER_S;
-	  move_actor(ai, cx, cy);
-	  if (g_level_tiles[cx][cy-1] >= 0) {
-	    other = g_level_tiles[cx][cy-1];
-	    cx = g_actors[other].cx;
-	    cy = g_actors[other].cy - 1;
-	    if (g_level_tiles[cx][cy] == T_EMPTY
-		|| (g_level_tiles[cx][cy] >= 0
-		  && g_actors[g_level_tiles[cx][cy]].type == T_BLACKY1)) {
-	      //
-	      if (!try_enter_blacky(other, cx, cy)) {
-		move_actor(other, cx, cy);
-	      }
-	    }
-	  }
-	}
+          && (!apply_sticky_blocks(ai))
+          && (!actor_held_by_sticky_block(ai))) {
+        //
+        if (g_level_tiles[cx][cy-1] == T_EMPTY) {
+          move_actor(ai, cx, cy-1);
+        } else if (!try_enter_blacky(ai, cx, cy-1)) {
+          actor->type = T_BOUNCER_S;
+          move_actor(ai, cx, cy);
+          if (g_level_tiles[cx][cy-1] >= 0) {
+            other = g_level_tiles[cx][cy-1];
+            cx = g_actors[other].cx;
+            cy = g_actors[other].cy - 1;
+            if (g_level_tiles[cx][cy] == T_EMPTY
+                || (g_level_tiles[cx][cy] >= 0
+                  && g_actors[g_level_tiles[cx][cy]].type == T_BLACKY1)) {
+              //
+              if (!try_enter_blacky(other, cx, cy)) {
+                move_actor(other, cx, cy);
+              }
+            }
+          }
+        }
       }
       break;
 
     case T_BOUNCER_S:
       if (g_tick_counter % 5 == 0
-	  && (!apply_sticky_blocks(ai))
-	  && (!actor_held_by_sticky_block(ai))) {
-	//
-	if (g_level_tiles[cx][cy+1] == T_EMPTY) {
-	  move_actor(ai, cx, cy+1);
-	} else if (!try_enter_blacky(ai, cx, cy+1)) {
-	  actor->type = T_BOUNCER_N;
-	  move_actor(ai, cx, cy);
-	  if (g_level_tiles[cx][cy+1] >= 0) {
-	    other = g_level_tiles[cx][cy+1];
-	    cx = g_actors[other].cx;
-	    cy = g_actors[other].cy + 1;
-	    if (g_level_tiles[cx][cy] == T_EMPTY
-		|| (g_level_tiles[cx][cy] >= 0
-		  && g_actors[g_level_tiles[cx][cy]].type == T_BLACKY1)) {
-	      //
-	      if (!try_enter_blacky(other, cx, cy)) {
-		move_actor(other, cx, cy);
-	      }
-	    }
-	  }
-	}
+          && (!apply_sticky_blocks(ai))
+          && (!actor_held_by_sticky_block(ai))) {
+        //
+        if (g_level_tiles[cx][cy+1] == T_EMPTY) {
+          move_actor(ai, cx, cy+1);
+        } else if (!try_enter_blacky(ai, cx, cy+1)) {
+          actor->type = T_BOUNCER_N;
+          move_actor(ai, cx, cy);
+          if (g_level_tiles[cx][cy+1] >= 0) {
+            other = g_level_tiles[cx][cy+1];
+            cx = g_actors[other].cx;
+            cy = g_actors[other].cy + 1;
+            if (g_level_tiles[cx][cy] == T_EMPTY
+                || (g_level_tiles[cx][cy] >= 0
+                  && g_actors[g_level_tiles[cx][cy]].type == T_BLACKY1)) {
+              //
+              if (!try_enter_blacky(other, cx, cy)) {
+                move_actor(other, cx, cy);
+              }
+            }
+          }
+        }
       }
       break;
 
     case T_BOUNCER_W:
       if (g_tick_counter % 5 == 0
-	  && (!apply_sticky_blocks(ai))
-	  && (!actor_held_by_sticky_block(ai))) {
-	//
-	if (g_level_tiles[cx-1][cy] == T_EMPTY) {
-	  move_actor(ai, cx-1, cy);
-	} else if (!try_enter_blacky(ai, cx-1, cy)) {
-	  actor->type = T_BOUNCER_E;
-	  move_actor(ai, cx, cy);
-	  if (g_level_tiles[cx-1][cy] >= 0) {
-	    other = g_level_tiles[cx-1][cy];
-	    cx = g_actors[other].cx - 1;
-	    cy = g_actors[other].cy;
-	    if (g_level_tiles[cx][cy] == T_EMPTY
-		|| (g_level_tiles[cx][cy] >= 0
-		  && g_actors[g_level_tiles[cx][cy]].type == T_BLACKY1)) {
-	      //
-	      if (!try_enter_blacky(other, cx, cy)) {
-		move_actor(other, cx, cy);
-	      }
-	    }
-	  }
-	}
+          && (!apply_sticky_blocks(ai))
+          && (!actor_held_by_sticky_block(ai))) {
+        //
+        if (g_level_tiles[cx-1][cy] == T_EMPTY) {
+          move_actor(ai, cx-1, cy);
+        } else if (!try_enter_blacky(ai, cx-1, cy)) {
+          actor->type = T_BOUNCER_E;
+          move_actor(ai, cx, cy);
+          if (g_level_tiles[cx-1][cy] >= 0) {
+            other = g_level_tiles[cx-1][cy];
+            cx = g_actors[other].cx - 1;
+            cy = g_actors[other].cy;
+            if (g_level_tiles[cx][cy] == T_EMPTY
+                || (g_level_tiles[cx][cy] >= 0
+                  && g_actors[g_level_tiles[cx][cy]].type == T_BLACKY1)) {
+              //
+              if (!try_enter_blacky(other, cx, cy)) {
+                move_actor(other, cx, cy);
+              }
+            }
+          }
+        }
       }
       break;
 
     case T_BOUNCER_E:
       if (g_tick_counter % 5 == 0
-	  && (!apply_sticky_blocks(ai))
-	  && (!actor_held_by_sticky_block(ai))) {
-	//
-	if (g_level_tiles[cx+1][cy] == T_EMPTY) {
-	  move_actor(ai, cx+1, cy);
-	} else if (!try_enter_blacky(ai, cx+1, cy)) {
-	  actor->type = T_BOUNCER_W;
-	  move_actor(ai, cx, cy);
-	  if (g_level_tiles[cx+1][cy] >= 0) {
-	    other = g_level_tiles[cx+1][cy];
-	    cx = g_actors[other].cx + 1;
-	    cy = g_actors[other].cy;
-	    if (g_level_tiles[cx][cy] == T_EMPTY
-		|| (g_level_tiles[cx][cy] >= 0
-		  && g_actors[g_level_tiles[cx][cy]].type == T_BLACKY1)) {
-	      //
-	      if (!try_enter_blacky(other, cx, cy)) {
-		move_actor(other, cx, cy);
-	      }
-	    }
-	  }
-	}
+          && (!apply_sticky_blocks(ai))
+          && (!actor_held_by_sticky_block(ai))) {
+        //
+        if (g_level_tiles[cx+1][cy] == T_EMPTY) {
+          move_actor(ai, cx+1, cy);
+        } else if (!try_enter_blacky(ai, cx+1, cy)) {
+          actor->type = T_BOUNCER_W;
+          move_actor(ai, cx, cy);
+          if (g_level_tiles[cx+1][cy] >= 0) {
+            other = g_level_tiles[cx+1][cy];
+            cx = g_actors[other].cx + 1;
+            cy = g_actors[other].cy;
+            if (g_level_tiles[cx][cy] == T_EMPTY
+                || (g_level_tiles[cx][cy] >= 0
+                  && g_actors[g_level_tiles[cx][cy]].type == T_BLACKY1)) {
+              //
+              if (!try_enter_blacky(other, cx, cy)) {
+                move_actor(other, cx, cy);
+              }
+            }
+          }
+        }
       }
       break;
 
     case T_ROCKY_N:
       if ((!apply_sticky_blocks(ai))
-	  && (!actor_held_by_sticky_block(ai))) {
-	other = g_level_tiles[cx][cy-1];
-	if (other == T_EMPTY) {
-	  move_actor(ai, cx, cy-1);
-	} else {
-	  if (!try_enter_blacky(ai, cx, cy-1)) {
-	    // FIXME this is coded differently --GM
-	    slide_left = slide_right = 0;
-	    if (other >= 0
-		&& g_actors[other].type >= T_ROCKY_N
-		&& g_actors[other].type <= T_ROCKY_E) {
-	      slide_left = slide_right = 1;
-	    } else if (other >= 0
-		&& g_actors[other].type == T_RBLOCK) {
-	      slide_left = slide_right = 1;
-	    } else if (other == T_WALL2) {
-	      slide_left = slide_right = 1;
-	    } else if (other == T_WALL1 || other == T_WALL4) {
-	      slide_left = 1;
-	    } else if (other == T_WALL3 || other == T_WALL6) {
-	      slide_right = 1;
-	    }
-	    slide_left = slide_left && g_level_tiles[cx-1][cy] == T_EMPTY;
-	    slide_right = slide_right && g_level_tiles[cx+1][cy] == T_EMPTY;
-	    slide_left = slide_left && g_level_tiles[cx-1][cy-1] == T_EMPTY;
-	    slide_right = slide_right && g_level_tiles[cx+1][cy-1] == T_EMPTY;
+          && (!actor_held_by_sticky_block(ai))) {
+        other = g_level_tiles[cx][cy-1];
+        if (other == T_EMPTY) {
+          move_actor(ai, cx, cy-1);
+        } else {
+          if (!try_enter_blacky(ai, cx, cy-1)) {
+            // FIXME this is coded differently --GM
+            slide_left = slide_right = 0;
+            if (other >= 0
+                && g_actors[other].type >= T_ROCKY_N
+                && g_actors[other].type <= T_ROCKY_E) {
+              slide_left = slide_right = 1;
+            } else if (other >= 0
+                && g_actors[other].type == T_RBLOCK) {
+              slide_left = slide_right = 1;
+            } else if (other == T_WALL2) {
+              slide_left = slide_right = 1;
+            } else if (other == T_WALL1 || other == T_WALL4) {
+              slide_left = 1;
+            } else if (other == T_WALL3 || other == T_WALL6) {
+              slide_right = 1;
+            }
+            slide_left = slide_left && g_level_tiles[cx-1][cy] == T_EMPTY;
+            slide_right = slide_right && g_level_tiles[cx+1][cy] == T_EMPTY;
+            slide_left = slide_left && g_level_tiles[cx-1][cy-1] == T_EMPTY;
+            slide_right = slide_right && g_level_tiles[cx+1][cy-1] == T_EMPTY;
 
-	    if (slide_left && slide_right) {
-	      // TODO understand rand() usage --GM
-	      move_actor(ai, cx + 1 - (2*(rand()%2)), cy - 1);
-	    } else if (slide_right) {
-	      move_actor(ai, cx + 1, cy - 1);
-	    } else if (slide_left) {
-	      move_actor(ai, cx - 1, cy - 1);
-	    } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
-	      actor->type = T_ROCKY_E;
-	      move_actor(ai, cx, cy);
-	    } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
-	      actor->type = T_ROCKY_W;
-	      move_actor(ai, cx, cy);
-	    }
-	  }
-	}
+            if (slide_left && slide_right) {
+              // TODO understand rand() usage --GM
+              move_actor(ai, cx + 1 - (2*(rand()%2)), cy - 1);
+            } else if (slide_right) {
+              move_actor(ai, cx + 1, cy - 1);
+            } else if (slide_left) {
+              move_actor(ai, cx - 1, cy - 1);
+            } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
+              actor->type = T_ROCKY_E;
+              move_actor(ai, cx, cy);
+            } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+              actor->type = T_ROCKY_W;
+              move_actor(ai, cx, cy);
+            }
+          }
+        }
       }
       break;
 
     case T_ROCKY_S:
       if ((!apply_sticky_blocks(ai))
-	  && (!actor_held_by_sticky_block(ai))) {
-	other = g_level_tiles[cx][cy+1];
-	if (other == T_EMPTY) {
-	  move_actor(ai, cx, cy+1);
-	} else {
-	  if (!try_enter_blacky(ai, cx, cy+1)) {
-	    // FIXME this is coded differently --GM
-	    slide_left = slide_right = 0;
-	    if (other >= 0
-		&& g_actors[other].type >= T_ROCKY_N
-		&& g_actors[other].type <= T_ROCKY_E) {
-	      slide_left = slide_right = 1;
-	    } else if (other >= 0
-		&& g_actors[other].type == T_RBLOCK) {
-	      slide_left = slide_right = 1;
-	    } else if (other == T_WALL8) {
-	      slide_left = slide_right = 1;
-	    } else if (other == T_WALL9 || other == T_WALL6) {
-	      slide_left = 1;
-	    } else if (other == T_WALL7 || other == T_WALL4) {
-	      slide_right = 1;
-	    }
-	    slide_left = slide_left && g_level_tiles[cx+1][cy] == T_EMPTY;
-	    slide_right = slide_right && g_level_tiles[cx-1][cy] == T_EMPTY;
-	    slide_left = slide_left && g_level_tiles[cx+1][cy+1] == T_EMPTY;
-	    slide_right = slide_right && g_level_tiles[cx-1][cy+1] == T_EMPTY;
+          && (!actor_held_by_sticky_block(ai))) {
+        other = g_level_tiles[cx][cy+1];
+        if (other == T_EMPTY) {
+          move_actor(ai, cx, cy+1);
+        } else {
+          if (!try_enter_blacky(ai, cx, cy+1)) {
+            // FIXME this is coded differently --GM
+            slide_left = slide_right = 0;
+            if (other >= 0
+                && g_actors[other].type >= T_ROCKY_N
+                && g_actors[other].type <= T_ROCKY_E) {
+              slide_left = slide_right = 1;
+            } else if (other >= 0
+                && g_actors[other].type == T_RBLOCK) {
+              slide_left = slide_right = 1;
+            } else if (other == T_WALL8) {
+              slide_left = slide_right = 1;
+            } else if (other == T_WALL9 || other == T_WALL6) {
+              slide_left = 1;
+            } else if (other == T_WALL7 || other == T_WALL4) {
+              slide_right = 1;
+            }
+            slide_left = slide_left && g_level_tiles[cx+1][cy] == T_EMPTY;
+            slide_right = slide_right && g_level_tiles[cx-1][cy] == T_EMPTY;
+            slide_left = slide_left && g_level_tiles[cx+1][cy+1] == T_EMPTY;
+            slide_right = slide_right && g_level_tiles[cx-1][cy+1] == T_EMPTY;
 
-	    if (slide_left && slide_right) {
-	      // TODO understand rand() usage --GM
-	      move_actor(ai, cx + 1 - (2*(rand()%2)), cy + 1);
-	    } else if (slide_right) {
-	      move_actor(ai, cx - 1, cy + 1);
-	    } else if (slide_left) {
-	      move_actor(ai, cx + 1, cy + 1);
-	    } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
-	      actor->type = T_ROCKY_W;
-	      move_actor(ai, cx, cy);
-	    } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
-	      actor->type = T_ROCKY_E;
-	      move_actor(ai, cx, cy);
-	    }
-	  }
-	}
+            if (slide_left && slide_right) {
+              // TODO understand rand() usage --GM
+              move_actor(ai, cx + 1 - (2*(rand()%2)), cy + 1);
+            } else if (slide_right) {
+              move_actor(ai, cx - 1, cy + 1);
+            } else if (slide_left) {
+              move_actor(ai, cx + 1, cy + 1);
+            } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
+              actor->type = T_ROCKY_W;
+              move_actor(ai, cx, cy);
+            } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+              actor->type = T_ROCKY_E;
+              move_actor(ai, cx, cy);
+            }
+          }
+        }
       }
       break;
 
     case T_ROCKY_W:
       if ((!apply_sticky_blocks(ai))
-	  && (!actor_held_by_sticky_block(ai))) {
-	other = g_level_tiles[cx-1][cy];
-	if (other == T_EMPTY) {
-	  move_actor(ai, cx-1, cy);
-	} else {
-	  if (!try_enter_blacky(ai, cx-1, cy)) {
-	    // FIXME this is coded differently --GM
-	    slide_left = slide_right = 0;
-	    if (other >= 0
-		&& g_actors[other].type >= T_ROCKY_N
-		&& g_actors[other].type <= T_ROCKY_E) {
-	      slide_left = slide_right = 1;
-	    } else if (other >= 0
-		&& g_actors[other].type == T_RBLOCK) {
-	      slide_left = slide_right = 1;
-	    } else if (other == T_WALL6) {
-	      slide_left = slide_right = 1;
-	    } else if (other == T_WALL3 || other == T_WALL2) {
-	      slide_left = 1;
-	    } else if (other == T_WALL9 || other == T_WALL8) {
-	      slide_right = 1;
-	    }
-	    slide_left = slide_left && g_level_tiles[cx][cy+1] == T_EMPTY;
-	    slide_right = slide_right && g_level_tiles[cx][cy-1] == T_EMPTY;
-	    slide_left = slide_left && g_level_tiles[cx-1][cy+1] == T_EMPTY;
-	    slide_right = slide_right && g_level_tiles[cx-1][cy-1] == T_EMPTY;
+          && (!actor_held_by_sticky_block(ai))) {
+        other = g_level_tiles[cx-1][cy];
+        if (other == T_EMPTY) {
+          move_actor(ai, cx-1, cy);
+        } else {
+          if (!try_enter_blacky(ai, cx-1, cy)) {
+            // FIXME this is coded differently --GM
+            slide_left = slide_right = 0;
+            if (other >= 0
+                && g_actors[other].type >= T_ROCKY_N
+                && g_actors[other].type <= T_ROCKY_E) {
+              slide_left = slide_right = 1;
+            } else if (other >= 0
+                && g_actors[other].type == T_RBLOCK) {
+              slide_left = slide_right = 1;
+            } else if (other == T_WALL6) {
+              slide_left = slide_right = 1;
+            } else if (other == T_WALL3 || other == T_WALL2) {
+              slide_left = 1;
+            } else if (other == T_WALL9 || other == T_WALL8) {
+              slide_right = 1;
+            }
+            slide_left = slide_left && g_level_tiles[cx][cy+1] == T_EMPTY;
+            slide_right = slide_right && g_level_tiles[cx][cy-1] == T_EMPTY;
+            slide_left = slide_left && g_level_tiles[cx-1][cy+1] == T_EMPTY;
+            slide_right = slide_right && g_level_tiles[cx-1][cy-1] == T_EMPTY;
 
-	    if (slide_left && slide_right) {
-	      // TODO understand rand() usage --GM
-	      move_actor(ai, cx - 1, cy + 1 - (2*(rand()%2)));
-	    } else if (slide_right) {
-	      move_actor(ai, cx - 1, cy - 1);
-	    } else if (slide_left) {
-	      move_actor(ai, cx - 1, cy + 1);
-	    } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
-	      actor->type = T_ROCKY_N;
-	      move_actor(ai, cx, cy);
-	    } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
-	      actor->type = T_ROCKY_S;
-	      move_actor(ai, cx, cy);
-	    }
-	  }
-	}
+            if (slide_left && slide_right) {
+              // TODO understand rand() usage --GM
+              move_actor(ai, cx - 1, cy + 1 - (2*(rand()%2)));
+            } else if (slide_right) {
+              move_actor(ai, cx - 1, cy - 1);
+            } else if (slide_left) {
+              move_actor(ai, cx - 1, cy + 1);
+            } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
+              actor->type = T_ROCKY_N;
+              move_actor(ai, cx, cy);
+            } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+              actor->type = T_ROCKY_S;
+              move_actor(ai, cx, cy);
+            }
+          }
+        }
       }
       break;
 
     case T_ROCKY_E:
       if ((!apply_sticky_blocks(ai))
-	  && (!actor_held_by_sticky_block(ai))) {
-	other = g_level_tiles[cx+1][cy];
-	if (other == T_EMPTY) {
-	  move_actor(ai, cx+1, cy);
-	} else {
-	  if (!try_enter_blacky(ai, cx+1, cy)) {
-	    // FIXME this is coded differently --GM
-	    slide_left = slide_right = 0;
-	    if (other >= 0
-		&& g_actors[other].type >= T_ROCKY_N
-		&& g_actors[other].type <= T_ROCKY_E) {
-	      slide_left = slide_right = 1;
-	    } else if (other >= 0
-		&& g_actors[other].type == T_RBLOCK) {
-	      slide_left = slide_right = 1;
-	    } else if (other == T_WALL4) {
-	      slide_left = slide_right = 1;
-	    } else if (other == T_WALL7 || other == T_WALL8) {
-	      slide_left = 1;
-	    } else if (other == T_WALL1 || other == T_WALL2) {
-	      slide_right = 1;
-	    }
-	    slide_left = slide_left && g_level_tiles[cx][cy-1] == T_EMPTY;
-	    slide_right = slide_right && g_level_tiles[cx][cy+1] == T_EMPTY;
-	    slide_left = slide_left && g_level_tiles[cx+1][cy-1] == T_EMPTY;
-	    slide_right = slide_right && g_level_tiles[cx+1][cy+1] == T_EMPTY;
+          && (!actor_held_by_sticky_block(ai))) {
+        other = g_level_tiles[cx+1][cy];
+        if (other == T_EMPTY) {
+          move_actor(ai, cx+1, cy);
+        } else {
+          if (!try_enter_blacky(ai, cx+1, cy)) {
+            // FIXME this is coded differently --GM
+            slide_left = slide_right = 0;
+            if (other >= 0
+                && g_actors[other].type >= T_ROCKY_N
+                && g_actors[other].type <= T_ROCKY_E) {
+              slide_left = slide_right = 1;
+            } else if (other >= 0
+                && g_actors[other].type == T_RBLOCK) {
+              slide_left = slide_right = 1;
+            } else if (other == T_WALL4) {
+              slide_left = slide_right = 1;
+            } else if (other == T_WALL7 || other == T_WALL8) {
+              slide_left = 1;
+            } else if (other == T_WALL1 || other == T_WALL2) {
+              slide_right = 1;
+            }
+            slide_left = slide_left && g_level_tiles[cx][cy-1] == T_EMPTY;
+            slide_right = slide_right && g_level_tiles[cx][cy+1] == T_EMPTY;
+            slide_left = slide_left && g_level_tiles[cx+1][cy-1] == T_EMPTY;
+            slide_right = slide_right && g_level_tiles[cx+1][cy+1] == T_EMPTY;
 
-	    if (slide_left && slide_right) {
-	      // TODO understand rand() usage --GM
-	      move_actor(ai, cx + 1, cy + 1 - (2*(rand()%2)));
-	    } else if (slide_right) {
-	      move_actor(ai, cx + 1, cy + 1);
-	    } else if (slide_left) {
-	      move_actor(ai, cx + 1, cy - 1);
-	    } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
-	      actor->type = T_ROCKY_S;
-	      move_actor(ai, cx, cy);
-	    } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
-	      actor->type = T_ROCKY_N;
-	      move_actor(ai, cx, cy);
-	    }
-	  }
-	}
+            if (slide_left && slide_right) {
+              // TODO understand rand() usage --GM
+              move_actor(ai, cx + 1, cy + 1 - (2*(rand()%2)));
+            } else if (slide_right) {
+              move_actor(ai, cx + 1, cy + 1);
+            } else if (slide_left) {
+              move_actor(ai, cx + 1, cy - 1);
+            } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
+              actor->type = T_ROCKY_S;
+              move_actor(ai, cx, cy);
+            } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+              actor->type = T_ROCKY_N;
+              move_actor(ai, cx, cy);
+            }
+          }
+        }
       }
       break;
 
@@ -2209,24 +2208,24 @@ void tick_game_state(void) {
     case T_B_SPIKE:
       // BUG: If a monster kills kye on its tick, it loses that tick
       if ((!try_killing_adjacent_kye(ai)) && g_tick_counter % 3 == 0) {
-	dx = 0;
-	dy = 0;
-	if (!apply_sticky_blocks(ai)) {
-	  if (!actor_held_by_sticky_block(ai)) {
+        dx = 0;
+        dy = 0;
+        if (!apply_sticky_blocks(ai)) {
+          if (!actor_held_by_sticky_block(ai)) {
 
-	    // Apply direction
-	    newx = cx + dx;
-	    newy = cy + dy;
-	    if (g_level_tiles[cx][cy] == T_EMPTY
-		|| g_level_tiles[cx][cy] == T_BLACKY1) {
-	      cx = newx;
-	      cy = newy;
-	    }
-	  }
-	  if (!try_enter_blacky(ai, cx, cy)) {
-	    move_actor(ai, cx, cy);
-	  }
-	}
+            // Apply direction
+            newx = cx + dx;
+            newy = cy + dy;
+            if (g_level_tiles[cx][cy] == T_EMPTY
+                || g_level_tiles[cx][cy] == T_BLACKY1) {
+              cx = newx;
+              cy = newy;
+            }
+          }
+          if (!try_enter_blacky(ai, cx, cy)) {
+            move_actor(ai, cx, cy);
+          }
+        }
       }
       break;
 
@@ -2261,7 +2260,7 @@ void count_all_diamonds(void) {
   for (cx = 0; cx < LEVEL_LX; cx++) {
     for (cy = 0; cy < LEVEL_LY; cy++) {
       if (g_level_tiles[cx][cy] == T_DIAMOND) {
-	diamonds++;
+        diamonds++;
       }
     }
   }
@@ -2364,25 +2363,23 @@ void try_move_kye(int dx, int dy) {
   // Check if diagonal is valid
   if (dx != 0 && dy != 0) {
     blocked = !(g_level_tiles[newx][g_kye_main_cy] == T_EMPTY
-	     && g_level_tiles[g_kye_main_cx][newy] == T_EMPTY);
+             && g_level_tiles[g_kye_main_cx][newy] == T_EMPTY);
     if (blocked) {
-      // TODO: Fix diagonal movement fallback --GM
-      // if (DS:02B2 != 0) {
-      //   if (g_level_tiles[newx][g_kye_main_cy] == T_EMPTY) {
-      //     dy = 0;
-      //     newy = g_kye_main_cy;
-      //     blocked = 0;
-      //   } else if (g_level_tiles[g_kye_main_cx][newy]) {
-      //     dx = 0;
-      //     newx = g_kye_main_cx;
-      //     blocked = 0;
-      //   }
-      // }
+      if (g_02B2 != 0) {
+        if (g_level_tiles[newx][g_kye_main_cy] == T_EMPTY) {
+          dy = 0;
+          newy = g_kye_main_cy;
+          blocked = 0;
+        } else if (g_level_tiles[g_kye_main_cx][newy]) {
+          dx = 0;
+          newx = g_kye_main_cx;
+          blocked = 0;
+        }
+      }
     }
   }
 
   if (!blocked) {
-    // TODO: Handle all the special things --GM
     switch(g_level_tiles[newx][newy]) {
     case T_EMPTY:
       move_kye(dx, dy);
@@ -2405,68 +2402,68 @@ void try_move_kye(int dx, int dy) {
     // There may be a reason for it...
     case T_DOOR_W_E:
       if (dy == 0 && dx == 1) {
-	move_kye(1, 0);
+        move_kye(1, 0);
       }
       break;
     case T_DOOR_E_W:
       if (dy == 0 && dx == -1) {
-	move_kye(-1, 0);
+        move_kye(-1, 0);
       }
       break;
     case T_DOOR_N_S:
       if (dy == 1 && dx == 0) {
-	move_kye(0, 1);
+        move_kye(0, 1);
       }
       break;
     case T_DOOR_S_N:
       if (dy == -1 && dx == 0) {
-	move_kye(0, -1);
+        move_kye(0, -1);
       }
       break;
 
     // Then we get into actor handling...
     default:
       if (g_level_tiles[newx][newy] >= 0) {
-	ai = g_level_tiles[newx][newy];
-	switch (g_actors[ai].type) {
-	  case T_BLACKY1:
-	    g_kye_lives--;
-	    respawn_kye();
-	    repaint_status_left();
-	    return;
-	  case T_BLACKY2:
-	    return;
-	}
-	pushx = g_actors[ai].cx + dx;
-	pushy = g_actors[ai].cy + dy;
-	if (dx != 0 && dy != 0) {
-	  // TODO: Diagonal handling --GM
-	} else {
-	  // FIXME THIS IS NOT HOW DIAGONALS ARE CHECKED --GM
-	  if (g_level_tiles[pushx][pushy] == T_EMPTY) {
-	    // FIXME: this checks one more boolean --GM
-	    move_actor(ai, pushx, pushy);
-	    move_kye(dx, dy);
-	    // FIXME: this sets a boolean --GM
-	  } else if (g_level_tiles[pushx][pushy] >= 0
-	      && g_actors[g_level_tiles[pushx][pushy]].type == T_BLACKY1) {
-	    // FIXME: this checks one more boolean --GM
-	    // POTENTIAL BUG: If try_enter_blacky fails then this breaks.
-	    // An actor will clobber an actor, or Kye will clobber an actor.
-	    if (!try_enter_blacky(ai, pushx, pushy)) {
-	      move_actor(ai, pushx, pushy);
-	    }
-	    move_kye(dx, dy);
-	  }
-	}
+        ai = g_level_tiles[newx][newy];
+        switch (g_actors[ai].type) {
+          case T_BLACKY1:
+            g_kye_lives--;
+            respawn_kye();
+            repaint_status_left();
+            return;
+          case T_BLACKY2:
+            return;
+        }
+        pushx = g_actors[ai].cx + dx;
+        pushy = g_actors[ai].cy + dy;
+        if (dx != 0 && dy != 0) {
+          // TODO: Diagonal handling --GM
+        } else {
+          // FIXME THIS IS NOT HOW DIAGONALS ARE CHECKED --GM
+          if (g_level_tiles[pushx][pushy] == T_EMPTY) {
+            // FIXME: this checks one more boolean --GM
+            move_actor(ai, pushx, pushy);
+            move_kye(dx, dy);
+            // FIXME: this sets a boolean --GM
+          } else if (g_level_tiles[pushx][pushy] >= 0
+              && g_actors[g_level_tiles[pushx][pushy]].type == T_BLACKY1) {
+            // FIXME: this checks one more boolean --GM
+            // POTENTIAL BUG: If try_enter_blacky fails then this breaks.
+            // An actor will clobber an actor, or Kye will clobber an actor.
+            if (!try_enter_blacky(ai, pushx, pushy)) {
+              move_actor(ai, pushx, pushy);
+            }
+            move_kye(dx, dy);
+          }
+        }
       }
     }
   }
   // TODO: Handle the weird thing here --GM
   // (this uses circle_x, circle_y to detect various movements?)
-  // if (DS:02B2 != 0 && !didmove) {
-  //   ...
-  // }
+  if (g_02B2 != 0 && !didmove) {
+    // TODO! --GM
+  }
 }
 
 // CS:57F5
@@ -2522,22 +2519,22 @@ void animate_diamonds(void) {
     SelectObject(dc, g_hbmpWall);
     for (cx = 0; cx < LEVEL_LX; cx++) {
       for (cy = 0; cy < LEVEL_LY; cy++) {
-	if (g_level_tiles[cx][cy] == T_DIAMOND) {
-	  px = cx * g_tile_lx;
-	  py = cy * g_tile_ly;
-	  src_px = 12 * TILE_LX;
-	  src_py = 0 * TILE_LY;
-	  // TODO: Work out how rand() is used --GM
-	  if (rand() % 2 == 0) {
-	    src_py = 1 * TILE_LY;
-	  }
-	  BitBlt(g_maindc,
-	    px, py,
-	    TILE_LX, TILE_LY,
-	    dc,
-	    src_px, src_py,
-	    SRCCOPY);
-	}
+        if (g_level_tiles[cx][cy] == T_DIAMOND) {
+          px = cx * g_tile_lx;
+          py = cy * g_tile_ly;
+          src_px = 12 * TILE_LX;
+          src_py = 0 * TILE_LY;
+          // TODO: Work out how rand() is used --GM
+          if (rand() % 2 == 0) {
+            src_py = 1 * TILE_LY;
+          }
+          BitBlt(g_maindc,
+            px, py,
+            TILE_LX, TILE_LY,
+            dc,
+            src_px, src_py,
+            SRCCOPY);
+        }
       }
     }
 
@@ -2571,30 +2568,30 @@ void animate_doors(void) {
 
     for (cx = 0; cx < LEVEL_LX; cx++) {
       for (cy = 0; cy < LEVEL_LY; cy++) {
-	switch(g_level_tiles[cx][cy]) {
-	case T_DOOR_E_W:
-	case T_DOOR_W_E:
-	  px = cx * g_tile_lx;
-	  py = cy * g_tile_ly;
-	  BitBlt(g_maindc,
-	    px, py,
-	    TILE_LX, TILE_LY,
-	    dc,
-	    14 * TILE_LX, src_py,
-	    SRCCOPY);
-	  break;
-	case T_DOOR_N_S:
-	case T_DOOR_S_N:
-	  px = cx * g_tile_lx;
-	  py = cy * g_tile_ly;
-	  BitBlt(g_maindc,
-	    px, py,
-	    TILE_LX, TILE_LY,
-	    dc,
-	    13 * TILE_LX, src_py,
-	    SRCCOPY);
-	  break;
-	}
+        switch(g_level_tiles[cx][cy]) {
+        case T_DOOR_E_W:
+        case T_DOOR_W_E:
+          px = cx * g_tile_lx;
+          py = cy * g_tile_ly;
+          BitBlt(g_maindc,
+            px, py,
+            TILE_LX, TILE_LY,
+            dc,
+            14 * TILE_LX, src_py,
+            SRCCOPY);
+          break;
+        case T_DOOR_N_S:
+        case T_DOOR_S_N:
+          px = cx * g_tile_lx;
+          py = cy * g_tile_ly;
+          BitBlt(g_maindc,
+            px, py,
+            TILE_LX, TILE_LY,
+            dc,
+            13 * TILE_LX, src_py,
+            SRCCOPY);
+          break;
+        }
       }
     }
 
@@ -2628,34 +2625,34 @@ void animate_blackies(void) {
     for (i = 0; i < g_actor_count; i++) {
       switch (g_actors[i].type) {
       case T_BLACKY1:
-	px = g_actors[i].cx * g_tile_lx;
-	py = g_actors[i].cy * g_tile_ly;
-	src_py = (g_actors[i].var0 * TILE_LY) + (4 * TILE_LY);
-	BitBlt(g_maindc,
-	  px, py,
-	  TILE_LX, TILE_LY,
-	  dc,
-	  8 * TILE_LX,
-	  src_py,
-	  SRCCOPY);
-	g_actors[i].var0 = (g_actors[i].var0 + 1) % 4;
-	break;
+        px = g_actors[i].cx * g_tile_lx;
+        py = g_actors[i].cy * g_tile_ly;
+        src_py = (g_actors[i].var0 * TILE_LY) + (4 * TILE_LY);
+        BitBlt(g_maindc,
+          px, py,
+          TILE_LX, TILE_LY,
+          dc,
+          8 * TILE_LX,
+          src_py,
+          SRCCOPY);
+        g_actors[i].var0 = (g_actors[i].var0 + 1) % 4;
+        break;
       case T_BLACKY2:
-	px = g_actors[i].cx * g_tile_lx;
-	py = g_actors[i].cy * g_tile_ly;
-	src_py = (g_actors[i].var0 * TILE_LY) + (4 * TILE_LY);
-	BitBlt(g_maindc,
-	  px, py,
-	  TILE_LX, TILE_LY,
-	  dc,
-	  9 * TILE_LX,
-	  src_py,
-	  SRCCOPY);
-	if (g_actors[i].var0 == 3) {
-	  g_actors[i].type = T_BLACKY1;
-	}
-	g_actors[i].var0 = (g_actors[i].var0 + 1) % 4;
-	break;
+        px = g_actors[i].cx * g_tile_lx;
+        py = g_actors[i].cy * g_tile_ly;
+        src_py = (g_actors[i].var0 * TILE_LY) + (4 * TILE_LY);
+        BitBlt(g_maindc,
+          px, py,
+          TILE_LX, TILE_LY,
+          dc,
+          9 * TILE_LX,
+          src_py,
+          SRCCOPY);
+        if (g_actors[i].var0 == 3) {
+          g_actors[i].type = T_BLACKY1;
+        }
+        g_actors[i].var0 = (g_actors[i].var0 + 1) % 4;
+        break;
       }
     }
     DeleteDC(dc);
@@ -2687,18 +2684,18 @@ void animate_monsters(void) {
       case T_B_BLOB:
       case T_B_VIRUS:
       case T_B_SPIKE:
-	px = g_actors[i].cx * g_tile_lx;
-	py = g_actors[i].cy * g_tile_ly;
-	src_px = actor_type * TILE_LX;
-	src_py = g_actors[i].var0 * TILE_LY;
-	BitBlt(g_maindc,
-	  px, py,
-	  TILE_LX, TILE_LY,
-	  dc,
-	  src_px, src_py,
-	  SRCCOPY);
-	g_actors[i].var0 = (g_actors[i].var0 + 1) % 4;
-	break;
+        px = g_actors[i].cx * g_tile_lx;
+        py = g_actors[i].cy * g_tile_ly;
+        src_px = actor_type * TILE_LX;
+        src_py = g_actors[i].var0 * TILE_LY;
+        BitBlt(g_maindc,
+          px, py,
+          TILE_LX, TILE_LY,
+          dc,
+          src_px, src_py,
+          SRCCOPY);
+        g_actors[i].var0 = (g_actors[i].var0 + 1) % 4;
+        break;
       }
     }
 
