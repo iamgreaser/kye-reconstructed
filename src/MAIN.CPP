@@ -185,6 +185,7 @@ void tick_game(void);
 void main_paint(HWND hWnd);
 void main_wm_lbuttondown(HWND hWnd, LONG lParam, WORD wParam);
 void main_wm_lbuttonup(void);
+void main_wm_mousemove(HWND hWnd, LONG lParam);
 void on_key_press(HWND hWnd, WORD wParam);
 void update_edit_menu_item(void);
 int main_wm_command(HWND hWnd, WORD wParam);
@@ -398,6 +399,36 @@ void main_wm_lbuttonup(void) {
     g_kye_needs_update = 0;
     g_moving_by_mouse = 0;
     clear_kye_mouse_ghost();
+  }
+}
+
+// CS:04F2
+void main_wm_mousemove(HWND hWnd, LONG lParam) {
+  // stack: 0x04 bytes
+  int py; // BP/FC
+  int px; // BP/FE
+
+  int cx; // SI
+  int cy; // DI
+
+  px = LOWORD(lParam);
+  py = HIWORD(lParam);
+  if (mouse_is_in_playfield(lParam)) {
+    if (g_is_in_editor == 0) {
+      SetCursor(g_hcArrow);
+      cx = px / g_tile_lx;
+      cy = py / g_tile_ly;
+      if (g_moving_by_mouse) {
+        update_kye_mouse_target(cx, cy);
+        g_kye_target_cx = cx;
+        g_kye_target_cy = cy;
+        g_kye_needs_update = 1;
+      }
+    } else {
+      SetCursor(g_hcArrow);
+    }
+  } else {
+    SetCursor(g_hcArrow);
   }
 }
 
@@ -686,7 +717,7 @@ LONG FAR PASCAL _export WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
     }
     break;
   case WM_MOUSEMOVE:
-    // CS:04F2(hWnd, lParam);
+    main_wm_mousemove(hWnd, lParam);
     break;
   case WM_LBUTTONDOWN:
     main_wm_lbuttondown(hWnd, lParam, wParam);
