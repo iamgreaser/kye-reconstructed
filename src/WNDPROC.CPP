@@ -11,6 +11,7 @@
 
 #include "resdefs.h"
 
+int unused_0054[4] = {-1, -1, -1, -1};
 int g_mouse_captured;
 int g_key_pressed;
 
