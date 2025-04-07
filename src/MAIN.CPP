@@ -2342,7 +2342,7 @@ void try_move_kye(int dx, int dy) {
   int pushy; // BP/F0
   int pushx; // BP/F2
   int newx; // BP/F4
-  // int // BP/F6
+  int pushdiagblocked; // BP/F6
   int blocked; // BP/F8
   // BP/FA
   int ai; // BP/FC
@@ -2354,7 +2354,7 @@ void try_move_kye(int dx, int dy) {
   // BX = dy;
   didmove = 0;
   blocked = 0;
-  // BP/F6 = 0x0000;
+  pushdiagblocked = 0;
   // DI = dx;
   // SI = dy;
   newx = g_kye_main_cx + dx;
@@ -2437,24 +2437,25 @@ void try_move_kye(int dx, int dy) {
         pushx = g_actors[ai].cx + dx;
         pushy = g_actors[ai].cy + dy;
         if (dx != 0 && dy != 0) {
-          // TODO: Diagonal handling --GM
-        } else {
-          // FIXME THIS IS NOT HOW DIAGONALS ARE CHECKED --GM
-          if (g_level_tiles[pushx][pushy] == T_EMPTY) {
-            // FIXME: this checks one more boolean --GM
+          pushdiagblocked = !(g_level_tiles[pushx][g_actors[ai].cy] == T_EMPTY
+                           && g_level_tiles[g_actors[ai].cx][pushy] == T_EMPTY);
+        }
+
+        if (g_level_tiles[pushx][pushy] == T_EMPTY) {
+          if (!pushdiagblocked) {
             move_actor(ai, pushx, pushy);
             move_kye(dx, dy);
-            // FIXME: this sets a boolean --GM
-          } else if (g_level_tiles[pushx][pushy] >= 0
-              && g_actors[g_level_tiles[pushx][pushy]].type == T_BLACKY1) {
-            // FIXME: this checks one more boolean --GM
-            // POTENTIAL BUG: If try_enter_blacky fails then this breaks.
-            // An actor will clobber an actor, or Kye will clobber an actor.
-            if (!try_enter_blacky(ai, pushx, pushy)) {
-              move_actor(ai, pushx, pushy);
-            }
-            move_kye(dx, dy);
+            didmove = 1;
           }
+        } else if (g_level_tiles[pushx][pushy] >= 0
+            && g_actors[g_level_tiles[pushx][pushy]].type == T_BLACKY1
+            && !pushdiagblocked) {
+          // POTENTIAL BUG: If try_enter_blacky fails then this breaks.
+          // An actor will clobber an actor, or Kye will clobber an actor.
+          if (!try_enter_blacky(ai, pushx, pushy)) {
+            move_actor(ai, pushx, pushy);
+          }
+          move_kye(dx, dy);
         }
       }
     }
