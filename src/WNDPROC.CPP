@@ -340,8 +340,10 @@ void update_edit_menu_item(void) {
 // CS:06D6 - MISMATCH FIXME: ...there is definitely not enough implemented yet --GM
 int main_wm_command(HWND hWnd, WORD wParam) {
   // Needs 0x50 bytes of stack (BP/B0)
+  char textbuf[80]; // BP/B0
 
   HMENU menu; // SI
+  int selected_level; // DX
 
   switch (wParam) {
   case IDC_GAME_EXIT:
@@ -369,26 +371,10 @@ int main_wm_command(HWND hWnd, WORD wParam) {
       g_is_in_editor = 0;
       cs_5119();
       menu = GetMenu(g_mainwnd);
-      ModifyMenu(menu,
-        IDC_LEVEL_EDIT,
-        MF_BYCOMMAND,
-        IDC_LEVEL_EDIT,
-        "&Edit"); // DS:0060
-      ModifyMenu(menu,
-        IDC_LEVEL_GOTO,
-        MF_BYCOMMAND,
-        IDC_LEVEL_GOTO,
-        "&Goto level..."); // DS:0066
-      ModifyMenu(menu,
-        IDC_LEVEL_RESTART,
-        MF_BYCOMMAND,
-        IDC_LEVEL_RESTART,
-        "&Restart"); // DS:0075
-      ModifyMenu(menu,
-        IDC_LEVEL_FILE,
-        MF_BYCOMMAND,
-        IDC_LEVEL_FILE,
-        "&File..."); // DS:007E
+      ModifyMenu(menu, IDC_LEVEL_EDIT, MF_BYCOMMAND, IDC_LEVEL_EDIT, "&Edit"); // DS:0060
+      ModifyMenu(menu, IDC_LEVEL_GOTO, MF_BYCOMMAND, IDC_LEVEL_GOTO, "&Goto level..."); // DS:0066
+      ModifyMenu(menu, IDC_LEVEL_RESTART, MF_BYCOMMAND, IDC_LEVEL_RESTART, "&Restart"); // DS:0075
+      ModifyMenu(menu, IDC_LEVEL_FILE, MF_BYCOMMAND, IDC_LEVEL_FILE, "&File..."); // DS:007E
       EnableMenuItem(menu, IDC_GAME_NEW, MF_BYCOMMAND|MF_ENABLED);
       DrawMenuBar(hWnd);
       load_level(g_levelidx);
@@ -404,24 +390,39 @@ int main_wm_command(HWND hWnd, WORD wParam) {
   case IDC_LEVEL_GOTO:
     if (g_is_in_editor == 0) {
       g_has_maintimer = 0;
-      strcpy(g_dialog_text, "");
-      // CS:15C0();
+      strcpy(g_dialog_text, ""); // CS:0087
+      cs_15C0();
       strupr(g_dialog_text);
-      // if (CS:1FC5() < 1) {
-      //
-      // } else {
-      // }
-      // HACK: Advance level anyway --GM
-      g_level_complete = 1;
+      selected_level = find_level_by_name(g_dialog_text);
+      if (selected_level > 0) {
+        g_levelidx = selected_level;
+        load_level(selected_level);
+        g_moving_by_mouse = 0;
+        set_status_msg(g_level_hint);
+        InvalidateRect(hWnd, NULL, TRUE);
+        UpdateWindow(hWnd);
+      } else {
+        if (strlen(g_dialog_text) > 0) {
+          msgbox_error("Bad luck", // DS:0088
+            "No such level"); // DS:0091
+        }
+      }
+      g_has_maintimer = 1;
 
     } else {
       // Actually "Edit Hint"
-      // TODO! --GM
+      strcpy(textbuf, g_level_hint);
+      switch (show_text_input_dialog("Edit the hint text:", textbuf)) {
+      case 0:
+        strcpy(g_level_hint, textbuf);
+        set_status_msg(g_level_hint);
+        break;
+      }
     }
-    g_has_maintimer = 1;
     break;
 
   case IDC_LEVEL_FILE:
+    // CS:0967
     // TODO! --GM
     break;
 
@@ -434,26 +435,10 @@ int main_wm_command(HWND hWnd, WORD wParam) {
         g_has_maintimer = 0;
         cs_501F();
         menu = GetMenu(g_mainwnd);
-        ModifyMenu(menu,
-          IDC_LEVEL_EDIT,
-          MF_BYCOMMAND,
-          IDC_LEVEL_EDIT,
-          "&Run"); // DS:0113
-        ModifyMenu(menu,
-          IDC_LEVEL_RESTART,
-          MF_BYCOMMAND,
-          IDC_LEVEL_RESTART,
-          "&Abort Edit"); // DS:0118
-        ModifyMenu(menu,
-          IDC_LEVEL_GOTO,
-          MF_BYCOMMAND,
-          IDC_LEVEL_GOTO,
-          "Edit &Hint"); // DS:0124
-        ModifyMenu(menu,
-          IDC_LEVEL_FILE,
-          MF_BYCOMMAND,
-          IDC_LEVEL_FILE,
-          "Edit &Name"); // DS:012F
+        ModifyMenu(menu, IDC_LEVEL_EDIT, MF_BYCOMMAND, IDC_LEVEL_EDIT, "&Run"); // DS:0113
+        ModifyMenu(menu, IDC_LEVEL_RESTART, MF_BYCOMMAND, IDC_LEVEL_RESTART, "&Abort Edit"); // DS:0118
+        ModifyMenu(menu, IDC_LEVEL_GOTO, MF_BYCOMMAND, IDC_LEVEL_GOTO, "Edit &Hint"); // DS:0124
+        ModifyMenu(menu, IDC_LEVEL_FILE, MF_BYCOMMAND, IDC_LEVEL_FILE, "Edit &Name"); // DS:012F
         EnableMenuItem(menu, IDC_GAME_NEW, MF_BYCOMMAND|MF_GRAYED);
         DrawMenuBar(hWnd);
         InvalidateRect(hWnd, NULL, TRUE);
@@ -467,26 +452,10 @@ int main_wm_command(HWND hWnd, WORD wParam) {
       g_is_in_editor = 0;
       cs_5119();
       menu = GetMenu(g_mainwnd);
-      ModifyMenu(menu,
-        IDC_LEVEL_EDIT,
-        MF_BYCOMMAND,
-        IDC_LEVEL_EDIT,
-        "&Edit"); // DS:013A
-      ModifyMenu(menu,
-        IDC_LEVEL_GOTO,
-        MF_BYCOMMAND,
-        IDC_LEVEL_GOTO,
-        "&Goto level..."); // DS:0140
-      ModifyMenu(menu,
-        IDC_LEVEL_FILE,
-        MF_BYCOMMAND,
-        IDC_LEVEL_FILE,
-        "&File"); // DS:014F
-      ModifyMenu(menu,
-        IDC_LEVEL_RESTART,
-        MF_BYCOMMAND,
-        IDC_LEVEL_RESTART,
-        "&Restart"); // DS:0158
+      ModifyMenu(menu, IDC_LEVEL_EDIT, MF_BYCOMMAND, IDC_LEVEL_EDIT, "&Edit"); // DS:013A
+      ModifyMenu(menu, IDC_LEVEL_GOTO, MF_BYCOMMAND, IDC_LEVEL_GOTO, "&Goto level..."); // DS:0140
+      ModifyMenu(menu, IDC_LEVEL_FILE, MF_BYCOMMAND, IDC_LEVEL_FILE, "&File"); // DS:014F
+      ModifyMenu(menu, IDC_LEVEL_RESTART, MF_BYCOMMAND, IDC_LEVEL_RESTART, "&Restart"); // DS:0158
       EnableMenuItem(menu, IDC_GAME_NEW, MF_BYCOMMAND|MF_ENABLED);
       DrawMenuBar(hWnd);
       // CS:2241();

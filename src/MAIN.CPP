@@ -158,7 +158,8 @@ RECT g_r_status_left; // DS:2B70
 RECT g_r_status_right; // DS:2B78
 RECT g_r_playfield; // DS:2B80
 RECT g_r_mainfrm; // DS:2B88
-char g_dialog_text[160]; // DS:2B90 TODO CONFIRM SIZE
+char g_dialog_text[80]; // DS:2B90
+char g_dialog_message[80]; // DS:2BE0
 char g_statusmsg[256]; // DS:2C30 TODO CONFIRM SIZE
 WORD g_maintimer; // DS:2D30
 HCURSOR g_hcCross; // DS:2D32
@@ -369,6 +370,20 @@ void set_status_msg(const char *msg) {
   // OPTIMISER NOTE: REP MOVSW / ADC CX,CX / REP MOVSB
 }
 
+// CS:1204
+int show_text_input_dialog(const char *msg, char *buf) {
+  strcpy(g_dialog_message, msg);
+  strcpy(g_dialog_text, buf);
+
+  // TODO! --GM
+
+  strcpy(buf, g_dialog_text);
+  if (g_dialog_text[0] == 0) {
+    return IDCANCEL;
+  }
+  return 0;
+}
+
 // CS:1358
 void show_level_done(void) {
   // TODO! --GM
@@ -381,6 +396,11 @@ void show_next_level_name(void) {
 
 // CS:14BA
 void show_game_over(void) {
+  // TODO! --GM
+}
+
+// CS:15C0
+void cs_15C0(void) {
   // TODO! --GM
 }
 
@@ -752,6 +772,13 @@ void load_level_row(int cy, const char *rowstr) {
       }
     }
   }
+}
+
+// CS:1FC5
+int find_level_by_name(const char *name) {
+  // TODO! --GM
+  (void)name;
+  return -1;
 }
 
 // CS:2088 - ***CODE MATCH!***

@@ -91,7 +91,8 @@ extern RECT g_r_status_left; // DS:2B70
 extern RECT g_r_status_right; // DS:2B78
 extern RECT g_r_playfield; // DS:2B80
 extern RECT g_r_mainfrm; // DS:2B88
-extern char g_dialog_text[160]; // DS:2B90 TODO CONFIRM SIZE
+extern char g_dialog_text[80]; // DS:2B90
+extern char g_dialog_message[80]; // DS:2BE0
 extern char g_statusmsg[256]; // DS:2C30 TODO CONFIRM SIZE
 extern WORD g_maintimer; // DS:2D30
 extern HCURSOR g_hcCross; // DS:2D32
