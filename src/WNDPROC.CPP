@@ -578,34 +578,33 @@ LONG FAR PASCAL _export WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
   return 0;
 }
 
-// CS:0D6A
+// CS:0D6A - Near-match, but one of the registers is incorrect.
 int PASCAL _export WinMain(HANDLE hInstance,
                            HANDLE hPrevInstance,
                            LPSTR lpCmdLine,
                            int nCmdShow) {
   // needs 0x60 (96) extra bytes on stack
-  char cmdlinebuf[50]; // /A0 BP-0x60
-  MSG msg; // /D2 BP-0x2A
-  WNDCLASS maincls; // /E4 BP-0x1C
   HWND mainwnd; // /FE BP-0x02
-  // BP-0x00 - seems to be everything?
+  WNDCLASS maincls; // /E4 BP-0x1C
+  MSG msg; // /D2 BP-0x2A
+  char cmdlinebuf[50]; // /A0 BP-0x60
 
-  register int si;
-  register char FAR *di;
+  int i; // SI - MISMATCH FIXME: Seems to be swapped with DI right now? --GM
 
-  for (di = lpCmdLine, si = 0; *di != 0 && si < 50; di++, si++) {
-    cmdlinebuf[si] = *di;
+
+  for (i = 0; lpCmdLine[i] != 0 && i < 50; i++) {
+    cmdlinebuf[i] = lpCmdLine[i];
   }
   // BUG: Clobbers past buffer on edge case
   // Ends up being moot in practice,
   // as the byte in question is a MSG,
   // which gets written before we next read it.
   // But still a bug.
-  cmdlinebuf[si] = 0;
+  cmdlinebuf[i] = 0;
 
   if (!hPrevInstance) {
     maincls.style = CS_VREDRAW|CS_HREDRAW|CS_DBLCLKS; // 0x000B
-    maincls.lpfnWndProc = WndProc; // CS:0C19
+    maincls.lpfnWndProc = WndProc;
     maincls.cbClsExtra = 0;
     maincls.cbWndExtra = 0;
     maincls.hInstance = hInstance;
@@ -622,7 +621,7 @@ int PASCAL _export WinMain(HANDLE hInstance,
   mainwnd = CreateWindow(
     "Kye", // DS:017E
     "Kye", // DS:0182
-    WS_MINIMIZEBOX|WS_SYSMENU|WS_DLGFRAME|WS_SYSMENU, // 0x00CA0000
+    WS_CAPTION|WS_MINIMIZEBOX|WS_SYSMENU|WS_SYSMENU, // 0x00CA0000
     50, // CW_USEDEFAULT would be better of course
     50, // Ditto... and yes, it *is* in Windows 3.0.
     // BUG: Different-sized window borders break things.
