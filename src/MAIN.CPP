@@ -274,9 +274,43 @@ void show_level_done(void) {
   FreeProcInstance(dlgproc);
 }
 
-// CS:1416
+// CS:1395 - ***CODE MATCH!***
+int FAR PASCAL _export DLG_LVLNEW_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
+  switch (msg) {
+  case WM_COMMAND:
+    // TODO: Name the items --GM
+    switch (wParam) {
+    case 1:
+      EndDialog(hDlg, 0);
+      return 1;
+    default:
+      return 0;
+    }
+    break;
+
+  case WM_CLOSE:
+    EndDialog(hDlg, 0);
+    return 1;
+
+  case WM_INITDIALOG:
+    // TODO: Name the items --GM
+    SetDlgItemText(hDlg, 104, g_level_name);
+    SetFocus(GetDlgItem(hDlg, 1));
+    return 0;
+  default:
+    return 0;
+  }
+}
+
+// CS:1416 - ***CODE MATCH!***
 void show_next_level_name(void) {
-  // TODO! --GM
+  // stack: 0x04 bytes
+  FARPROC dlgproc; // BP/FC
+
+  // BUG: Failure not checked
+  dlgproc = MakeProcInstance((FARPROC)DLG_LVLNEW_FUNC, g_hInstance);
+  DialogBox(g_hInstance, "DLG_NEW1", g_mainwnd, dlgproc); // DS:0415
+  FreeProcInstance(dlgproc);
 }
 
 // CS:14BA
