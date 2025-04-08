@@ -841,6 +841,11 @@ void load_level(int levelidx) {
   }
 }
 
+// CS:2241
+void cs_2241(void) {
+  // TODO! --GM
+}
+
 // CS:2370
 void delete_and_draw_unacting_tile(int cx, int cy) {
   // SI = cx
@@ -1086,6 +1091,10 @@ void repaint_status_left(void) {
     default:
       break;
   }
+}
+
+// CS:2F89
+void cs_2F89(char *fname_buf) {
 }
 
 // CS:3006

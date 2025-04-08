@@ -337,7 +337,7 @@ void update_edit_menu_item(void) {
   EnableMenuItem(menu, IDC_LEVEL_EDIT, MF_GRAYED);
 }
 
-// CS:06D6 - MISMATCH FIXME: ...there is definitely not enough implemented yet --GM
+// CS:06D6 - ***CODE MATCH!***
 int main_wm_command(HWND hWnd, WORD wParam) {
   // Needs 0x50 bytes of stack (BP/B0)
   char textbuf[80]; // BP/B0
@@ -390,7 +390,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
   case IDC_LEVEL_GOTO:
     if (g_is_in_editor == 0) {
       g_has_maintimer = 0;
-      strcpy(g_dialog_text, ""); // CS:0087
+      strcpy(g_dialog_text, ""); // DS:0087
       cs_15C0();
       strupr(g_dialog_text);
       selected_level = find_level_by_name(g_dialog_text);
@@ -412,7 +412,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
     } else {
       // Actually "Edit Hint"
       strcpy(textbuf, g_level_hint);
-      switch (show_text_input_dialog("Edit the hint text:", textbuf)) {
+      switch (show_text_input_dialog("Edit the hint text:", textbuf)) { // DS:009F
       case 0:
         strcpy(g_level_hint, textbuf);
         set_status_msg(g_level_hint);
@@ -422,15 +422,37 @@ int main_wm_command(HWND hWnd, WORD wParam) {
     break;
 
   case IDC_LEVEL_FILE:
-    // CS:0967
-    // TODO! --GM
+    if (g_is_in_editor == 0) {
+      cs_2F89(g_levelset_fname);
+      load_level(g_levelidx);
+      set_status_msg(g_level_hint);
+      update_edit_menu_item();
+      g_moving_by_mouse = 0;
+      InvalidateRect(hWnd, NULL, TRUE);
+      UpdateWindow(hWnd);
+      update_window_title();
+    } else {
+      // Actually "Edit Name"
+      strcpy(textbuf, g_level_name);
+      switch (show_text_input_dialog("Edit the Level Name:", textbuf)) { // DS:00B3
+      case 0:
+        if (strlen(textbuf) < 20) {
+          strupr(textbuf);
+          strcpy(g_level_name, textbuf);
+        }
+        break;
+      }
+    }
     break;
 
   case IDC_LEVEL_EDIT:
     if (g_is_in_editor == 0) {
       g_levelidx = 1;
       load_level(1);
-      if (g_levelcount < 2) {
+      if (g_levelcount > 1) {
+        msgbox_error("Cannot edit multi-level files.", // DS:00C8
+            "Load a single level file.(eg. template.kye)"); // DS:00E7
+      } else {
         g_is_in_editor = 1;
         g_has_maintimer = 0;
         cs_501F();
@@ -444,9 +466,6 @@ int main_wm_command(HWND hWnd, WORD wParam) {
         InvalidateRect(hWnd, NULL, TRUE);
         UpdateWindow(hWnd);
         update_window_title();
-      } else {
-        msgbox_error("Cannot edit multi-level files.", // DS:00C8
-            "Load a single level file.(eg. template.kye)"); // DS:00E7
       }
     } else {
       g_is_in_editor = 0;
@@ -454,11 +473,11 @@ int main_wm_command(HWND hWnd, WORD wParam) {
       menu = GetMenu(g_mainwnd);
       ModifyMenu(menu, IDC_LEVEL_EDIT, MF_BYCOMMAND, IDC_LEVEL_EDIT, "&Edit"); // DS:013A
       ModifyMenu(menu, IDC_LEVEL_GOTO, MF_BYCOMMAND, IDC_LEVEL_GOTO, "&Goto level..."); // DS:0140
-      ModifyMenu(menu, IDC_LEVEL_FILE, MF_BYCOMMAND, IDC_LEVEL_FILE, "&File"); // DS:014F
+      ModifyMenu(menu, IDC_LEVEL_FILE, MF_BYCOMMAND, IDC_LEVEL_FILE, "&File..."); // DS:014F
       ModifyMenu(menu, IDC_LEVEL_RESTART, MF_BYCOMMAND, IDC_LEVEL_RESTART, "&Restart"); // DS:0158
       EnableMenuItem(menu, IDC_GAME_NEW, MF_BYCOMMAND|MF_ENABLED);
       DrawMenuBar(hWnd);
-      // CS:2241();
+      cs_2241();
       load_level(g_levelidx);
       set_status_msg(g_level_hint);
       g_moving_by_mouse = 0;
