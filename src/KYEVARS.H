@@ -34,6 +34,8 @@ extern tileconv_map_entry_s TILECONV_MAP[];
 extern int g_is_in_editor; // DS:03F2
 // DS:03F4 contains strings.
 
+// CS:1986 clear_level() and later stuff needs to be in the next module.
+// CS:1869 init_timer() is probably a good candidate for also being in the next module.
 extern int g_has_maintimer; // DS:0458
 // DS:045A contains strings.
 
