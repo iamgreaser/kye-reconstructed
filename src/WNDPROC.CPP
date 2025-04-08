@@ -500,6 +500,27 @@ int main_wm_command(HWND hWnd, WORD wParam) {
     }
     return 1;
 
+  case IDC_301:
+    // Unused, not defined. Could this be sound? Who knows...
+    menu = GetMenu(g_mainwnd);
+    if (g_02BC != 0) {
+      CheckMenuItem(menu, IDC_301, MF_BYCOMMAND | MF_UNCHECKED);
+      g_02BC = 0;
+    } else {
+      CheckMenuItem(menu, IDC_301, MF_BYCOMMAND | MF_CHECKED);
+      g_02BC = 1;
+    }
+    return 1;
+
+  case IDC_HELP_THE_GAME:
+    // Windows 3.1 calls it HELP_CONTENTS, but Windows 3.0 calls it HELP_INDEX.
+    WinHelp(g_mainwnd, "kyehelp.hlp", HELP_INDEX, 0); // DS:0161
+    return 1;
+
+  case IDC_HELP_USING_HELP:
+    WinHelp(g_mainwnd, "", HELP_HELPONHELP, 0); // DS:016D
+    return 1;
+
   case IDC_HELP_ABOUT:
     show_charity_dialog();
     return 1;

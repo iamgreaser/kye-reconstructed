@@ -26,7 +26,7 @@ extern int g_kye_fizzle_in; // DS:02B4
 extern int g_kye_injured; // DS:02B6
 extern int g_kye_lives; // DS:02B8
 extern int g_actor_count; // DS:02BA
-// int // DS:02BC
+extern int g_02BC; // DS:02BC
 extern int g_tick_counter; // DS:02BE
 
 // This map is at DS:02C0

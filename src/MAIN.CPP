@@ -26,7 +26,7 @@ int g_kye_fizzle_in = 0; // DS:02B4
 int g_kye_injured; // DS:02B6
 int g_kye_lives = 3; // DS:02B8
 int g_actor_count; // DS:02BA
-// int // DS:02BC
+int g_02BC = 0; // DS:02BC
 int g_tick_counter; // DS:02BE
 
 // This map is at DS:02C0

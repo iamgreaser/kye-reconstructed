@@ -6,4 +6,8 @@
 #define IDC_LEVEL_FILE 203
 #define IDC_LEVEL_EDIT 204
 
+#define IDC_301 301
+
+#define IDC_HELP_THE_GAME 901
+#define IDC_HELP_USING_HELP 902
 #define IDC_HELP_ABOUT 909
