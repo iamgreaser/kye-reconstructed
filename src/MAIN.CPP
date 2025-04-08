@@ -98,6 +98,7 @@ tileconv_map_entry_s TILECONV_MAP[] = {
   // TODO! --GM
   {-1, 0, 0},
 };
+char _pad_03F1 = 0; // FIXME work out why alignment option is borked --GM
 
 int g_is_in_editor; // DS:03F2
 // DS:03F4 contains strings.
@@ -107,67 +108,6 @@ int g_is_in_editor; // DS:03F2
 
 // char // DS:0443
 // DS:0444 contains strings.
-
-int g_has_maintimer; // DS:0458
-// DS:045A contains strings.
-
-// DS:050C pertains to some kind of file open dialogue?
-
-// int // DS:06A9 == 0x5C
-// DS:06AB contains strings.
-
-// This map is at DS:06B8
-// TODO: Editor entity spec --GM
-// DS:0D38 = 0x000A
-// DS:0D3A = 0x0000
-// DS:0D3C contains at least one string...
-
-// const int g_CIRCLE_X[4]; // DS:0D5A
-// const int g_CIRCLE_Y[4]; // DS:0D62
-int g_door_anim_flag; // DS:0D6A
-
-int g_level_tiles[LEVEL_LX][LEVEL_LY]; // DS:127E
-actor_s g_actors[MAX_ACTORS]; // DS:172E
-int g_kye_mouse_cy; // DS:29EE
-int g_kye_mouse_cx; // DS:29F0
-int g_kye_spawn_cy; // DS:29F2
-int g_kye_spawn_cx; // DS:29F4
-int g_kye_main_cy; // DS:29F6
-int g_kye_main_cx; // DS:29F8
-char g_level_hint[80]; // DS:29FA
-char g_level_congrats[80]; // DS:2A4A
-char g_level_name[20]; // DS:2A9A
-char g_2AAE[80]; // DS:2AAE
-char g_2AFE[80]; // DS:2AFE
-HBITMAP g_hbmpWall; // DS:2B4E
-HBITMAP g_hbmpBlock; // DS:2B50
-HBITMAP g_hbmpKye; // DS:2B52
-HPEN g_hpenRed;  // DS:2B54
-HPEN g_hpenWhite; // DS:2B56
-HPEN g_hpenBlack; // DS:2B58
-HPEN g_saved_hpen; // DS:2B5A
-HBRUSH g_hbrBlue;  // DS:2B5C
-HBRUSH g_hbrGreen; // DS:2B5E
-HBRUSH g_hbrRed;   // DS:2B60
-HBRUSH g_hbrWhite; // DS:2B62
-HBRUSH g_hbrBlack; // DS:2B64
-
-RECT g_r_maincli; // DS:2B68
-RECT g_r_status_left; // DS:2B70
-RECT g_r_status_right; // DS:2B78
-RECT g_r_playfield; // DS:2B80
-RECT g_r_mainfrm; // DS:2B88
-char g_dialog_text[80]; // DS:2B90
-char g_dialog_message[80]; // DS:2BE0
-char g_statusmsg[256]; // DS:2C30 TODO CONFIRM SIZE
-WORD g_maintimer; // DS:2D30
-HCURSOR g_hcCross; // DS:2D32
-HCURSOR g_hcArrow; // DS:2D34
-PAINTSTRUCT g_paint; // DS:2D36
-int g_has_maindc; // DS:2D56
-HDC g_maindc; // DS:2D58
-HANDLE g_hInstance; // DS:2D5A
-HWND g_mainwnd; // DS:2D5C
 
 // CS:0F78 - ***CODE MATCH!***
 int FAR PASCAL _export DLG_ERR1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
@@ -204,7 +144,7 @@ void msgbox_error(char *m1, char *m2) {
   MessageBox(g_mainwnd, m2, m1, MB_ICONEXCLAMATION);
 }
 
-// CS:101D - MISMATCH FIXME: Strings require this to be in a separate file. --GM
+// CS:101D - ***CODE MATCH!***
 void init_brushes_and_stuff(void) {
   g_hbrBlack = CreateSolidBrush(RGB(0x00,0x00,0x00));
   g_hbrWhite = CreateSolidBrush(RGB(0xFF,0xFF,0xFF));
@@ -1899,8 +1839,11 @@ void try_move_kye(int dx, int dy) {
   int dx2; // BP/D4
   // BP/D6 - pointer premultiplier
   // BP/D8
+  // FIXME: This needs to be placed into a later file! --GM
+#if 0
   int circle_y[4] = {0,1,0,-1}; // BP/DA const from DS:0D62
   int circle_x[4] = {1,0,-1,0}; // BP/E2 const from DS:0D5A
+#endif
   // BP/EA
   // BP/EC
   int didmove; // BP/EE
