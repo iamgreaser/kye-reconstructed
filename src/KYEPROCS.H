@@ -22,6 +22,7 @@ void deinit_brushes_and_stuff(void);
 void compute_window_geometry(void);
 int mouse_is_in_playfield(int x, int y);
 int show_text_input_dialog(const char *msg, char *buf);
+int FAR PASCAL _export DLG_LVLDUN_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
 void show_level_done(void);
 void show_next_level_name(void);
 void show_game_over(void);
