@@ -13,12 +13,9 @@ void on_key_press(HWND hWnd, WORD wParam);
 void update_edit_menu_item(void);
 int main_wm_command(HWND hWnd, WORD wParam);
 LONG FAR PASCAL _export WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam);
+int PASCAL _export WinMain(HANDLE hInstance, HANDLE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
 
 // MAIN.CPP
-int PASCAL _export WinMain(HANDLE hInstance,
-                           HANDLE hPrevInstance,
-                           LPSTR lpCmdLine,
-                           int nCmdShow);
 void msgbox_error(char *m1, char *m2);
 void init_brushes_and_stuff(void);
 void deinit_brushes_and_stuff(void);

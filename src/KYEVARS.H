@@ -1,15 +1,14 @@
 // DS:0000 16 bytes unused
 // DS:0010 seems to be standard runtime
 // DS:0029 "Borland C++ - Copyright 1991 Borland Intl."
+
 extern int unused_0054[4]; // DS:0054 8 bytes 0xFF, seemingly unused?
 extern int g_mouse_captured; // DS:005C
 extern int g_key_pressed; // DS:005E
-// DS:0060: Menu strings
 
-// char // DS:0087
-// DS:0088: A mix of strings incl. editor menu strings
+// DS:0060: Constant strings in code
 
-// current map: 0002:011C       _g_level_complete
+// current map: 0002:01A0       _g_level_complete
 extern int g_level_complete; // DS:019E
 extern char g_levelset_fname[256]; // DS:01A0
 extern int g_levelidx; // DS:02A0
