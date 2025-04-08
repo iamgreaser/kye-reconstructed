@@ -174,14 +174,14 @@ void deinit_brushes_and_stuff(void) {
   DeleteObject(g_hbmpWall);
 }
 
-// CS:1124
+// CS:1124 - ***CODE MATCH!***
 void compute_window_geometry(void) {
   GetWindowRect(g_mainwnd, &g_r_mainfrm);
   GetClientRect(g_mainwnd, &g_r_maincli);
 
   // SI = 16 as a constant used twice for optimisation
   // However, we do this plus 1 in each case?
-  int textheight = 16;
+  int textheight = 16; // SI
   SetRect(
     &g_r_playfield,
     g_r_maincli.left,
@@ -202,17 +202,17 @@ void compute_window_geometry(void) {
     g_r_playfield.bottom+textheight+1);
 }
 
-// CS:11A3
-int mouse_is_in_playfield(LONG lParam) {
+// CS:11A3 - ***CODE MATCH!***
+int mouse_is_in_playfield(int x, int y) {
   // stack: 0x4 bytes
   POINT p;
 
-  p.x = LOWORD(lParam);
-  p.y = HIWORD(lParam);
+  p.x = x;
+  p.y = y;
   return PtInRect(&g_r_playfield, p);
 }
 
-// CS:11C4
+// CS:11C4 - ***CODE MATCH!***
 void set_status_msg(const char *msg) {
   // almost BUG: Rect invalidated before updating drawing info
   // Probably fine on 3.x, but Win32 might care.

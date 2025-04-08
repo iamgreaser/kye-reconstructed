@@ -133,7 +133,7 @@ void main_wm_lbuttondown(HWND hWnd, LONG lParam, WORD wParam) {
   int y; // DI
   x = LOWORD(lParam);
   y = HIWORD(lParam);
-  if (mouse_is_in_playfield(lParam)) {
+  if (mouse_is_in_playfield(LOWORD(lParam), HIWORD(lParam))) {
     switch (g_is_in_editor) {
     case 0:
       tick_game();
@@ -177,7 +177,7 @@ void main_wm_lbuttonup(HWND hWnd, LONG lParam) {
 // CS:045F - ***CODE MATCH!***
 void main_wm_lbuttondblclick(HWND hWnd, LONG lParam, WORD wParam) {
   // VESTIGAL BUG: This does nothing but acquires and releases g_maindc.
-  if (mouse_is_in_playfield(lParam)) {
+  if (mouse_is_in_playfield(LOWORD(lParam), HIWORD(lParam))) {
     switch(g_is_in_editor) {
     case 0:
       acquire_main_dc();
@@ -198,7 +198,7 @@ void main_wm_rbuttondown(HWND hWnd, LONG lParam, WORD wParam) {
 
   px = LOWORD(lParam);
   py = HIWORD(lParam);
-  if (mouse_is_in_playfield(lParam)) {
+  if (mouse_is_in_playfield(LOWORD(lParam), HIWORD(lParam))) {
     switch (g_is_in_editor) {
     case 0:
       if (g_moving_by_mouse) {
@@ -229,7 +229,7 @@ void main_wm_mousemove(HWND hWnd, LONG lParam) {
 
   px = LOWORD(lParam);
   py = HIWORD(lParam);
-  if (mouse_is_in_playfield(lParam)) {
+  if (mouse_is_in_playfield(LOWORD(lParam), HIWORD(lParam))) {
     switch (g_is_in_editor) {
     case 0:
       SetCursor(g_hcArrow);

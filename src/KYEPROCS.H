@@ -20,7 +20,7 @@ void msgbox_error(char *m1, char *m2);
 void init_brushes_and_stuff(void);
 void deinit_brushes_and_stuff(void);
 void compute_window_geometry(void);
-int mouse_is_in_playfield(LONG lParam);
+int mouse_is_in_playfield(int x, int y);
 int show_text_input_dialog(const char *msg, char *buf);
 void show_level_done(void);
 void show_next_level_name(void);
