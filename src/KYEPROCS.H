@@ -36,12 +36,12 @@ void show_charity_dialog(void);
 void show_last_level_ending(void);
 int FAR PASCAL _export DLG_INP1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
 void update_window_title(void);
+
+// UNK003.CPP
 void acquire_main_dc(void);
 void release_main_dc(void);
 void init_timer(void);
 void deinit_timer(void);
-
-// UNK003.CPP
 int convert_char_to_internal(int *subgroup_out, int *internal_type_out, char external_char_in);
 void clear_level(void);
 void process_loaded_level(void);

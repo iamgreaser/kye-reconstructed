@@ -27,6 +27,40 @@ int g_has_maintimer; // DS:0458
 // const int g_CIRCLE_X[4]; // DS:0D5A
 // const int g_CIRCLE_Y[4]; // DS:0D62
 
+// Word alignment mandates that this starts the module.
+// CS:186C - ***CODE MATCH!*** (hopefully - the alignment throws ndisasm off)
+void acquire_main_dc(void) {
+  if (!g_has_maindc) {
+    g_maindc = GetDC(g_mainwnd);
+    g_has_maindc = 1;
+  }
+}
+
+// CS:1886 - ***CODE MATCH!***
+void release_main_dc(void) {
+  if (g_has_maindc) {
+    ReleaseDC(g_mainwnd, g_maindc);
+    g_has_maindc = 0;
+  }
+}
+
+// TODO: The next function --GM
+
+// CS:18C9
+void init_timer(void) {
+  g_maintimer = SetTimer(g_mainwnd, 0, 100, NULL);
+  g_has_maintimer = 1;
+}
+
+// CS:18E4
+void deinit_timer(void) {
+  // BUG: Checks against handle, but only clears the "has handle" flag.
+  if (g_maintimer) {
+    KillTimer(g_mainwnd, 0);
+  }
+  g_has_maintimer = 0;
+}
+
 // CS:18FE
 int convert_char_to_internal(int *subgroup_out, int *internal_type_out, char external_char_in) {
   int i; // CX

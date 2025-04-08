@@ -422,7 +422,7 @@ int FAR PASCAL _export DLG_OK_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam
   return 0;
 }
 
-// CS:166C
+// CS:166C - ***CODE MATCH!***
 void show_charity_dialog(void) {
   FARPROC dlgproc;
 
@@ -432,12 +432,17 @@ void show_charity_dialog(void) {
   FreeProcInstance(dlgproc);
 }
 
-// CS:16A9
+// CS:16A9 - ***CODE MATCH!***
 void show_last_level_ending(void) {
-  // TODO! --GM
+  FARPROC dlgproc;
+
+  // BUG: Failure not checked
+  dlgproc = MakeProcInstance((FARPROC)DLG_OK_FUNC, g_hInstance);
+  DialogBox(g_hInstance, "DLG_LAST", g_mainwnd, dlgproc); // DS:043A
+  FreeProcInstance(dlgproc);
 }
 
-// CS:16E6
+// CS:16E6 - ***CODE MATCH!***
 int FAR PASCAL _export DLG_INP1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
   switch (msg) {
   case WM_COMMAND:
@@ -475,49 +480,16 @@ int FAR PASCAL _export DLG_INP1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lPar
 void update_window_title(void) {
   // needs 0x82 (130) extra bytes on stack
   char title[128]; // /7E BP-0x82
-  //int unk00; // /FE BP-0x02
-  // BP-0x00
+  //int unk00; // /FE BP-0x02 - for some reason I think we got some spillage?
 
-  // TODO dubious, also seems stuff got inlined --GM
   strcpy(title, "Kye"); // DS:0444
   if (strlen(g_levelset_fname) > 0) {
     strcat(title, " - ["); // DS:0448
     strcat(title, g_levelset_fname);
     strcat(title, "]"); // DS:044D
   }
-  if (g_is_in_editor) {
+  if (g_is_in_editor == 1) {
     strcat(title, " (Edit) "); // DS:044F
   }
   SetWindowText(g_mainwnd, title);
-}
-
-// CS:186C
-void acquire_main_dc(void) {
-  if (!g_has_maindc) {
-    g_maindc = GetDC(g_mainwnd);
-    g_has_maindc = 1;
-  }
-}
-
-// CS:1886
-void release_main_dc(void) {
-  if (g_has_maindc) {
-    ReleaseDC(g_mainwnd, g_maindc);
-    g_has_maindc = 0;
-  }
-}
-
-// CS:18C9
-void init_timer(void) {
-  g_maintimer = SetTimer(g_mainwnd, 0, 100, NULL);
-  g_has_maintimer = 1;
-}
-
-// CS:18E4
-void deinit_timer(void) {
-  // BUG: Checks against handle, but only clears the "has handle" flag.
-  if (g_maintimer) {
-    KillTimer(g_mainwnd, 0);
-  }
-  g_has_maintimer = 0;
 }
