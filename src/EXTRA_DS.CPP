@@ -1,26 +1,10 @@
+// vim: set syntax=cpp :
+// Any globals that have yet to be placed in the right module.
+
 #include <windows.h>
 
 #include "kyetypes.h"
 
-// vim: set syntax=cpp :
-// Any globals that have yet to be placed in the right module.
-
-int g_has_maintimer; // DS:0458
-// DS:045A contains strings.
-
-// DS:050C pertains to some kind of file open dialogue?
-
-// int // DS:06A9 == 0x5C
-// DS:06AB contains strings.
-
-// This map is at DS:06B8
-// TODO: Editor entity spec --GM
-// DS:0D38 = 0x000A
-// DS:0D3A = 0x0000
-// DS:0D3C contains at least one string...
-
-// const int g_CIRCLE_X[4]; // DS:0D5A
-// const int g_CIRCLE_Y[4]; // DS:0D62
 int g_door_anim_flag; // DS:0D6A
 
 int g_level_tiles[LEVEL_LX][LEVEL_LY]; // DS:127E

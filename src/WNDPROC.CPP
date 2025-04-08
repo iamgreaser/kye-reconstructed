@@ -392,7 +392,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
     if (g_is_in_editor == 0) {
       g_has_maintimer = 0;
       strcpy(g_dialog_text, ""); // DS:0087
-      cs_15C0();
+      show_level_name_input();
       strupr(g_dialog_text);
       selected_level = find_level_by_name(g_dialog_text);
       if (selected_level > 0) {

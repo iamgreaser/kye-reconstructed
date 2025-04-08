@@ -29,7 +29,8 @@ void show_next_level_name(void);
 int FAR PASCAL _export DLG_KYESGONE_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
 void show_game_over(void);
 void set_status_msg(const char *msg);
-void cs_15C0(void);
+int FAR PASCAL _export DLG_INPNAM_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
+void show_level_name_input(void);
 int FAR PASCAL _export DLG_OK_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
 void show_charity_dialog(void);
 void show_last_level_ending(void);
@@ -39,6 +40,8 @@ void acquire_main_dc(void);
 void release_main_dc(void);
 void init_timer(void);
 void deinit_timer(void);
+
+// UNK003.CPP
 int convert_char_to_internal(int *subgroup_out, int *internal_type_out, char external_char_in);
 void clear_level(void);
 void process_loaded_level(void);
