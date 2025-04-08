@@ -346,7 +346,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
   switch (wParam) {
   case IDC_GAME_EXIT:
     PostQuitMessage(0);
-    return 1;
+    break;
 
   case IDC_GAME_NEW:
     g_levelidx = 1;
@@ -355,7 +355,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
     set_status_msg(g_level_hint);
     InvalidateRect(hWnd, NULL, TRUE);
     UpdateWindow(hWnd);
-    return 1;
+    break;
 
   case IDC_LEVEL_RESTART:
     if (g_is_in_editor == 0) {
@@ -399,7 +399,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
       UpdateWindow(hWnd);
       update_window_title();
     }
-    return 1;
+    break;
 
   case IDC_LEVEL_GOTO:
     if (g_is_in_editor == 0) {
@@ -419,11 +419,11 @@ int main_wm_command(HWND hWnd, WORD wParam) {
       // TODO! --GM
     }
     g_has_maintimer = 1;
-    return 1;
+    break;
 
   case IDC_LEVEL_FILE:
     // TODO! --GM
-    return 1;
+    break;
 
   case IDC_LEVEL_EDIT:
     if (g_is_in_editor == 0) {
@@ -498,7 +498,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
       UpdateWindow(hWnd);
       update_window_title();
     }
-    return 1;
+    break;
 
   case IDC_301:
     // Unused, not defined. Could this be sound? Who knows...
@@ -510,22 +510,25 @@ int main_wm_command(HWND hWnd, WORD wParam) {
       CheckMenuItem(menu, IDC_301, MF_BYCOMMAND | MF_CHECKED);
       g_02BC = 1;
     }
-    return 1;
+    break;
 
   case IDC_HELP_THE_GAME:
     // Windows 3.1 calls it HELP_CONTENTS, but Windows 3.0 calls it HELP_INDEX.
     WinHelp(g_mainwnd, "kyehelp.hlp", HELP_INDEX, 0); // DS:0161
-    return 1;
+    break;
 
   case IDC_HELP_USING_HELP:
     WinHelp(g_mainwnd, "", HELP_HELPONHELP, 0); // DS:016D
-    return 1;
+    break;
 
   case IDC_HELP_ABOUT:
     show_charity_dialog();
-    return 1;
+    break;
+
+  default:
+    return 0;
   }
-  return 0;
+  return 1;
 }
 
 // CS:0C19 - ***CODE MATCH!***
