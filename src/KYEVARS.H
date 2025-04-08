@@ -66,12 +66,11 @@ extern int g_kye_spawn_cy; // DS:29F2
 extern int g_kye_spawn_cx; // DS:29F4
 extern int g_kye_main_cy; // DS:29F6
 extern int g_kye_main_cx; // DS:29F8
-// TODO: Confirm sizes --GM
 extern char g_level_hint[80]; // DS:29FA
 extern char g_level_congrats[80]; // DS:2A4A
-extern char g_level_name[80]; // DS:2A9A
-// DS:2AEA
-
+extern char g_level_name[20]; // DS:2A9A
+extern char g_2AAE[80]; // DS:2AAE
+extern char g_2AFE[80]; // DS:2AFE
 extern HBITMAP g_hbmpWall; // DS:2B4E
 extern HBITMAP g_hbmpBlock; // DS:2B50
 extern HBITMAP g_hbmpKye; // DS:2B52

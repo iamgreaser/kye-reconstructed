@@ -134,12 +134,11 @@ int g_kye_spawn_cy; // DS:29F2
 int g_kye_spawn_cx; // DS:29F4
 int g_kye_main_cy; // DS:29F6
 int g_kye_main_cx; // DS:29F8
-// TODO: Confirm sizes --GM
 char g_level_hint[80]; // DS:29FA
 char g_level_congrats[80]; // DS:2A4A
-char g_level_name[80]; // DS:2A9A
-// DS:2AEA
-
+char g_level_name[20]; // DS:2A9A
+char g_2AAE[80]; // DS:2AAE
+char g_2AFE[80]; // DS:2AFE
 HBITMAP g_hbmpWall; // DS:2B4E
 HBITMAP g_hbmpBlock; // DS:2B50
 HBITMAP g_hbmpKye; // DS:2B52
@@ -169,6 +168,37 @@ int g_has_maindc; // DS:2D56
 HDC g_maindc; // DS:2D58
 HANDLE g_hInstance; // DS:2D5A
 HWND g_mainwnd; // DS:2D5C
+
+// CS:0F78 - ***CODE MATCH!***
+int FAR PASCAL _export DLG_ERR1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
+  // Seems to be unused?
+  switch (msg) {
+  case WM_COMMAND:
+    // TODO: Name the items --GM
+    switch (wParam) {
+    case 1:
+      EndDialog(hDlg, 0);
+      return 1;
+    default:
+      return 0;
+    }
+    break;
+
+  case WM_CLOSE:
+    EndDialog(hDlg, 0);
+    return 1;
+
+  case WM_INITDIALOG:
+    // TODO: Name the items --GM
+    SetDlgItemText(hDlg, 101, g_2AFE);
+    SetDlgItemText(hDlg, 102, g_2AAE);
+    SetFocus(GetDlgItem(hDlg, 1));
+    return 0;
+  default:
+    return 0;
+  }
+}
+
 
 // CS:1005
 void msgbox_error(char *m1, char *m2) {
