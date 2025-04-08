@@ -103,12 +103,6 @@ char _pad_03F1 = 0; // FIXME work out why alignment option is borked --GM
 int g_is_in_editor; // DS:03F2
 // DS:03F4 contains strings.
 
-// char // DS:0427
-// DS:0428 contains strings.
-
-// char // DS:0443
-// DS:0444 contains strings.
-
 // CS:0F78 - ***CODE MATCH!***
 int FAR PASCAL _export DLG_ERR1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
   // Seems to be unused?
@@ -218,15 +212,20 @@ void set_status_msg(const char *msg) {
   // Probably fine on 3.x, but Win32 might care.
   InvalidateRect(g_mainwnd, &g_r_status_right, FALSE);
   strcpy(g_statusmsg, msg);
-  // OPTIMISER NOTE: REP MOVSW / ADC CX,CX / REP MOVSB
 }
 
-// CS:1204
+// CS:1204 - ***CODE MATCH!***
 int show_text_input_dialog(const char *msg, char *buf) {
+  // stack: 0x04 bytes
+  FARPROC dlgproc; // BP/FC
+
   strcpy(g_dialog_message, msg);
   strcpy(g_dialog_text, buf);
 
-  // TODO! --GM
+  // BUG: Failure not checked
+  dlgproc = MakeProcInstance((FARPROC)DLG_INP1_FUNC, g_hInstance);
+  DialogBox(g_hInstance, "DLG_INP1", g_mainwnd, dlgproc); // DS:0403
+  FreeProcInstance(dlgproc);
 
   strcpy(buf, g_dialog_text);
   if (g_dialog_text[0] == 0) {
@@ -289,7 +288,43 @@ void show_charity_dialog(void) {
 }
 
 // CS:16A9
-void show_last_level_ending(void) {}
+void show_last_level_ending(void) {
+  // TODO! --GM
+}
+
+// CS:16E6
+int FAR PASCAL _export DLG_INP1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
+  switch (msg) {
+  case WM_COMMAND:
+    // TODO: Name the items --GM
+    switch (wParam) {
+    case 1:
+      GetDlgItemText(hDlg, 103, g_dialog_text, 80);
+      EndDialog(hDlg, 0);
+      return 1;
+    case 2:
+      strcpy(g_dialog_text, ""); // DS:0443
+      EndDialog(hDlg, 0);
+      return 1;
+    default:
+      return 0;
+    }
+    break;
+
+  case WM_CLOSE:
+    EndDialog(hDlg, 0);
+    return 1;
+
+  case WM_INITDIALOG:
+    // TODO: Name the items --GM
+    SetDlgItemText(hDlg, 102, g_dialog_message);
+    SetDlgItemText(hDlg, 103, g_dialog_text);
+    SetFocus(GetDlgItem(hDlg, 103));
+    return 0;
+  default:
+    return 0;
+  }
+}
 
 // CS:17BD
 void update_window_title(void) {

@@ -30,6 +30,7 @@ void cs_15C0(void);
 int FAR PASCAL _export DLG_OK_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
 void show_charity_dialog(void);
 void show_last_level_ending(void);
+int FAR PASCAL _export DLG_INP1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
 void update_window_title(void);
 void acquire_main_dc(void);
 void release_main_dc(void);

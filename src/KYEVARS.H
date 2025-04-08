@@ -34,12 +34,6 @@ extern tileconv_map_entry_s TILECONV_MAP[];
 extern int g_is_in_editor; // DS:03F2
 // DS:03F4 contains strings.
 
-// char // DS:0427
-// DS:0428 contains strings.
-
-// char // DS:0443
-// DS:0444 contains strings.
-
 extern int g_has_maintimer; // DS:0458
 // DS:045A contains strings.
 

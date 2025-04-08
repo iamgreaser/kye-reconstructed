@@ -664,7 +664,6 @@ int PASCAL _export WinMain(HANDLE hInstance,
   clear_level();
 
   if (!registration_check(cmdlinebuf)) {
-    // TODO: Make "this appeal" appear --GM
     strcpy(g_levelset_fname, "border.kye"); // DS:0186
     load_level(g_levelidx);
     set_status_msg(g_level_hint);
