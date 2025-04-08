@@ -142,13 +142,13 @@ char g_2AFE[80]; // DS:2AFE
 HBITMAP g_hbmpWall; // DS:2B4E
 HBITMAP g_hbmpBlock; // DS:2B50
 HBITMAP g_hbmpKye; // DS:2B52
-HPEN g_hpenBlue;  // DS:2B54
+HPEN g_hpenRed;  // DS:2B54
 HPEN g_hpenWhite; // DS:2B56
 HPEN g_hpenBlack; // DS:2B58
 HPEN g_saved_hpen; // DS:2B5A
-HBRUSH g_hbrRed;   // DS:2B5C
+HBRUSH g_hbrBlue;  // DS:2B5C
 HBRUSH g_hbrGreen; // DS:2B5E
-HBRUSH g_hbrBlue;  // DS:2B60
+HBRUSH g_hbrRed;   // DS:2B60
 HBRUSH g_hbrWhite; // DS:2B62
 HBRUSH g_hbrBlack; // DS:2B64
 
@@ -199,37 +199,36 @@ int FAR PASCAL _export DLG_ERR1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lPar
   }
 }
 
-
-// CS:1005
+// CS:1005 - ***CODE MATCH!***
 void msgbox_error(char *m1, char *m2) {
   MessageBox(g_mainwnd, m2, m1, MB_ICONEXCLAMATION);
 }
 
-// CS:101D
+// CS:101D - MISMATCH FIXME: Strings require this to be in a separate file. --GM
 void init_brushes_and_stuff(void) {
   g_hbrBlack = CreateSolidBrush(RGB(0x00,0x00,0x00));
   g_hbrWhite = CreateSolidBrush(RGB(0xFF,0xFF,0xFF));
-  g_hbrBlue  = CreateSolidBrush(RGB(0x00,0x00,0xFF));
-  g_hbrGreen = CreateSolidBrush(RGB(0x00,0xFF,0x00));
   g_hbrRed   = CreateSolidBrush(RGB(0xFF,0x00,0x00));
+  g_hbrGreen = CreateSolidBrush(RGB(0x00,0xFF,0x00));
+  g_hbrBlue  = CreateSolidBrush(RGB(0x00,0x00,0xFF));
   g_hpenBlack = CreatePen(PS_SOLID, 1, RGB(0x00,0x00,0x00));
   g_hpenWhite = CreatePen(PS_SOLID, 1, RGB(0xFF,0xFF,0xFF));
-  g_hpenBlue  = CreatePen(PS_SOLID, 1, RGB(0x00,0x00,0xFF));
+  g_hpenRed   = CreatePen(PS_SOLID, 1, RGB(0xFF,0x00,0x00));
   g_hbmpKye   = LoadBitmap(g_hInstance, "kye");   // DS:03F4
   g_hbmpBlock = LoadBitmap(g_hInstance, "block"); // DS:03F8
   g_hbmpWall  = LoadBitmap(g_hInstance, "wall");  // DS:03FE
 }
 
-// CS:10C0
+// CS:10C0 - ***CODE MATCH!***
 void deinit_brushes_and_stuff(void) {
   DeleteObject(g_hbrBlack);
   DeleteObject(g_hbrWhite);
-  DeleteObject(g_hbrBlue);
-  DeleteObject(g_hbrGreen);
   DeleteObject(g_hbrRed);
+  DeleteObject(g_hbrGreen);
+  DeleteObject(g_hbrBlue);
   DeleteObject(g_hpenBlack);
   DeleteObject(g_hpenWhite);
-  DeleteObject(g_hpenBlue);
+  DeleteObject(g_hpenRed);
   DeleteObject(g_hbmpKye);
   DeleteObject(g_hbmpBlock);
   DeleteObject(g_hbmpWall);

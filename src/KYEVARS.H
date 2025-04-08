@@ -74,13 +74,13 @@ extern char g_2AFE[80]; // DS:2AFE
 extern HBITMAP g_hbmpWall; // DS:2B4E
 extern HBITMAP g_hbmpBlock; // DS:2B50
 extern HBITMAP g_hbmpKye; // DS:2B52
-extern HPEN g_hpenBlue;  // DS:2B54
+extern HPEN g_hpenRed;   // DS:2B54
 extern HPEN g_hpenWhite; // DS:2B56
 extern HPEN g_hpenBlack; // DS:2B58
 extern HPEN g_saved_hpen; // DS:2B5A
-extern HBRUSH g_hbrRed;   // DS:2B5C
+extern HBRUSH g_hbrBlue;  // DS:2B5C
 extern HBRUSH g_hbrGreen; // DS:2B5E
-extern HBRUSH g_hbrBlue;  // DS:2B60
+extern HBRUSH g_hbrRed;   // DS:2B60
 extern HBRUSH g_hbrWhite; // DS:2B62
 extern HBRUSH g_hbrBlack; // DS:2B64
 
