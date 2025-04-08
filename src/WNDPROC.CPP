@@ -28,7 +28,7 @@ void repaint_main_playfield(void) {
     } else {
       repaint_kye(0);
     }
-    return; // FIXME: Double-RET in output --GM
+    return;
   case 1:
     repaint_all_walls();
     repaint_all_actors();
