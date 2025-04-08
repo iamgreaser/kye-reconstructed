@@ -26,6 +26,7 @@ int FAR PASCAL _export DLG_LVLDUN_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lP
 void show_level_done(void);
 int FAR PASCAL _export DLG_LVLNEW_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
 void show_next_level_name(void);
+int FAR PASCAL _export DLG_KYESGONE_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
 void show_game_over(void);
 void set_status_msg(const char *msg);
 void cs_15C0(void);

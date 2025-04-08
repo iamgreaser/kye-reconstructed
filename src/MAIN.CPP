@@ -313,9 +313,42 @@ void show_next_level_name(void) {
   FreeProcInstance(dlgproc);
 }
 
+// CS:1453 - ***CODE MATCH!***
+int FAR PASCAL _export DLG_KYESGONE_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
+  (void)lParam;
+  switch (msg) {
+  case WM_COMMAND:
+    // TODO: Name the items --GM
+    switch (wParam) {
+    case 1:
+      EndDialog(hDlg, 0);
+      return 1;
+    default:
+      return 0;
+    }
+    break;
+
+  case WM_CLOSE:
+    EndDialog(hDlg, 0);
+    return 1;
+
+  case WM_INITDIALOG:
+    // TODO: Name the items --GM
+    SetFocus(GetDlgItem(hDlg, 1));
+    break;
+  }
+  return 0;
+}
+
 // CS:14BA
 void show_game_over(void) {
-  // TODO! --GM
+  // stack: 0x04 bytes
+  FARPROC dlgproc; // BP/FC
+
+  // BUG: Failure not checked
+  dlgproc = MakeProcInstance((FARPROC)DLG_LVLNEW_FUNC, g_hInstance);
+  DialogBox(g_hInstance, "DLG_GON1", g_mainwnd, dlgproc); // DS:041E
+  FreeProcInstance(dlgproc);
 }
 
 // CS:15C0
