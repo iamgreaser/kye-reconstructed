@@ -7,4 +7,6 @@ for C_NAME in $@; do
 done
   echo "-O2 -y -1 -G -W -ms -M -LC:\\BORLANDC\\LIB -eD:\\OUT\\KYE.EXE ${C_OBJ_LIST}" >build/MKEXE.ARG
 echo "bcc @D:\\BUILD\\MKEXE.ARG"
+echo "if errorlevel 1 goto fail"
 echo "rc D:\\SRC\\KYE.RES D:\\OUT\\KYE.EXE"
+echo "if errorlevel 1 goto fail"

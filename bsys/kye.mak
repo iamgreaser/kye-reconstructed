@@ -29,8 +29,9 @@ build-kye: ${OUTDIR}KYE.EXE
 ${BUILDDIR} ${OUTDIR}: | prepare-bcp30af
 	install -D -d $@
 
-${OUTDIR}KYE.EXE &: ${BUILDDIR}BUILDDOS.BAT | ${OUTDIR} ${BUILDDIR}
+${OUTDIR}KYE.EXE: ${BUILDDIR}BUILDDOS.BAT | ${OUTDIR} ${BUILDDIR}
 	env SDL_VIDEODRIVER=dummy LIBGL_ALWAYS_SOFTWARE=yes dosbox-x ${DBXFLAGS} -c "ctty lpt1" -c "mount d ." -c "D:\\BUILD\\BUILDDOS.BAT" -exit 2>/dev/null
+	[ -e $@ ]
 
 ${BUILDDIR}BUILDDOS.BAT: ${KYE_C_SRCS} ${KYE_C_HEADERS} $(wildcard ./bsys/prepdos-*.sh) | ${BUILDDIR}
 	rm $@ || true
@@ -38,4 +39,5 @@ ${BUILDDIR}BUILDDOS.BAT: ${KYE_C_SRCS} ${KYE_C_HEADERS} $(wildcard ./bsys/prepdo
 	./bsys/prepdos-init.sh >> $@.tmp || (rm $@.tmp && false)
 	./bsys/prepdos-obj.sh ${KYE_C_NAMES} >> $@.tmp || (rm $@.tmp && false)
 	./bsys/prepdos-exe.sh ${KYE_C_NAMES} >> $@.tmp || (rm $@.tmp && false)
+	./bsys/prepdos-final.sh >> $@.tmp || (rm $@.tmp && false)
 	mv $@.tmp $@
