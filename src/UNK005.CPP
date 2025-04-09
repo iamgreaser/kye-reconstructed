@@ -384,10 +384,33 @@ void encode_level_row(int cy, char *line) {
   line[LEVEL_LX] = 0;
 }
 
-// CS:1FC5
+// CS:1FC5 - ***CODE MATCH!***
 int find_level_by_name(const char *name) {
-  // TODO! --GM
-  (void)name;
+  // stack: 0x03DE bytes
+  int levelidx; // BP/FFFE
+  FILE *fp; // BP/FFFC
+  file_level_s lvl; // BP/FC72
+  char buf80a[80]; // BP/FC22
+
+  if (g_levelset_fname[0] == 0) {
+    return -1;
+  }
+  fp = fopen(g_levelset_fname, "r"); // DS:0476
+  if (fp == NULL) {
+    return -1;
+  }
+  fseek(fp, 0, SEEK_SET);
+  read_line(fp, buf80a, 80-1);
+  g_levelcount = atol(buf80a);
+  for (levelidx = 1; levelidx <= g_levelcount; levelidx++) {
+    read_level(fp, &lvl);
+    if (!strcmp(name, lvl.name)) {
+      fclose(fp);
+      return levelidx;
+    }
+  }
+
+  fclose(fp);
   return -1;
 }
 
