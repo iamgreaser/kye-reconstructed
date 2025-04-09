@@ -43,7 +43,12 @@ void release_main_dc(void);
 void cs_18A1(RECT FAR *lprc);
 void init_timer(void);
 void deinit_timer(void);
+
+// UNK004.CPP
 int convert_char_to_internal(int *subgroup_out, int *internal_type_out, char external_char_in);
+int convert_internal_to_char(int subgroup_in, int internal_type_in, char *external_char_out);
+
+// UNK005.CPP
 void clear_level(void);
 void process_loaded_level(void);
 void read_line(FILE *fp, char *buf, int max_len);
