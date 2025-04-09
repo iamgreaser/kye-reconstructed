@@ -63,7 +63,7 @@ void encode_level_row(int cy, char *line);
 int find_level_by_name(const char *name);
 int registration_check(const char *cmdline);
 void load_level(int levelidx);
-void cs_2241(void);
+void save_single_level_file(void);
 void delete_and_draw_unacting_tile(int cx, int cy);
 void draw_actor(HDC dst_dc, HDC src_dc, int ai);
 void repaint_all_actors(void);

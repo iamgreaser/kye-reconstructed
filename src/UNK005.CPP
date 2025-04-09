@@ -472,9 +472,50 @@ void load_level(int levelidx) {
   }
 }
 
-// CS:2241
-void cs_2241(void) {
-  // TODO! --GM
+// CS:2241 - MISMATCH FIXME: A weird optimisation is taking place with something going into the AX register. Weird peephole shenanigans, perhaps? --GM
+void save_single_level_file(void) {
+  // stack: 0x3DC bytes
+  FILE *fp; // BP/FFFE
+  file_level_s lvl; // BP/FC74
+  char buf80a[80]; // BP/FC24
+
+  int result; // DX
+  int cy; // SI
+  // DI = row pointer
+
+  strcpy(lvl.name, g_level_name);
+  strcpy(lvl.congrats, g_level_congrats);
+  strcpy(lvl.hint, g_level_hint);
+
+  for (cy = 0; cy < LEVEL_LY; cy++) {
+    encode_level_row(cy, lvl.rows[cy]);
+  }
+
+  fp = fopen(g_levelset_fname, "w"); // DS:048D
+  if (fp != NULL) {
+    // MISMATCH FIXME: Somehow, this pulls AX out of its arse especially for fp, despite not using it above. --GM
+    fseek(fp, 0, SEEK_SET);
+    strcpy(buf80a, "1"); // DS:048F
+    result = write_line(fp, buf80a);
+    if (result) {
+      result = write_level(fp, &lvl);
+      if (result) {
+        fclose(fp);
+        return;
+      }
+    }
+
+  } else {
+    msgbox_error("Cannot open file: ", g_levelset_fname); // DS:0491
+    clear_level();
+    g_levelset_fname[0] = 0;
+    return;
+  }
+
+  // BUG: fp is not closed in this situation!
+  msgbox_error("Cannot write file: ", g_levelset_fname); // DS:04A4
+  clear_level();
+  g_levelset_fname[0] = 0;
 }
 
 // CS:2370

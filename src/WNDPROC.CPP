@@ -478,7 +478,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
       ModifyMenu(menu, IDC_LEVEL_RESTART, MF_BYCOMMAND, IDC_LEVEL_RESTART, "&Restart"); // DS:0158
       EnableMenuItem(menu, IDC_GAME_NEW, MF_BYCOMMAND|MF_ENABLED);
       DrawMenuBar(hWnd);
-      cs_2241();
+      save_single_level_file();
       load_level(g_levelidx);
       set_status_msg(g_level_hint);
       g_moving_by_mouse = 0;
