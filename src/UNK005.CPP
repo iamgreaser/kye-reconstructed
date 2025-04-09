@@ -45,26 +45,19 @@ void clear_level(void) {
   g_tile_under_kye = T_EMPTY;
 }
 
-// CS:1A37 - MISMATCH FIXME --GM
+// CS:1A37 - ***CODE MATCH!***
 void process_loaded_level(void) {
-  // needs 4 extra bytes on stack
-  // BP/FC = ?
-  // BP/FE = column counter
-  // FIXME revisit for optimisations, this most likely won't match --GM
-
   // SI = tile pointer
   int cx; // DI
   int cy; // DX
   int found; // CX
-
-  int tile;
 
   // Ensure at least one diamond exists.
   found = 0;
   for (cx = 0; cx < LEVEL_LX; cx++) {
     for (cy = 0; cy < LEVEL_LY; cy++) {
       if (g_level_tiles[cx][cy] == T_DIAMOND) {
-        found = 1;
+        found++;
         goto done_diamond_search;
       }
     }
@@ -80,7 +73,7 @@ done_diamond_search:
   for (cx = 0; cx < LEVEL_LX; cx++) {
     for (cy = 0; cy < LEVEL_LY; cy++) {
       if (g_level_tiles[cx][cy] == T_KYE) {
-        found = 1;
+        found++;
         goto done_kye_search;
       }
     }
@@ -97,28 +90,35 @@ done_kye_search:
   }
 
   // Ensure borders have walls
-  // TODO: Verify order of check --GM
   for (cx = 0; cx < LEVEL_LX; cx++) {
-    tile = g_level_tiles[cx][0];
-    if (!(tile >= T_WALL9 && tile <= T_WALL1)) {
+    if (!(g_level_tiles[cx][0] >= T_WALL9 && g_level_tiles[cx][0] <= T_WALL1)) {
+      if (g_level_tiles[cx][0] >= 0) {
+        mark_actor_for_deletion(g_level_tiles[cx][0]);
+      }
       g_level_tiles[cx][0] = T_WALL5;
     }
   }
   for (cx = 0; cx < LEVEL_LX; cx++) {
-    tile = g_level_tiles[cx][LEVEL_LY-1];
-    if (!(tile >= T_WALL9 && tile <= T_WALL1)) {
+    if (!(g_level_tiles[cx][LEVEL_LY-1] >= T_WALL9 && g_level_tiles[cx][LEVEL_LY-1] <= T_WALL1)) {
+      if (g_level_tiles[cx][LEVEL_LY-1] >= 0) {
+        mark_actor_for_deletion(g_level_tiles[cx][LEVEL_LY-1]);
+      }
       g_level_tiles[cx][LEVEL_LY-1] = T_WALL5;
     }
   }
   for (cy = 0; cy < LEVEL_LY; cy++) {
-    tile = g_level_tiles[0][cy];
-    if (!(tile >= T_WALL9 && tile <= T_WALL1)) {
+    if (!(g_level_tiles[0][cy] >= T_WALL9 && g_level_tiles[0][cy] <= T_WALL1)) {
+      if (g_level_tiles[0][cy] >= 0) {
+        mark_actor_for_deletion(g_level_tiles[0][cy]);
+      }
       g_level_tiles[0][cy] = T_WALL5;
     }
   }
   for (cy = 0; cy < LEVEL_LY; cy++) {
-    tile = g_level_tiles[LEVEL_LX-1][cy];
-    if (!(tile >= T_WALL9 && tile <= T_WALL1)) {
+    if (!(g_level_tiles[LEVEL_LX-1][cy] >= T_WALL9 && g_level_tiles[LEVEL_LX-1][cy] <= T_WALL1)) {
+      if (g_level_tiles[LEVEL_LX-1][cy] >= 0) {
+        mark_actor_for_deletion(g_level_tiles[LEVEL_LX-1][cy]);
+      }
       g_level_tiles[LEVEL_LX-1][cy] = T_WALL5;
     }
   }
@@ -127,12 +127,9 @@ done_kye_search:
   garbage_collect_actors();
 }
 
-// CS:1B6C
+// CS:1B6C - ***CODE MATCH!***
 void read_line(FILE *fp, char *buf, int max_len) {
-  // TODO CHECK OPTIMISATIONS --GM
-  // needs 0x100 (256) extra bytes on stack
-  char linebuf[256]; // BP/FF00
-  // BP+0x000
+  char linebuf[256];
 
   int i;
 
@@ -141,7 +138,7 @@ void read_line(FILE *fp, char *buf, int max_len) {
 
   for (i = 0;
        linebuf[i] != 0
-         && i < max_len
+         && i != max_len
          && linebuf[i] != '\n'
          && linebuf[i] != '\r';
        i++) {
@@ -150,7 +147,7 @@ void read_line(FILE *fp, char *buf, int max_len) {
   buf[i] = 0;
 }
 
-// CS:1BBE
+// CS:1BBE - ***CODE MATCH!***
 void read_level(FILE *fp, file_level_s *lvl) {
   int cy; // register SI
 
@@ -158,9 +155,11 @@ void read_level(FILE *fp, file_level_s *lvl) {
   read_line(fp, lvl->hint, 85-2);
   read_line(fp, lvl->congrats, 85-2);
   for (cy = 0; cy < LEVEL_LY; cy++) {
-    read_line(fp, lvl->rows[cy], LEVEL_LX+3-2);
+    read_line(fp, lvl->rows[cy], LEVEL_LX+5-2);
   }
 }
+
+// CS:1C13 - TODO! --GM
 
 // CS:1CD2
 int create_actor(int type, int cx, int cy) {

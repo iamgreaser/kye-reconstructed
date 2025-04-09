@@ -10,7 +10,7 @@ typedef struct {
   char name[35];
   char congrats[85];
   char hint[85];
-  char rows[LEVEL_LY][LEVEL_LX+3];
+  char rows[LEVEL_LY][LEVEL_LX+5];
   // we tend to get 1 byte of padding...?
 } file_level_s;
 
