@@ -8,7 +8,6 @@ extern int g_key_pressed; // DS:005E
 
 // DS:0060: Constant strings in code
 
-// current map: 0002:01A0       _g_level_complete
 extern int g_level_complete; // DS:019E
 extern char g_levelset_fname[256]; // DS:01A0
 extern int g_levelidx; // DS:02A0

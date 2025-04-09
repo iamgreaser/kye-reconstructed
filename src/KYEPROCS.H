@@ -40,6 +40,7 @@ void update_window_title(void);
 // UNK003.CPP
 void acquire_main_dc(void);
 void release_main_dc(void);
+void cs_18A1(RECT FAR *lprc);
 void init_timer(void);
 void deinit_timer(void);
 int convert_char_to_internal(int *subgroup_out, int *internal_type_out, char external_char_in);
