@@ -608,71 +608,67 @@ void repaint_all_actors(void) {
   DeleteDC(dc);
 }
 
-// CS:24BA
+// CS:24BA - MISMATCH FIXME: 2 extra write-only bytes on the stack, use of the wrong register, and 2 bytes of extra code so we're out of phase. Using a kludge to at least get this back into phase. --GM
 void draw_wall(int cx, int cy, HDC dc) {
-  // TODO CHECK OPTIMISATIONS - stack needs work --GM
+  // stack: 0x04 bytes
+  // BP/FE
+  // int *column; // BP/FC
+
   // General arrangement:
   // SI = x
   // CX = y
-  int tile;
-  tile = g_level_tiles[cx][cy];
+
+  int px; // SI
+  int py; // DI
+  register int src_px; // DX - MISMATCH FIXME: This needs to be DX! Not AX! --GM
+
+#define tile (g_level_tiles[cx][cy])
 
   // These types are negative numbers, T_WALL1 > T_WALL9
   if (tile <= T_WALL1 && tile >= T_WALL9) {
     // Draw actual wall
-    BitBlt(
-      g_maindc,
-      cx * g_tile_lx,
-      cy * g_tile_ly,
-      TILE_LX, TILE_LY, // Yes, this is hardcoded somehow.
-      dc,
-      (3+(T_WALL1-tile)) * TILE_LX,
-      0 * TILE_LY,
-      SRCCOPY);
-
-  } else if (tile == T_EARTH) {
-    BitBlt(
-      g_maindc,
-      cx * g_tile_lx,
-      cy * g_tile_ly,
-      TILE_LX, TILE_LY,
-      dc,
-      0 * TILE_LX, 0 * TILE_LY,
-      SRCCOPY);
-
-  } else if (tile == T_DIAMOND) {
-    BitBlt(
-      g_maindc,
-      cx * g_tile_lx,
-      cy * g_tile_ly,
-      TILE_LX, TILE_LY,
-      dc,
-      12 * TILE_LX, 0 * TILE_LY,
-      SRCCOPY);
-
-  } else if (tile == T_DOOR_W_E || tile == T_DOOR_E_W) {
-    BitBlt(
-      g_maindc,
-      cx * g_tile_lx,
-      cy * g_tile_ly,
-      TILE_LX, TILE_LY,
-      dc,
-      14 * TILE_LX, 0 * TILE_LY,
-      SRCCOPY);
-
-  } else if (tile == T_DOOR_N_S || tile == T_DOOR_S_N) {
-    BitBlt(
-      g_maindc,
-      cx * g_tile_lx,
-      cy * g_tile_ly,
-      TILE_LX, TILE_LY,
-      dc,
-      13 * TILE_LX, 0 * TILE_LY,
-      SRCCOPY);
+    px = cx * g_tile_lx;
+    py = cy * g_tile_ly;
+    src_px = ((abs(tile) - abs(T_WALL1)) * TILE_LX) + (3 * TILE_LX);
+    BitBlt(g_maindc, px, py, TILE_LX, TILE_LY, dc, src_px, 0 * TILE_LY, SRCCOPY);
+    return;
   }
+
+  if (tile == T_EARTH) {
+    px = cx * g_tile_lx;
+    py = cy * g_tile_ly;
+    BitBlt(g_maindc, px, py, TILE_LX, TILE_LY, dc, 0 * TILE_LX, 0 * TILE_LY, SRCCOPY);
+    return;
+  }
+
+  if (tile == T_DIAMOND) {
+    px = cx * g_tile_lx;
+    py = cy * g_tile_ly;
+    BitBlt(g_maindc, px, py, TILE_LX, TILE_LY, dc, 12 * TILE_LX, 0 * TILE_LY, SRCCOPY);
+    return;
+  }
+
+  // KLUDGE: Try to make the function a little smaller so we can at least get back into phase.
+  px = cx * g_tile_lx;
+  if (tile == T_DOOR_W_E || tile == T_DOOR_E_W) {
+    //px = cx * g_tile_lx;
+    py = cy * g_tile_ly;
+    BitBlt(g_maindc, px, py, TILE_LX, TILE_LY, dc, 14 * TILE_LX, 0 * TILE_LY, SRCCOPY);
+    return;
+  }
+
+  if (tile == T_DOOR_N_S || tile == T_DOOR_S_N) {
+    //px = cx * g_tile_lx;
+    py = cy * g_tile_ly;
+    // 3 effective no-op pairs of bytes gets us back into phase.
+    py++; py--; py++; py--; py++; py--;
+    BitBlt(g_maindc, px, py, TILE_LX, TILE_LY, dc, 13 * TILE_LX, 0 * TILE_LY, SRCCOPY);
+    return;
+  }
+#undef tile
 }
 
-// CS:2665
+// CS:2665 - ***CODE MATCH!***
 void repaint_all_walls(void) {
   HDC dc; // BP/FE BP-0x02
   // BP-0x00
