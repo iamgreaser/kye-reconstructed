@@ -193,25 +193,25 @@ void cs_1CCB(void) {
   g_actor_count = 0;
 }
 
-// CS:1CD2
+// CS:1CD2 - MISMATCH FIXME: Registers are loaded in the wrong order and I need a hack to force the type into a register so the rest of the code can mostly match --GM
 int create_actor(int type, int cx, int cy) {
+  register int atype = type; // CX
   if (g_actor_count < MAX_ACTORS) {
-    // CX = tile
+    // CX = type
     // SI = cx
     // DI = cy
     g_level_tiles[cx][cy] = g_actor_count;
-    g_actors[g_actor_count].type = type;
+    g_actors[g_actor_count].type = atype;
     g_actors[g_actor_count].cx = cx;
     g_actors[g_actor_count].cy = cy;
     g_actors[g_actor_count].var0 = 0;
-    g_actor_count++;
+    g_actor_count = g_actor_count + 1;
     return g_actor_count - 1;
-  } else {
-    return -1;
   }
+  return -1;
 }
 
-// CS:1D40
+// CS:1D40 - ***CODE MATCH!***
 void mark_actor_for_deletion(int ai) {
   g_actors[ai].type = T_DEAD_ACTOR;
 }
