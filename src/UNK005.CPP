@@ -159,7 +159,39 @@ void read_level(FILE *fp, file_level_s *lvl) {
   }
 }
 
-// CS:1C13 - TODO! --GM
+// CS:1C13 - ***CODE MATCH!***
+int write_line(FILE *fp, const char *s) {
+  int result;
+  result = fputs(s, fp);
+  if (result == -1) { return 0; }
+  result = fputc('\n', fp);
+  if (result == -1) { return 0; }
+  return 1;
+}
+
+// CS:1C45 - ***CODE MATCH!***
+int write_level(FILE *fp, file_level_s *lvl) {
+  int cy; // SI
+  int result; // DX
+
+  result = write_line(fp, lvl->name);
+  if (result == 0) { return 0; }
+  result = write_line(fp, lvl->hint);
+  if (result == 0) { return 0; }
+  result = write_line(fp, lvl->congrats);
+  if (result == 0) { return 0; }
+  for (cy = 0; cy < LEVEL_LY; cy++) {
+    result = write_line(fp, lvl->rows[cy]);
+    if (result == 0) { return 0; }
+  }
+  return 1;
+}
+
+// CS:1CCB - ***CODE MATCH!***
+// UNUSED FUNCTION
+void cs_1CCB(void) {
+  g_actor_count = 0;
+}
 
 // CS:1CD2
 int create_actor(int type, int cx, int cy) {

@@ -53,6 +53,8 @@ void clear_level(void);
 void process_loaded_level(void);
 void read_line(FILE *fp, char *buf, int max_len);
 void read_level(FILE *fp, file_level_s *lvl);
+int write_line(FILE *fp, const char *s);
+int write_level(FILE *fp, file_level_s *lvl);
 int create_actor(int type, int cx, int cy);
 void mark_actor_for_deletion(int ai);
 void garbage_collect_actors(void);
