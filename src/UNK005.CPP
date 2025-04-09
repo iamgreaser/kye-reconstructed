@@ -472,7 +472,7 @@ void load_level(int levelidx) {
   }
 }
 
-// CS:2241 - MISMATCH FIXME: A weird optimisation is taking place with something going into the AX register. Weird peephole shenanigans, perhaps? --GM
+// CS:2241 - ***CODE MATCH!***
 void save_single_level_file(void) {
   // stack: 0x3DC bytes
   FILE *fp; // BP/FFFE
@@ -492,30 +492,40 @@ void save_single_level_file(void) {
   }
 
   fp = fopen(g_levelset_fname, "w"); // DS:048D
-  if (fp != NULL) {
-    // MISMATCH FIXME: Somehow, this pulls AX out of its arse especially for fp, despite not using it above. --GM
-    fseek(fp, 0, SEEK_SET);
-    strcpy(buf80a, "1"); // DS:048F
-    result = write_line(fp, buf80a);
-    if (result) {
-      result = write_level(fp, &lvl);
-      if (result) {
-        fclose(fp);
-        return;
-      }
-    }
+  if (fp == 0) goto open_fail;
+  // ^ The above has to be a goto. Making this gotoless gives the following mismatch:
+  //   mov [bp-0x2],ax
+  //   cmp word [bp-0x2],byte +0x0
+  //   jz 0x2340
+  //   push byte +0x0
+  //   push byte +0x0
+  //   push byte +0x0
+  // and then instead of this:
+  //   000022F3  FF76FE            push word [bp-0x2]
+  // it'll do this:
+  //   push ax
 
-  } else {
-    msgbox_error("Cannot open file: ", g_levelset_fname); // DS:0491
-    clear_level();
-    g_levelset_fname[0] = 0;
-    return;
-  }
+  fseek(fp, 0, SEEK_SET);
+  strcpy(buf80a, "1"); // DS:048F
+  result = write_line(fp, buf80a);
+  if (!result) goto write_fail;
+  result = write_level(fp, &lvl);
+  if (!result) goto write_fail;
+  fclose(fp);
+  return;
+
+open_fail:
+  msgbox_error("Cannot open file: ", g_levelset_fname); // DS:0491
+  clear_level();
+  g_levelset_fname[0] = 0;
+  return;
 
   // BUG: fp is not closed in this situation!
+write_fail:
   msgbox_error("Cannot write file: ", g_levelset_fname); // DS:04A4
   clear_level();
   g_levelset_fname[0] = 0;
+  return;
 }
 
 // CS:2370
@@ -2041,4 +2051,3 @@ void animate_everything(void) {
   animate_autospawners();
   animate_blackies();
 }
-
