@@ -277,15 +277,14 @@ void garbage_collect_actors(void) {
 #endif
 }
 
-// CS:1DF3 - MISMATCH FIXME: This implementation currently uses 0x6 bytes of stack, not 0x8. Also, monsters are not implemented properly yet. --GM
+// CS:1DF3 - ***CODE MATCH!***
 void load_level_row(int cy, const char *rowstr) {
-  // TODO CHECK OPTIMISATIONS --GM
+  // TODO: Clean up some optimisations? --GM
   // needs 0x8 extra bytes on stack
-  const char *str_ptr; // BP/F8 BP-0x08
-  int internal_type; // BP/FA BP-0x06
-  int subgroup; // BP/FC BP-0x04
   int ai; // BP/FE BP-0x02
-  // BP-0x00
+  int subgroup; // BP/FC BP-0x04
+  int internal_type; // BP/FA BP-0x06
+  const char *str_ptr; // BP/F8 BP-0x08
 
   // registers
   int cx; // SI
@@ -321,10 +320,11 @@ void load_level_row(int cy, const char *rowstr) {
             ai = create_actor(internal_type, cx, cy);
             // BUG: Failure (-1) not checked
             // Mathematically it won't happen, but I like hygiene. --GM
-            // TODO: Decipher this 32-bit-int mess --GM
-            //g_actors[ai].var0 = rand()<<2;
-            (void)ai;
-            // 0x00008000L, CS:6231(0x8000, 0)<<2;
+
+            // random(x) is a Turbo C++ / Borland C++ extension, apparently?
+            // It's defined as a macro.
+            // Probably something like ((((long)rand()) * (x)) / RAND_MAX)?
+            g_actors[ai].var0 = random(4);
             break;
           case T_AUTOSLIDER1:
             create_actor((cx % 4) + T_AUTOSLIDER1, cx, cy);
@@ -339,10 +339,10 @@ void load_level_row(int cy, const char *rowstr) {
           break;
         case 3:
           *tileptr = T_KYE;
+          g_kye_main_cx = cx;
           g_kye_main_cy = cy;
           g_kye_spawn_cy = cy;
           g_kye_spawn_cx = cx;
-          g_kye_main_cx = cx;
           break;
       }
     }
