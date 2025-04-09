@@ -349,6 +349,41 @@ void load_level_row(int cy, const char *rowstr) {
   }
 }
 
+// CS:1F43 - ***CODE MATCH!***
+void encode_level_row(int cy, char *line) {
+  // Stack: 0x06 bytes
+  char external_char; // BP/FE
+  int cx; // BP/FC
+  int internal_type; // BP/FA
+
+  int tile; // DX
+  int subgroup; // CX
+  // DI = cy<<1
+  // SI = running tile counter
+
+  for (cx = 0; cx < LEVEL_LX; cx++) {
+    internal_type = 0;
+    tile = g_level_tiles[cx][cy];
+    if (tile >= 0) {
+      subgroup = 2;
+      internal_type = g_actors[tile].type;
+    } else if (tile == T_EMPTY) {
+      subgroup = 0;
+    } else if (tile == T_KYE) {
+      subgroup = 3;
+    } else {
+      subgroup = 1;
+      internal_type = tile;
+    }
+    if (convert_internal_to_char(subgroup, internal_type, &external_char)) {
+      line[cx] = external_char;
+    } else {
+      line[cx] = ' ';
+    }
+  }
+  line[LEVEL_LX] = 0;
+}
+
 // CS:1FC5
 int find_level_by_name(const char *name) {
   // TODO! --GM

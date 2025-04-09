@@ -59,6 +59,7 @@ int create_actor(int type, int cx, int cy);
 void mark_actor_for_deletion(int ai);
 void garbage_collect_actors(void);
 void load_level_row(int cy, const char *rowstr);
+void encode_level_row(int cy, char *line);
 int find_level_by_name(const char *name);
 int registration_check(const char *cmdline);
 void load_level(int levelidx);
