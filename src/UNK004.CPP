@@ -11,16 +11,19 @@
 #include "kyevars.h"
 
 // Word alignment mandates that this starts the module.
-// CS:18FE
+// CS:18FE - MISMATCH FIXME: external_char_in is being dumped into DL before the loop --GM
 int convert_char_to_internal(int *subgroup_out, int *internal_type_out, char external_char_in) {
+  // DI = subgroup_out
   int i; // CX
 
-  for (i = 0; TILECONV_MAP[i].subgroup != -1; i++) {
+  i = 0;
+  while (TILECONV_MAP[i].subgroup != -1) {
     if (TILECONV_MAP[i].external_char == external_char_in) {
       *subgroup_out = TILECONV_MAP[i].subgroup;
       *internal_type_out = TILECONV_MAP[i].internal_type;
       return 1;
     }
+    i++;
   }
 
   return 0;
