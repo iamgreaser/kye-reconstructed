@@ -528,7 +528,7 @@ write_fail:
   return;
 }
 
-// CS:2370
+// CS:2370 - ***CODE MATCH!***
 void delete_and_draw_unacting_tile(int cx, int cy) {
   // SI = cx
   // DI = cy
@@ -538,8 +538,8 @@ void delete_and_draw_unacting_tile(int cx, int cy) {
   g_level_tiles[cx][cy] = T_EMPTY;
   // BUG: Previous pen not saved
   SelectObject(g_maindc, g_hpenWhite);
-  px = (cx * g_tile_lx) + g_r_playfield.left;
-  py = (cy * g_tile_ly) + g_r_playfield.top;
+  px = g_r_playfield.left + (cx * g_tile_lx);
+  py = g_r_playfield.top  + (cy * g_tile_ly);
   Rectangle(
     g_maindc,
     px,
@@ -548,10 +548,10 @@ void delete_and_draw_unacting_tile(int cx, int cy) {
     py + g_tile_ly);
 }
 
-// CS:23D2
+// CS:23D2 - ***CODE MATCH!***
 void draw_actor(HDC dst_dc, HDC src_dc, int ai) {
-  int dst_py; // BP/FC
   int dst_px; // BP/FE
+  int dst_py; // BP/FC
 
   // SI = ai
   int type; // CX
@@ -562,12 +562,12 @@ void draw_actor(HDC dst_dc, HDC src_dc, int ai) {
   dst_px = g_actors[ai].cx * g_tile_lx;
   dst_py = g_actors[ai].cy * g_tile_ly;
 
-  if (type < 23) {
-    src_px = type * TILE_LX;
-    src_py = 0;
-  } else {
+  if (type >= 23) {
     src_px = (type - 23) * TILE_LX;
     src_py = 4 * TILE_LY;
+  } else {
+    src_px = type * TILE_LX;
+    src_py = 0;
   }
 
   switch (type) {
@@ -594,7 +594,7 @@ void draw_actor(HDC dst_dc, HDC src_dc, int ai) {
     SRCCOPY);
 }
 
-// CS:247F
+// CS:247F - ***CODE MATCH!***
 void repaint_all_actors(void) {
   HDC dc; // DI
   int ai; // SI
