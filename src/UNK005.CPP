@@ -216,12 +216,49 @@ void mark_actor_for_deletion(int ai) {
   g_actors[ai].type = T_DEAD_ACTOR;
 }
 
-// CS:1D51
+// CS:1D51 - ***CODE MATCH!***
 void garbage_collect_actors(void) {
-  // FIXME THIS IS NOT HOW IT'S IMPLEMENTED,
-  // BUT THE ACTUAL DECOMP/DISASM HURTS TO READ --GM
-  // this implementation is O(n) worst case.
-  // the real implementation appears to be O(n^2) worst case.
+#if 1
+  // This is the real implementation.
+  // stack: 0x04 bytes (BP/FC)
+  // BP/FC - temporary actor pointer
+  // BP/FE - temporary column pointer
+
+  // These are probably called i, j, k.
+  int ai; // CX
+  int cx; // DX - also secondary actor index pointer
+  int cy; // DI
+
+  ai = 0;
+  while (ai < g_actor_count) {
+    if (g_actors[ai].type == T_DEAD_ACTOR) {
+      // BUG: Actor count apparently doesn't decrement when there's only one actor?
+      // I'm not sure how exploitable this is - I don't know how to create actors when there's no actors remaining. --GM
+      if (g_actor_count >= 1) {
+        g_actor_count = g_actor_count - 1;
+        for (cx = ai; cx < g_actor_count; cx++) {
+          // BUG: var0 is not copied. This could be abused to, for example, make a blacky last longer.
+          g_actors[cx].type = g_actors[cx+1].type;
+          g_actors[cx].cx = g_actors[cx+1].cx;
+          g_actors[cx].cy = g_actors[cx+1].cy;
+        }
+        for (cy = 1; cy < LEVEL_LY-1; cy++) {
+          for (cx = 1; cx < LEVEL_LX-1; cx++) {
+            if (g_level_tiles[cx][cy] > ai) {
+              g_level_tiles[cx][cy] = g_level_tiles[cx][cy] - 1;
+            }
+          }
+        }
+      }
+    } else {
+      ai++;
+    }
+  }
+
+#else
+  // This is how I implemented it before attempting to match the code. --GM
+  // It's O(n) instead of O(n^2) and it's easier to understand.
+  // It does not have the bugs identified. As a result, due to one of the bugs being triggered frequently in practice, this is inaccurate.
 
   int ai;
   int deleted;
@@ -237,9 +274,10 @@ void garbage_collect_actors(void) {
     }
   }
   g_actor_count -= deleted;
+#endif
 }
 
-// CS:1DF3
+// CS:1DF3 - MISMATCH FIXME: This implementation currently uses 0x6 bytes of stack, not 0x8. Also, monsters are not implemented properly yet. --GM
 void load_level_row(int cy, const char *rowstr) {
   // TODO CHECK OPTIMISATIONS --GM
   // needs 0x8 extra bytes on stack
