@@ -427,13 +427,12 @@ int registration_check(const char *cmdline) {
   return 1;
 }
 
-// CS:20D6
+// CS:20D6 - ***CODE MATCH!***
 void load_level(int levelidx) {
   // needs 0x3DC (988) extra bytes on stack
-  char buf80a[80]; // BP/FC24
-  file_level_s lvl; // BP/FC74
   FILE *fp; // BP/FFFE BP-0x002
-  // BP-0x000
+  file_level_s lvl; // BP/FC74
+  char buf80a[80]; // BP/FC24
 
   int i;
 
@@ -445,7 +444,7 @@ void load_level(int levelidx) {
       g_levelset_fname[0] = 0;
       return;
     }
-    fseek(fp, 0, SEEK_SET); // FIXME CONFIRM --GM
+    fseek(fp, 0, SEEK_SET);
     read_line(fp, buf80a, 80-1);
     g_levelcount = atol(buf80a);
     g_level_complete = 0;
@@ -458,7 +457,6 @@ void load_level(int levelidx) {
       levelidx = 1;
     }
 
-    // TODO CONFIRM OPTIMISATION, this might not be a thing --GM
     for (i = 0; i < levelidx; i++) {
       read_level(fp, &lvl);
     }
