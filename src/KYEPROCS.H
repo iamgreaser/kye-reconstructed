@@ -70,7 +70,7 @@ void repaint_all_actors(void);
 void draw_wall(int cx, int cy, HDC dc);
 void repaint_all_walls(void);
 void draw_fizzled_kye(int fizzle_level);
-void cs_2791(int cx, int cy);
+void paint_tile_in_editor(int cx, int cy);
 void repaint_status_left(void);
 void cs_2F89(char *fname_buf);
 void move_actor(int ai, int newx, int newy);

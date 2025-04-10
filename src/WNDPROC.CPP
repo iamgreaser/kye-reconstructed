@@ -150,7 +150,7 @@ void main_wm_lbuttondown(HWND hWnd, LONG lParam, WORD wParam) {
       y = y / g_tile_ly;
       cs_4B7A(x, y);
       acquire_main_dc();
-      cs_2791(x, y);
+      paint_tile_in_editor(x, y);
       repaint_status_left();
       release_main_dc();
       break;

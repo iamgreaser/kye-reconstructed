@@ -719,9 +719,39 @@ void draw_fizzled_kye(int fizzle_level){
   DeleteObject(bmp);
 }
 
-// CS:2791
-void cs_2791(int cx, int cy) {
-  // TODO! --GM
+// CS:2791 - ***CODE MATCH!***
+void paint_tile_in_editor(int cx, int cy) {
+  // Stack: 0x02 bytes
+  int tile; // BP/FE
+
+  // DI = cx
+  HDC dc; // SI
+
+  dc = CreateCompatibleDC(g_maindc);
+
+  tile = g_level_tiles[cx][cy];
+  if (tile >= 0) {
+    SelectObject(dc, g_hbmpBlock);
+    draw_actor(g_maindc, dc, tile);
+
+  } else if (tile == T_KYE) {
+    SelectObject(dc, g_hbmpKye);
+    BitBlt(g_maindc,
+      cx * g_tile_lx, cy * g_tile_ly,
+      TILE_LX, TILE_LY,
+      dc,
+      0 * TILE_LX, 0 * TILE_LY,
+      SRCCOPY);
+
+  } else if (tile == T_EMPTY) {
+    delete_and_draw_unacting_tile(cx, cy);
+
+  } else {
+    SelectObject(dc, g_hbmpWall);
+    draw_wall(cx, cy, dc);
+  }
+
+  DeleteDC(dc);
 }
 
 // CS:2847
