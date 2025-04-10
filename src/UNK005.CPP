@@ -687,10 +687,36 @@ void repaint_all_walls(void) {
   DeleteDC(dc);
 }
 
-// CS:26AA
+// CS:26AA - ***CODE MATCH!***
 void draw_fizzled_kye(int fizzle_level){
-  // TODO! --GM
-  (void)fizzle_level;
+  // Stack: 0x08 bytes
+  int px; // BP/FE
+  int py; // BP/FC
+  HDC src_dc; // BP/FA
+  HBITMAP bmp; // BP/F8
+
+  HDC bmp_dc; // DI
+  int reps; // SI
+
+  src_dc = CreateCompatibleDC(g_maindc);
+  bmp = CreateCompatibleBitmap(g_maindc, TILE_LX, TILE_LY);
+  bmp_dc = CreateCompatibleDC(g_maindc);
+  SelectObject(bmp_dc, bmp);
+  SelectObject(src_dc, g_hbmpKye);
+
+  BitBlt(bmp_dc, 0, 0, TILE_LX, TILE_LY, src_dc,
+    0 * TILE_LX, 0 * TILE_LY, SRCCOPY);
+
+  for (reps = 0; reps < fizzle_level; reps++) {
+    SetPixel(bmp_dc, random(TILE_LX), random(TILE_LY), RGB(0xFF, 0xFF, 0xFF));
+  }
+  px = g_kye_main_cx * g_tile_lx;
+  py = g_kye_main_cy * g_tile_ly;
+  BitBlt(g_maindc, px, py, TILE_LX, TILE_LY, bmp_dc, 0, 0, SRCCOPY);
+
+  DeleteDC(src_dc);
+  DeleteDC(bmp_dc);
+  DeleteObject(bmp);
 }
 
 // CS:2791
@@ -701,13 +727,13 @@ void cs_2791(int cx, int cy) {
 // CS:2847
 void repaint_status_left(void) {
   // stack needs 0x6C bytes (BP/94)
+  HDC dc; // BP/FE
+  int px; // BP/FC
+  // int *ent1; // BP/FA
+  // BP/AD
   //char textbuf[25]; // BP/94
   // TODO: Find actual length --GM
   char textbuf[32];
-  // BP/AD
-  // int *ent1; // BP/FA
-  int px; // BP/FC
-  HDC dc; // BP/FE
 
   int i; // SI
   int diamonds; // CX
