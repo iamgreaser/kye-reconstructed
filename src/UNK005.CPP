@@ -760,6 +760,7 @@ void repaint_status_left(void) {
   HDC dc; // BP/FE
   int px; // BP/FC
   // int *ent1; // BP/FA
+  // tile ptr // BP/F8
   // BP/AD
   //char textbuf[25]; // BP/94
   // TODO: Find actual length --GM
@@ -770,65 +771,106 @@ void repaint_status_left(void) {
   int cx, cy; // not really mapped to anything?
 
   switch (g_is_in_editor) {
-    case 0: {
-      // 2862
-      SelectObject(g_maindc, g_hpenWhite);
-      Rectangle(
+  case 0:
+    // 2862
+    SelectObject(g_maindc, g_hpenWhite);
+    Rectangle(
+      g_maindc,
+      g_r_status_left.left,
+      g_r_status_left.top,
+      g_r_status_left.left + 70,
+      g_r_status_left.top + 17);
+    dc = CreateCompatibleDC(g_maindc);
+    SelectObject(dc, g_hbmpKye);
+    for (px = 0, i = 0; i < g_kye_lives; px += TILE_LX + 4, i++) {
+      BitBlt(
         g_maindc,
-        g_r_status_left.left,
-        g_r_status_left.top,
-        g_r_status_left.left + 70,
-        g_r_status_left.top + 17);
-      dc = CreateCompatibleDC(g_maindc);
-      SelectObject(dc, g_hbmpKye);
-      for (px = 0, i = 0; i < g_kye_lives; px += TILE_LX + 4, i++) {
-        BitBlt(
-          g_maindc,
-          g_r_status_left.left + px + 1,
-          g_r_status_left.top + 1,
-          TILE_LX, TILE_LY,
-          dc,
-          0, 0,
-          SRCCOPY);
-      }
-      DeleteDC(dc);
+        g_r_status_left.left + px + 1,
+        g_r_status_left.top + 1,
+        TILE_LX, TILE_LY,
+        dc,
+        0, 0,
+        SRCCOPY);
+    }
+    DeleteDC(dc);
 
-      SelectObject(g_maindc, g_hpenBlack);
-      sprintf(textbuf, "Level:  %d   ", g_levelidx); // DS:04B8
-      TextOut(g_maindc,
-        g_r_status_left.left + 80,
-        g_r_status_left.top,
-        textbuf,
-        strlen(textbuf));
+    SelectObject(g_maindc, g_hpenBlack);
+    sprintf(textbuf, "Level:  %d   ", g_levelidx); // DS:04B8
+    TextOut(g_maindc,
+      g_r_status_left.left + 80,
+      g_r_status_left.top,
+      textbuf,
+      strlen(textbuf));
 
-      diamonds = 0;
-      for (cx = 0; cx < LEVEL_LX; cx++) {
-        for (cy = 0; cy < LEVEL_LY; cy++) {
-          if (g_level_tiles[cx][cy] == T_DIAMOND) {
-            diamonds++;
-          }
+    diamonds = 0;
+    for (cx = 0; cx < LEVEL_LX; cx++) {
+      for (cy = 0; cy < LEVEL_LY; cy++) {
+        if (g_level_tiles[cx][cy] == T_DIAMOND) {
+          diamonds++;
         }
       }
-      sprintf(textbuf, "Diamonds left:  %d   ", diamonds);
-      TextOut(g_maindc,
-        g_r_status_left.left + 160,
-        g_r_status_left.top,
-        textbuf,
-        strlen(textbuf));
-    } break;
+    }
+    sprintf(textbuf, "Diamonds left:  %d   ", diamonds);
+    TextOut(g_maindc,
+      g_r_status_left.left + 160,
+      g_r_status_left.top,
+      textbuf,
+      strlen(textbuf));
+    break;
 
-    case 1: {
-      // 299B
-      // TODO! --GM
-    } break;
-
-    default:
-      break;
+  case 1:
+    // 299B
+    diamonds = 0;
+    for (cx = 0; cx < LEVEL_LX; cx++) {
+      for (cy = 0; cy < LEVEL_LY; cy++) {
+        if (g_level_tiles[cx][cy] == T_DIAMOND) {
+          diamonds++;
+        }
+      }
+    }
+    // TODO! --GM
+    break;
   }
+}
+
+// CS:2A48
+void cs_2A48(void) {
+  // TODO! --GM
+}
+
+// CS:2AE1
+// TODO: ARGS --GM
+//void cs_2AE1(void) {
+  // TODO! --GM
+//}
+
+// CS:2BA6
+// TODO: ARGS --GM
+//void cs_2BA6(void) {
+  // TODO! --GM
+//}
+
+// CS:2C31
+// TODO: ARGS --GM
+//void cs_2C31(void) {
+  // TODO! --GM
+//}
+
+// CS:2C83
+// TODO: ARGS --GM
+//void cs_2C83(void) {
+  // TODO! --GM
+//}
+
+// CS:2CFB
+int FAR PASCAL _export DLG_FOPEN_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
+  // TODO! --GM
+  return 0;
 }
 
 // CS:2F89
 void cs_2F89(char *fname_buf) {
+  // TODO! --GM
 }
 
 // CS:3006
