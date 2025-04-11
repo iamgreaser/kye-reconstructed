@@ -49,3 +49,4 @@ int g_has_maindc; // DS:2D56
 HDC g_maindc; // DS:2D58
 HANDLE g_hInstance; // DS:2D5A
 HWND g_mainwnd; // DS:2D5C
+char g_toolname[50]; // DS:2D5E

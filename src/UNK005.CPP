@@ -754,25 +754,22 @@ void paint_tile_in_editor(int cx, int cy) {
   DeleteDC(dc);
 }
 
-// CS:2847
+// CS:2847 - ***CODE MATCH!***
 void repaint_status_left(void) {
   // stack needs 0x6C bytes (BP/94)
   HDC dc; // BP/FE
   int px; // BP/FC
   // int *ent1; // BP/FA
   // tile ptr // BP/F8
-  // BP/AD
-  //char textbuf[25]; // BP/94
-  // TODO: Find actual length --GM
-  char textbuf[32];
+  char textbuf[100]; // BP/94
 
   int i; // SI
   int diamonds; // CX
-  int cx, cy; // not really mapped to anything?
+  int x; // DI
+  int y; // DX
 
   switch (g_is_in_editor) {
   case 0:
-    // 2862
     SelectObject(g_maindc, g_hpenWhite);
     Rectangle(
       g_maindc,
@@ -782,11 +779,12 @@ void repaint_status_left(void) {
       g_r_status_left.top + 17);
     dc = CreateCompatibleDC(g_maindc);
     SelectObject(dc, g_hbmpKye);
-    for (px = 0, i = 0; i < g_kye_lives; px += TILE_LX + 4, i++) {
+    for (i = 0; i < g_kye_lives; i++) {
+      x = g_r_status_left.left + i * (TILE_LX + 4) + 1;
+      y = g_r_status_left.top + 1;
       BitBlt(
         g_maindc,
-        g_r_status_left.left + px + 1,
-        g_r_status_left.top + 1,
+        x, y,
         TILE_LX, TILE_LY,
         dc,
         0, 0,
@@ -796,39 +794,56 @@ void repaint_status_left(void) {
 
     SelectObject(g_maindc, g_hpenBlack);
     sprintf(textbuf, "Level:  %d   ", g_levelidx); // DS:04B8
+    y = strlen(textbuf);
     TextOut(g_maindc,
       g_r_status_left.left + 80,
       g_r_status_left.top,
-      textbuf,
-      strlen(textbuf));
+      textbuf, y);
 
     diamonds = 0;
-    for (cx = 0; cx < LEVEL_LX; cx++) {
-      for (cy = 0; cy < LEVEL_LY; cy++) {
-        if (g_level_tiles[cx][cy] == T_DIAMOND) {
+    for (x = 0; x < LEVEL_LX; x++) {
+      for (y = 0; y < LEVEL_LY; y++) {
+        if (g_level_tiles[x][y] == T_DIAMOND) {
           diamonds++;
         }
       }
     }
-    sprintf(textbuf, "Diamonds left:  %d   ", diamonds);
+    sprintf(textbuf, "Diamonds left:  %d   ", diamonds); // DS:04C6
+    y = strlen(textbuf);
     TextOut(g_maindc,
       g_r_status_left.left + 160,
       g_r_status_left.top,
-      textbuf,
-      strlen(textbuf));
+      textbuf, y);
     break;
 
   case 1:
-    // 299B
     diamonds = 0;
-    for (cx = 0; cx < LEVEL_LX; cx++) {
-      for (cy = 0; cy < LEVEL_LY; cy++) {
-        if (g_level_tiles[cx][cy] == T_DIAMOND) {
+    for (x = 0; x < LEVEL_LX; x++) {
+      for (y = 0; y < LEVEL_LY; y++) {
+        if (g_level_tiles[x][y] == T_DIAMOND) {
           diamonds++;
         }
       }
     }
-    // TODO! --GM
+    sprintf(textbuf, "Diamonds:  %d   ", diamonds); // DS:04DC
+    y = strlen(textbuf);
+    TextOut(g_maindc,
+      g_r_status_left.left + 5,
+      g_r_status_left.top,
+      textbuf, y);
+
+    sprintf(textbuf, "Tool:  %s                    ", g_toolname); // DS:04ED
+    y = strlen(textbuf);
+    if (y > 25) {
+      y = 25;
+      textbuf[25] = 0;
+    }
+    TextOut(g_maindc,
+      g_r_status_left.left + 110,
+      g_r_status_left.top,
+      textbuf,
+      y);
+
     break;
   }
 }
