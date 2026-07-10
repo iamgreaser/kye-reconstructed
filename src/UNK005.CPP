@@ -907,10 +907,17 @@ void cs_2BA6(char *a0, const char *a1) {
 }
 
 // CS:2C31
-// TODO: ARGS --GM
-//void cs_2C31(void) {
-  // TODO! --GM
-//}
+void cs_2C31(char *a0, const char *a1) {
+  char *fol; // SI
+
+  for (fol = a0; *fol != 0 && *fol != '.'; fol++) {
+    // Do nothing, just search
+  }
+
+  if (*fol != '.') {
+    strcat(a0, a1);
+  }
+}
 
 // CS:2C83
 // TODO: ARGS --GM
