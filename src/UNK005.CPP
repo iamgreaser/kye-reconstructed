@@ -906,7 +906,7 @@ void cs_2BA6(char *a0, const char *a1) {
   }
 }
 
-// CS:2C31
+// CS:2C31 - ***CODE MATCH!***
 void cs_2C31(char *a0, const char *a1) {
   char *fol; // SI
 
@@ -919,11 +919,17 @@ void cs_2C31(char *a0, const char *a1) {
   }
 }
 
-// CS:2C83
-// TODO: ARGS --GM
-//void cs_2C83(void) {
-  // TODO! --GM
-//}
+// CS:2C83 - ***CODE MATCH!***
+void cs_2C83(char *a0, const char *a1) {
+  int tmp0; // AX
+
+  tmp0 = strlen(a0);
+  if (tmp0 > 0 && a0[tmp0-1] != '\\' && a0[tmp0-1] != ':') {
+    strcat(a0, "\\"); // DS:06A9
+  }
+
+  strcat(a0, a1);
+}
 
 // CS:2CFB
 int FAR PASCAL _export DLG_FOPEN_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {

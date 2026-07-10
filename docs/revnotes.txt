@@ -41,7 +41,6 @@ Compiler intrinsics
 *** strcpy(ds:dst, src="const string") ***
 
 Constant string gets allocated onto DS.
-
 NOTE: "length" includes the NUL terminator here.
 
 It all seems to start like this:
@@ -105,11 +104,26 @@ But another case does use `mov di,&dst`.
     rep movsb
   pop ds
 
+*** strcat(ds:dst, src="const string") ***
+
+Constant string gets allocated onto DS.
+NOTE: "length" includes the NUL terminator here.
+
+  mov di,&dst
+  mov si,src.ptr
+  cld
+  mov cx,0xffff
+  xor ax,ax
+  repne scasb
+  dec di
+  mov cx,src.len
+  rep movsb
+
 *** strcat(ds:dst, ds:src) ***
 
-  mov di,0x2d90
+  mov di,&dst
   push di
-    mov di,0x68c
+    mov di,&src
     cld
     xor ax,ax
     mov cx,0xffff
@@ -154,3 +168,15 @@ But another case does use `mov di,&dst`.
   @skip:
   dec di
 
+*** strlen(ds:src) -> AX ***
+
+  mov di,&src
+  push ds
+  pop es
+  cld
+  xor ax,ax
+  mov cx,0xffff
+  repne scasb
+  not cx
+  dec cx
+  mov ax,cx
