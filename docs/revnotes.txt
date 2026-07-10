@@ -134,3 +134,23 @@ But another case does use `mov di,&dst`.
   rep movsb
   mov ds,word [bp-TMP_SEG]
 
+*** strchr(ds:src, const CHAR_TO_FIND) ***
+
+  mov di,&src
+  push ds
+  pop es
+  cld
+  xor ax,ax
+  mov cx,0xffff
+  repne scasb
+  not cx
+  mov ax,CHAR_TO_FIND
+  sub di,cx
+  repne scasb
+  jz @skip
+    mov di,0x1
+    xor ax,ax
+    mov es,ax
+  @skip:
+  dec di
+

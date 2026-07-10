@@ -889,11 +889,22 @@ void cs_2AE1(int a0_unk, LPSTR a1, LPSTR a3, LPSTR a5) {
   a1[fol-a5+1] = 0;
 }
 
-// CS:2BA6
-// TODO: ARGS --GM
-//void cs_2BA6(void) {
-  // TODO! --GM
-//}
+// CS:2BA6 - ***CODE MATCH!***
+void cs_2BA6(char *a0, const char *a1) {
+  const char *fol; // SI
+
+  for (fol = a1; *fol != 0 && *fol != '.'; fol++) {
+    // Do nothing, just search
+  }
+
+  if (*fol != 0) {
+    if (strchr(fol, '*') == NULL) {
+      if (strchr(fol, '?') == NULL) {
+        strcpy(a0, fol);
+      }
+    }
+  }
+}
 
 // CS:2C31
 // TODO: ARGS --GM
