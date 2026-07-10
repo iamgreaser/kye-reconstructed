@@ -15,3 +15,7 @@ indent_size = 8
 [*.{sh,bat}]
 indent_style = space
 indent_size = 2
+
+[*.txt]
+indent_style = space
+indent_size = 2

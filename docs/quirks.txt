@@ -1,0 +1,59 @@
+vim: set sts=2 sw=2 et :
+
+------------------------------
+
+A primer on how Kye works:
+
+There is a 30 wide x 20 high 2D grid of 16-bit signed integers, arranged as a row of columns, or `[x][y]` in C array notation. The natural array order is really only relevant when dealing with out-of-bounds memory accesses, which can actually happen when respawning after losing a Kye.
+Each value can be a negative integer denoting that this is either empty (-1), Kye (-2), or a "wall" type (anything less than that) which may or may not be a wall.
+Or it can be a non-negative integer denoting an index into an array of "block"-type things (in my source code reconstruction I call these "actors").
+
+The actors array is a list of structures containing 4 16-bit signed integers: The block type, the x and y coordinates of the actor, and a general-purpose variable I like to call "var0".
+
+When a level is being loaded, tiles are added and actors are created starting from left to right, continuing top to bottom, effectively transposed from its natural array order. Actors are appended to the end of the actor list.
+
+TODO: Explain the order of how actors are added when the level is being loaded --GM
+TODO: Explain how each tick works --GM
+
+------------------------------
+
+Garbage collection order var0 bug:
+
+There are 2 bugs in the actor garbage collection function.
+One so far seems to be benign: if there is exactly one actor in the array, it is not removed. However, it is a dead actor, and the tile is replaced with either an empty or a wall. I'm not sure if there is a way to, for example, force it to draw over something when the window needs a repaint.
+
+This focuses on the much more notable bug.
+
+When an actor is created (either via loading the level, or via being created by an autoslider or autorocky), it has a var0 set to 0 EXCEPT if it is a beast, in which case its var0 is set to a random integer n such that 0 <= n <= 3.
+
+Most actors don't use var0. Here's the ones which do:
+
+- All 5 beasts: Indicates which of the 4 animation frames are shown when drawing the beast. Every 3rd tick in a special phase, var0 is advanced by 1, wrapping around within mod 4.
+- Blackies (empty): Same animation behaviour as a beast, but for an empty blacky, and every 5th tick in its own special phase.
+- Blackies (full): Same as an empty blacky, but when the animation phase is being advanced, if var0 is equal to 3 before advancing it, it gets turned into an empty blacky in the process.
+
+This function gets called:
+
+- Immediately after loading a level (just in case someone put actors in the border where walls are meant to be)
+- At the end of the main tick
+- At the end of the special phase used for timer blocks
+
+Let's say we have actors A, B, and C, with tick values 3, 2, 0 respectively:
+
+  A B C
+  3 2 0
+
+Suppose actor B is deleted and garbage collected. The effect this has on the actor list and the var0 values:
+
+  A C -
+  3 2 0
+
+Suddenly, actor C has actor B's var0 value.
+
+So, here's how the bug is typically triggered:
+
+>
+>   After the main tick and all timer blocks are processed, if exactly one actor gets deleted, then every actor after it steals from the actor after itself in the list.
+>
+
+------------------------------

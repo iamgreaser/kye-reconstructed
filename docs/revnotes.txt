@@ -1,0 +1,136 @@
+==============================
+Rules for this codebase
+------------------------------
+
+- SS = DS.
+- One data segment.
+- One code segment, if I recall correctly?
+
+==============================
+Prologues and epilogues
+------------------------------
+
+Unused locals typically get removed, same deal with written-but-not-read locals.
+
+No arguments or used locals:
+
+  ...
+  ret
+
+1 argument, no used locals:
+
+  push bp
+  mov bp,sp
+  ...
+  pop bp
+  ret
+
+1 argument, 1 used local:
+
+  push bp
+  mov bp,sp
+  sub sp,0x2
+  ...
+  leave
+  ret
+
+==============================
+Compiler intrinsics
+------------------------------
+
+*** strcpy(ds:dst, src="const string") ***
+
+Constant string gets allocated onto DS.
+
+NOTE: "length" includes the NUL terminator here.
+
+It all seems to start like this:
+
+  mov di,&dst
+  mov si,src.ptr
+  cld
+  push ds
+  pop es
+
+Then:
+
+If the length is divisible by 2:
+
+  mov cx,src.len/2
+  rep movsw
+
+Otherwise, if the length mod 2 is 1:
+
+  mov cx,floor(src.len/2)
+  rep movsw
+  movsb
+
+Also, if the length is 1 (yeah, go figure with that one):
+
+  xor cx,cx
+  rep movsw
+  movsb
+
+*** strcpy(ds:dst, ds:src) ***
+
+One case I have uses a `lea di,[bp-*]` to point to a destination buffer stored in locals.
+But another case does use `mov di,&dst`.
+
+  mov di,&dst
+  push di
+    mov di,&src
+    cld
+    push ds
+    pop es
+    mov ax,di
+  pop di
+  push ax
+    xor ax,ax
+    mov cx,0xffff
+    repne scasb
+    not cx
+    sub di,cx
+    shr cx,1
+    push di
+      push es
+        push ds
+        pop es
+      pop ax
+    pop si
+  pop di
+  push ds
+    mov ds,ax
+    rep movsw
+    adc cx,cx
+    rep movsb
+  pop ds
+
+*** strcat(ds:dst, ds:src) ***
+
+  mov di,0x2d90
+  push di
+    mov di,0x68c
+    cld
+    xor ax,ax
+    mov cx,0xffff
+    repne scasb
+    not cx
+    sub di,cx
+    push di
+      push es
+        push ds
+        pop es
+      pop ax
+    pop si
+  pop di
+  mov word [bp-TMP_SEG],ds
+  mov ds,ax
+  push cx
+    mov cx,0xffff
+    xor ax,ax
+    repne scasb
+    dec di
+  pop cx
+  rep movsb
+  mov ds,word [bp-TMP_SEG]
+
