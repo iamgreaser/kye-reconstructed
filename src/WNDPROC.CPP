@@ -578,7 +578,7 @@ LONG FAR PASCAL _export WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
   return 0;
 }
 
-// CS:0D6A - Near-match, but one of the registers is incorrect.
+// CS:0D6A - ***CODE MATCH!***
 int PASCAL _export WinMain(HANDLE hInstance,
                            HANDLE hPrevInstance,
                            LPSTR lpCmdLine,
@@ -589,7 +589,7 @@ int PASCAL _export WinMain(HANDLE hInstance,
   MSG msg; // /D2 BP-0x2A
   char cmdlinebuf[50]; // /A0 BP-0x60
 
-  int i; // SI - MISMATCH FIXME: Seems to be swapped with DI right now? --GM
+  register int i; // SI - has to be `register` otherwise it gets assigned to DI instead
 
 
   for (i = 0; lpCmdLine[i] != 0 && i < 50; i++) {
