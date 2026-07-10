@@ -866,11 +866,28 @@ void cs_2A48(HWND hDlg) {
   SetDlgItemText(hDlg, 401, g_068C); // DS:068C
 }
 
-// CS:2AE1
-// TODO: ARGS --GM
-//void cs_2AE1(void) {
-  // TODO! --GM
-//}
+// CS:2AE1 - ***CODE MATCH!***
+void cs_2AE1(int a0_unk, LPSTR a1, LPSTR a3, LPSTR a5) {
+  LPSTR fol;
+  char tmpc0;
+
+  fol = a5 + lstrlen(a5);
+  while (*fol != ':' && *fol != '\\' && fol > a5) {
+    fol = AnsiPrev(a5, fol);
+  }
+
+  if (*fol != ':' && *fol != '\\') {
+    lstrcpy(a3, a5);
+    *a1 = 0;
+    return;
+  }
+
+  lstrcpy(a3, fol+1);
+  tmpc0 = fol[1];
+  lstrcpy(a1, a5);
+  fol[1] = tmpc0;
+  a1[fol-a5+1] = 0;
+}
 
 // CS:2BA6
 // TODO: ARGS --GM
