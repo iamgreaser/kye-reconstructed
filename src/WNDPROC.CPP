@@ -12,9 +12,9 @@
 
 #include "resdefs.h"
 
-int unused_0054[4] = {-1, -1, -1, -1};
-int g_mouse_captured;
-int g_key_pressed;
+int unused_0054[4] = {-1, -1, -1, -1}; // DS:0054
+int g_mouse_captured; // DS:005C
+int g_key_pressed; // DS:005E
 
 // CS:016A - ***CODE MATCH!***
 // requirements, somewhat: -k- -G -O2 -1 -W -ms
