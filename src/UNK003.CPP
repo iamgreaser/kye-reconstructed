@@ -13,8 +13,6 @@
 int g_has_maintimer; // DS:0458
 // DS:045A contains strings.
 
-// DS:050C pertains to some kind of file open dialogue?
-
 // int // DS:06A9 == 0x5C
 // DS:06AB contains strings.
 

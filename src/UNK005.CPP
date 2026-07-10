@@ -10,6 +10,9 @@
 #include "kyeprocs.h"
 #include "kyevars.h"
 
+// DS:050C pertains to some kind of file open dialogue?
+char g_050C[128]; // DS:050C
+
 char g_068C[13] = "*.kye"; // DS:068C
 // DS:0699 contains constant NUL-terminated string ".kye"
 char g_069E[13] = "~~~~~~~~.*\\"; // DS:069E
@@ -867,7 +870,7 @@ void cs_2A48(HWND hDlg) {
 }
 
 // CS:2AE1 - ***CODE MATCH!***
-void cs_2AE1(int a0_unk, LPSTR a1, LPSTR a3, LPSTR a5) {
+void cs_2AE1(HWND hDlg, LPSTR a1, LPSTR a3, LPSTR a5) {
   LPSTR fol;
   char tmpc0;
 
@@ -934,6 +937,393 @@ void cs_2C83(char *a0, const char *a1) {
 // CS:2CFB
 int FAR PASCAL _export DLG_FOPEN_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
   // TODO! --GM
+  // [bp+0xE].w = hDlg
+  // [bp+0xC].w = msg
+  // [bp+0xA].w = wParam
+  // [bp+0x6].d = lParam
+
+  // 00002CFB  8CD8              mov ax,ds
+  // 00002CFD  90                nop
+  // 00002CFE  45                inc bp
+  // 00002CFF  55                push bp
+  // 00002D00  8BEC              mov bp,sp
+  // 00002D02  1E                push ds
+  // 00002D03  8ED8              mov ds,ax
+  // 00002D05  83EC02            sub sp,0x2
+  // 00002D08  56                push si
+  // 00002D09  57                push di
+
+  // 00002D0A  8B460C            mov ax,[bp+0xc]
+  // 00002D0D  3D1001            cmp ax,0x110
+  // 00002D10  7503              jnz 0x2d15
+  // 00002D12  E91C02            jmp 0x2f31
+  // 00002D15  3D1101            cmp ax,0x111
+  // 00002D18  7403              jz 0x2d1d
+  // 00002D1A  E95F02            jmp 0x2f7c
+  switch (msg) {
+    case WM_COMMAND:
+      // 00002D1D  8B460A            mov ax,[bp+0xa]
+      // 00002D20  3D9401            cmp ax,0x194
+      // 00002D23  741D              jz 0x2d42
+      // 00002D25  7713              ja 0x2d3a
+
+      // 00002D27  3D0100            cmp ax,0x1
+      // 00002D2A  7503              jnz 0x2d2f
+      // 00002D2C  E9EE00            jmp 0x2e1d
+      // 00002D2F  3D0200            cmp ax,0x2
+      // 00002D32  7503              jnz 0x2d37
+      // 00002D34  E9DD01            jmp 0x2f14
+      // 00002D37  E94202            jmp 0x2f7c
+
+      // 00002D3A  3D9501            cmp ax,0x195
+      // 00002D3D  745A              jz 0x2d99
+      // 00002D3F  E93A02            jmp 0x2f7c
+
+      switch (wParam) {
+        case 404: // 2D42
+          // 00002D42  8B4608            mov ax,[bp+0x8]
+          // 00002D45  3D0100            cmp ax,0x1
+          // 00002D48  740A              jz 0x2d54
+          // 00002D4A  3D0200            cmp ax,0x2
+          // 00002D4D  7503              jnz 0x2d52
+          // 00002D4F  E9CB00            jmp 0x2e1d
+          // 00002D52  EB37              jmp 0x2d8b
+          switch (HIWORD(lParam)) {
+            case 1:
+              // 00002D54  FF760E            push word [bp+0xe]
+              // 00002D57  1E                push ds
+              // 00002D58  68902D            push word 0x2d90
+              // 00002D5B  689401            push word 0x194
+              // 00002D5E  9AFFFF0000        call word 0x0:word 0xffff
+              // 00002D63  0BC0              or ax,ax
+              // 00002D65  7524              jnz 0x2d8b
+              if (!DlgDirSelect(hDlg, g_2D90, 404)) {
+                SetDlgItemText(hDlg, 401, g_2D90);
+                // 00002D67  FF760E            push word [bp+0xe]
+                // 00002D6A  689101            push word 0x191
+                // 00002D6D  1E                push ds
+                // 00002D6E  68902D            push word 0x2d90
+                // 00002D71  9AFFFF0000        call word 0x0:word 0xffff
+
+                // SendDlgItemMessage()
+                SendDlgItemMessage(hDlg, 401, WM_USER + 1, 0x0000, 0x00007FFFUL);
+                // 00002D76  FF760E            push word [bp+0xe]
+                // 00002D79  689101            push word 0x191
+                // 00002D7C  680104            push word 0x401
+                // 00002D7F  6A00              push word 0x0
+                // 00002D81  68FF7F            push word 0x7fff
+                // 00002D84  6A00              push word 0x0
+                // 00002D86  9AFFFF0000        call word 0x0:word 0xffff
+              }
+              break;
+
+            case 2: // 2E1D?!?! There's some deduplication happening.
+              goto unk_2E1D;
+          }
+
+          // 00002D8B  B80100            mov ax,0x1
+          // 00002D8E  5F                pop di
+          // 00002D8F  5E                pop si
+          // 00002D90  8D66FE            lea sp,[bp-0x2]
+          // 00002D93  1F                pop ds
+          // 00002D94  5D                pop bp
+          // 00002D95  4D                dec bp
+          // 00002D96  CA0A00            retf word 0xa
+          return 1;
+
+        case 405: // 2D99
+          // 00002D99  8B4608            mov ax,[bp+0x8]
+          // 00002D9C  3D0100            cmp ax,0x1
+          // 00002D9F  7407              jz 0x2da8
+          // 00002DA1  3D0200            cmp ax,0x2
+          // 00002DA4  7477              jz 0x2e1d
+          // 00002DA6  EB67              jmp 0x2e0f
+          switch (HIWORD(lParam)) {
+            case 1: // 2DA8
+              // DlgDirSelect()
+              // 00002DA8  FF760E            push word [bp+0xe]
+              // 00002DAB  1E                push ds
+              // 00002DAC  68902D            push word 0x2d90
+              // 00002DAF  689501            push word 0x195
+              // 00002DB2  9AFFFF0000        call word 0x0:word 0xffff
+              // 00002DB7  0BC0              or ax,ax
+              // 00002DB9  7454              jz 0x2e0f
+              if (!DlgDirSelect(hDlg, g_2D90, 405)) {
+                break;
+              }
+
+              strcpy(g_2D90, g_068C);
+              // 00002DBB  BF902D            mov di,0x2d90
+              // 00002DBE  57                push di
+              // 00002DBF  BF8C06            mov di,0x68c
+              // 00002DC2  FC                cld
+              // 00002DC3  1E                push ds
+              // 00002DC4  07                pop es
+              // 00002DC5  33C0              xor ax,ax
+              // 00002DC7  B9FFFF            mov cx,0xffff
+              // 00002DCA  F2AE              repne scasb
+              // 00002DCC  F7D1              not cx
+              // 00002DCE  2BF9              sub di,cx
+              // 00002DD0  57                push di
+              // 00002DD1  06                push es
+              // 00002DD2  1E                push ds
+              // 00002DD3  07                pop es
+              // 00002DD4  58                pop ax
+              // 00002DD5  5E                pop si
+              // 00002DD6  5F                pop di
+              // 00002DD7  8C5EFC            mov word [bp-0x4],ds
+              // 00002DDA  8ED8              mov ds,ax
+              // 00002DDC  51                push cx
+              // 00002DDD  B9FFFF            mov cx,0xffff
+              // 00002DE0  33C0              xor ax,ax
+              // 00002DE2  F2AE              repne scasb
+              // 00002DE4  4F                dec di
+              // 00002DE5  59                pop cx
+              // 00002DE6  F3A4              rep movsb
+              // 00002DE8  8E5EFC            mov ds,word [bp-0x4]
+
+              SetDlgItemText(hDlg, 401, g_2D90);
+              // 00002DEB  FF760E            push word [bp+0xe]
+              // 00002DEE  689101            push word 0x191
+              // 00002DF1  1E                push ds
+              // 00002DF2  68902D            push word 0x2d90
+              // 00002DF5  9AFFFF0000        call word 0x0:word 0xffff
+
+              // SendDlgItemMessage()
+              SendDlgItemMessage(hDlg, 401, WM_USER + 1, 0x0000, 0x00007FFFUL);
+              // 00002DFA  FF760E            push word [bp+0xe]
+              // 00002DFD  689101            push word 0x191
+              // 00002E00  680104            push word 0x401
+              // 00002E03  6A00              push word 0x0
+              // 00002E05  68FF7F            push word 0x7fff
+              // 00002E08  6A00              push word 0x0
+              // 00002E0A  9AFFFF0000        call word 0x0:word 0xffff
+              break;
+
+            case 2: // 2E1D?!?! There's some deduplication happening.
+              goto unk_2E1D;
+
+          }
+
+          // 00002E0F  B80100            mov ax,0x1
+          // 00002E12  5F                pop di
+          // 00002E13  5E                pop si
+          // 00002E14  8D66FE            lea sp,[bp-0x2]
+          // 00002E17  1F                pop ds
+          // 00002E18  5D                pop bp
+          // 00002E19  4D                dec bp
+          // 00002E1A  CA0A00            retf word 0xa
+          return 1;
+
+
+        case 1: // 2E1D?!?! There's some deduplication happening.
+          goto unk_2E1D;
+
+        case 2: // 2F14
+          EndDialog(hDlg, 0);
+          // 00002F14  FF760E            push word [bp+0xe]
+          // 00002F17  6A00              push word 0x0
+          // 00002F19  9AFFFF0000        call word 0x0:word 0xffff
+
+          g_050C[0] = 0;
+          // 00002F1E  C6060C0500        mov byte [0x50c],0x0
+
+          // 00002F23  B80100            mov ax,0x1
+          // 00002F26  5F                pop di
+          // 00002F27  5E                pop si
+          // 00002F28  8D66FE            lea sp,[bp-0x2]
+          // 00002F2B  1F                pop ds
+          // 00002F2C  5D                pop bp
+          // 00002F2D  4D                dec bp
+          // 00002F2E  CA0A00            retf word 0xa
+          return 1;
+      }
+
+    unk_2E1D:
+      GetDlgItemText(hDlg, 401, g_050C, 128);
+      // 00002E1D  FF760E            push word [bp+0xe]
+      // 00002E20  689101            push word 0x191
+      // 00002E23  1E                push ds
+      // 00002E24  680C05            push word 0x50c
+      // 00002E27  688000            push word 0x80
+      // 00002E2A  9AFFFF0000        call word 0x0:word 0xffff
+
+      // 00002E2F  BF0C05            mov di,0x50c
+      // 00002E32  1E                push ds
+      // 00002E33  07                pop es
+      // 00002E34  FC                cld
+      // 00002E35  33C0              xor ax,ax
+      // 00002E37  B9FFFF            mov cx,0xffff
+      // 00002E3A  F2AE              repne scasb
+      // 00002E3C  F7D1              not cx
+      // 00002E3E  B82A00            mov ax,0x2a
+      // 00002E41  2BF9              sub di,cx
+      // 00002E43  F2AE              repne scasb
+      // 00002E45  7407              jz 0x2e4e
+      // 00002E47  BF0100            mov di,0x1
+      // 00002E4A  33C0              xor ax,ax
+      // 00002E4C  8EC0              mov es,ax
+      // 00002E4E  4F                dec di
+      // 00002E4F  0BFF              or di,di
+      // 00002E51  7524              jnz 0x2e77
+      // 00002E53  BF0C05            mov di,0x50c
+      // 00002E56  1E                push ds
+      // 00002E57  07                pop es
+      // 00002E58  FC                cld
+      // 00002E59  33C0              xor ax,ax
+      // 00002E5B  B9FFFF            mov cx,0xffff
+      // 00002E5E  F2AE              repne scasb
+      // 00002E60  F7D1              not cx
+      // 00002E62  B83F00            mov ax,0x3f
+      // 00002E65  2BF9              sub di,cx
+      // 00002E67  F2AE              repne scasb
+      // 00002E69  7407              jz 0x2e72
+      // 00002E6B  BF0100            mov di,0x1
+      // 00002E6E  33C0              xor ax,ax
+      // 00002E70  8EC0              mov es,ax
+      // 00002E72  4F                dec di
+      // 00002E73  0BFF              or di,di
+      // 00002E75  7467              jz 0x2ede
+      if (strchr(g_050C, '*') != NULL || strchr(g_050C, '?') != NULL) {
+        cs_2AE1(hDlg, g_2D90, g_068C, g_050C);
+        // 00002E77  1E                push ds
+        // 00002E78  680C05            push word 0x50c
+        // 00002E7B  1E                push ds
+        // 00002E7C  688C06            push word 0x68c
+        // 00002E7F  1E                push ds
+        // 00002E80  68902D            push word 0x2d90
+        // 00002E83  FF760E            push word [bp+0xe]
+        // 00002E86  E858FC            call 0x2ae1
+        // 00002E89  83C40E            add sp,0xe
+
+        // 00002E8C  803E902D00        cmp byte [0x2d90],0x0
+        // 00002E91  7428              jz 0x2ebb
+        if (g_2D90[0] != 0) {
+          strcpy(g_060C, g_2D90);
+          // 00002E93  BF0C06            mov di,0x60c
+          // 00002E96  57                push di
+          // 00002E97  BF902D            mov di,0x2d90
+          // 00002E9A  FC                cld
+          // 00002E9B  1E                push ds
+          // 00002E9C  07                pop es
+          // 00002E9D  33C0              xor ax,ax
+          // 00002E9F  B9FFFF            mov cx,0xffff
+          // 00002EA2  F2AE              repne scasb
+          // 00002EA4  F7D1              not cx
+          // 00002EA6  2BF9              sub di,cx
+          // 00002EA8  D1E9              shr cx,1
+          // 00002EAA  57                push di
+          // 00002EAB  06                push es
+          // 00002EAC  1E                push ds
+          // 00002EAD  07                pop es
+          // 00002EAE  58                pop ax
+          // 00002EAF  5E                pop si
+          // 00002EB0  5F                pop di
+          // 00002EB1  1E                push ds
+          // 00002EB2  8ED8              mov ds,ax
+          // 00002EB4  F3A5              rep movsw
+          // 00002EB6  13C9              adc cx,cx
+          // 00002EB8  F3A4              rep movsb
+          // 00002EBA  1F                pop ds
+        }
+
+        // TODO: I think this might be backwards, and this string might have to be modifiable --GM
+        cs_2BA6(g_068C, ".kye"); // DS:0699
+        // 00002EBB  688C06            push word 0x68c
+        // 00002EBE  689906            push word 0x699
+        // 00002EC1  E8E2FC            call 0x2ba6
+        // 00002EC4  83C404            add sp,0x4
+
+        cs_2A48(hDlg);
+        // 00002EC7  FF760E            push word [bp+0xe]
+        // 00002ECA  E87BFB            call 0x2a48
+        // 00002ECD  83C402            add sp,0x2
+
+        return 1;
+        // 00002ED0  B80100            mov ax,0x1
+        // 00002ED3  5F                pop di
+        // 00002ED4  5E                pop si
+        // 00002ED5  8D66FE            lea sp,[bp-0x2]
+        // 00002ED8  1F                pop ds
+        // 00002ED9  5D                pop bp
+        // 00002EDA  4D                dec bp
+        // 00002EDB  CA0A00            retf word 0xa
+      }
+
+      cs_2C31(g_050C, ".kye"); // DS:0699
+      // 00002EDE  689906            push word 0x699
+      // 00002EE1  680C05            push word 0x50c
+      // 00002EE4  E84AFD            call 0x2c31
+      // 00002EE7  83C404            add sp,0x4
+      // 00002EEA  FF760E            push word [bp+0xe]
+      // 00002EED  689301            push word 0x193
+      // 00002EF0  1E                push ds
+      // 00002EF1  688C05            push word 0x58c
+      // 00002EF4  688000            push word 0x80
+      // 00002EF7  9AFFFF0000        call word 0x0:word 0xffff
+      // 00002EFC  FF760E            push word [bp+0xe]
+      // 00002EFF  6A00              push word 0x0
+      // 00002F01  9AFFFF0000        call word 0x0:word 0xffff
+
+      // 00002F06  B80100            mov ax,0x1
+      // 00002F09  5F                pop di
+      // 00002F0A  5E                pop si
+      // 00002F0B  8D66FE            lea sp,[bp-0x2]
+      // 00002F0E  1F                pop ds
+      // 00002F0F  5D                pop bp
+      // 00002F10  4D                dec bp
+      // 00002F11  CA0A00            retf word 0xa
+      return 1;
+
+    case WM_INITDIALOG:
+      cs_2A48(hDlg);
+      // 00002F31  FF760E            push word [bp+0xe]
+      // 00002F34  E811FB            call 0x2a48
+      // 00002F37  83C402            add sp,0x2
+
+      SetDlgItemText(hDlg, 401, g_068C); // DS:068C
+      // 00002F3A  FF760E            push word [bp+0xe]
+      // 00002F3D  689101            push word 0x191
+      // 00002F40  1E                push ds
+      // 00002F41  688C06            push word 0x68c
+      // 00002F44  9AFFFF0000        call word 0x0:word 0xffff
+
+      SendDlgItemMessage(hDlg, 401, WM_USER + 1, 0x0000, 0x00007FFFUL);
+      // 00002F49  FF760E            push word [bp+0xe]
+      // 00002F4C  689101            push word 0x191
+      // 00002F4F  680104            push word 0x401
+      // 00002F52  6A00              push word 0x0
+      // 00002F54  68FF7F            push word 0x7fff
+      // 00002F57  6A00              push word 0x0
+      // 00002F59  9AFFFF0000        call word 0x0:word 0xffff
+
+      SetFocus(GetDlgItem(hDlg, 401));
+      // 00002F5E  FF760E            push word [bp+0xe]
+      // 00002F61  689101            push word 0x191
+      // 00002F64  9AFFFF0000        call word 0x0:word 0xffff
+      // 00002F69  50                push ax
+      // 00002F6A  9AFFFF0000        call word 0x0:word 0xffff
+
+      // 00002F6F  33C0              xor ax,ax
+      // 00002F71  5F                pop di
+      // 00002F72  5E                pop si
+      // 00002F73  8D66FE            lea sp,[bp-0x2]
+      // 00002F76  1F                pop ds
+      // 00002F77  5D                pop bp
+      // 00002F78  4D                dec bp
+      // 00002F79  CA0A00            retf word 0xa
+      return 0;
+
+  }
+
+  // 00002F7C  33C0              xor ax,ax
+  // 00002F7E  5F                pop di
+  // 00002F7F  5E                pop si
+  // 00002F80  8D66FE            lea sp,[bp-0x2]
+  // 00002F83  1F                pop ds
+  // 00002F84  5D                pop bp
+  // 00002F85  4D                dec bp
+  // 00002F86  CA0A00            retf word 0xa
   return 0;
 }
 

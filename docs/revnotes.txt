@@ -12,6 +12,8 @@ Prologues and epilogues
 
 Unused locals typically get removed, same deal with written-but-not-read locals.
 
+Arguments start from [BP+0x4] for normal functions and [BP+0x6] for far functions.
+
 No arguments or used locals:
 
   ...
@@ -25,7 +27,7 @@ No arguments or used locals:
   pop bp
   ret
 
-1 argument, 1 used local:
+1 argument, 2 bytes of locals:
 
   push bp
   mov bp,sp
@@ -33,6 +35,23 @@ No arguments or used locals:
   ...
   leave
   ret
+
+A `FAR PASCAL` Windows-callback-compatible function, 10 bytes of callee-cleanup args, 2 bytes of locals:
+
+  mov ax,ds
+  nop
+  inc bp
+  push bp
+  mov bp,sp
+  push ds
+  mov ds,ax
+  sub sp,0x2
+  ...
+  lea sp,[bp-0x2]
+  pop ds
+  pop bp
+  dec bp
+  retf word 0xa
 
 ==============================
 Compiler intrinsics
