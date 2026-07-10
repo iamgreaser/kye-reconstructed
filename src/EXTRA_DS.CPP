@@ -5,6 +5,8 @@
 
 #include "kyetypes.h"
 
+char g_060C[128]; // DS:060C TODO CONFIRM SIZE
+
 int g_door_anim_flag; // DS:0D6A
 
 int g_level_tiles[LEVEL_LX][LEVEL_LY]; // DS:127E
@@ -50,3 +52,4 @@ HDC g_maindc; // DS:2D58
 HANDLE g_hInstance; // DS:2D5A
 HWND g_mainwnd; // DS:2D5C
 char g_toolname[50]; // DS:2D5E
+char g_2D90[50]; // DS:2D90 TODO CONFIRM SIZE

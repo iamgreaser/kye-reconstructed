@@ -41,8 +41,12 @@ extern int g_has_maintimer; // DS:0458
 // int // DS:06A9 == 0x5C
 // DS:06AB contains strings.
 
+extern char g_060C[128]; // DS:060C TODO CONFIRM SIZE
+extern char g_068C[13]; // DS:068C
+
 // This map is at DS:06B8
 // TODO: Editor entity spec --GM
+
 // DS:0D38 = 0x000A
 // DS:0D3A = 0x0000
 // DS:0D3C contains at least one string...
@@ -94,3 +98,4 @@ extern HDC g_maindc; // DS:2D58
 extern HANDLE g_hInstance; // DS:2D5A
 extern HWND g_mainwnd; // DS:2D5C
 extern char g_toolname[50]; // DS:2D5E
+extern char g_2D90[50]; // DS:2D90 TODO CONFIRM SIZE

@@ -10,6 +10,10 @@
 #include "kyeprocs.h"
 #include "kyevars.h"
 
+char g_068C[13] = "*.kye"; // DS:068C
+// DS:0699 contains constant NUL-terminated string ".kye"
+char g_069E[13] = "~~~~~~~~.*\\"; // DS:069E
+
 // Weird compiler flags from the previous module seems to mandate that this starts the module.
 // CS:1986 - ***CODE MATCH!***
 void clear_level(void) {
@@ -848,9 +852,18 @@ void repaint_status_left(void) {
   }
 }
 
-// CS:2A48
-void cs_2A48(void) {
-  // TODO! --GM
+// CS:2A48 - ***CODE MATCH!***
+void cs_2A48(HWND hDlg) {
+  // [BP-2].w = temporary storage for segment for strcat
+
+  strcpy(g_2D90, g_060C);
+  strcat(g_2D90, g_068C);
+  DlgDirList(hDlg, g_2D90, 404, 403, 0);
+
+  // FIXME: 0x4010 is DDL_DRIVES | DDL_DIRECTORY, this seems to be missing from BC++3.0 headers! --GM
+  DlgDirList(hDlg, g_069E, 405, 403, 0x4010); // DS:069E
+
+  SetDlgItemText(hDlg, 401, g_068C); // DS:068C
 }
 
 // CS:2AE1
