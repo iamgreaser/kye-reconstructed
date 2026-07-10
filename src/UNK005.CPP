@@ -1052,7 +1052,7 @@ int FAR PASCAL _export DLG_FOPEN_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lPa
                 break;
               }
 
-              strcpy(g_2D90, g_068C);
+              strcat(g_2D90, g_068C);
               // 00002DBB  BF902D            mov di,0x2d90
               // 00002DBE  57                push di
               // 00002DBF  BF8C06            mov di,0x68c
