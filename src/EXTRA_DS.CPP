@@ -7,7 +7,11 @@
 
 char g_060C[128]; // DS:060C TODO CONFIRM SIZE
 
+char _pad0003[0x738]; // Put this *somewhere*...
+
 int g_door_anim_flag; // DS:0D6A
+
+char _pad0001[0x512]; // Put this *somewhere*...
 
 int g_level_tiles[LEVEL_LX][LEVEL_LY]; // DS:127E
 actor_s g_actors[MAX_ACTORS]; // DS:172E
@@ -34,6 +38,8 @@ HBRUSH g_hbrGreen; // DS:2B5E
 HBRUSH g_hbrRed;   // DS:2B60
 HBRUSH g_hbrWhite; // DS:2B62
 HBRUSH g_hbrBlack; // DS:2B64
+
+char _pad0002[0x2];
 
 RECT g_r_maincli; // DS:2B68
 RECT g_r_status_left; // DS:2B70
