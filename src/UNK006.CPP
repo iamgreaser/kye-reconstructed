@@ -12,7 +12,7 @@
 
 // Word alignment mandates that this starts the module.
 
-// CS:3006 - MISMATCHED
+// CS:3006 - ***CODE MATCH!***
 void move_actor(int ai, int newx, int newy) {
   HDC dc; // DI
 
@@ -27,16 +27,16 @@ void move_actor(int ai, int newx, int newy) {
     g_actors[ai].cy);
   g_actors[ai].cx = newx;
   g_actors[ai].cy = newy;
-  g_level_tiles[newx][newy] = ai;
+  g_level_tiles[g_actors[ai].cx][g_actors[ai].cy] = ai;
   draw_actor(g_maindc, dc, ai);
   DeleteDC(dc);
 }
 
-// CS:3084
+// CS:3084 - ***CODE MATCH!***
 int apply_sticky_blocks(int ai) {
   // need 0x4 bytes of stack (BP/FC)
-  int result; // BP/FC
   int cx; // BP/FE
+  int result; // BP/FC
 
   int cy; // CX
 
