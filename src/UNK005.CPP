@@ -636,7 +636,18 @@ void draw_wall(int cx, int cy, HDC dc) {
     // Draw actual wall
     px = cx * g_tile_lx;
     py = cy * g_tile_ly;
-    src_px = ((abs(tile) - abs(T_WALL1)) * TILE_LX) + (3 * TILE_LX);
+    //
+    // MISMATCH: There's a dummy register spill here.
+    //
+    // Original: [bp-0x2] gets set to DX which is set after calculating all this crap.
+    //
+    // This code: [bp-0x2] gets set to AX which is set to tile which is g_level_tiles[cx][cy].
+    // In doing so, the second abs() calculation adds in an extra MOV DX,AX.
+    //
+    // This particular kludging constrains the mismatch to this if() block.
+    //
+    src_px = abs(tile);
+    src_px = TILE_LX * (src_px - abs(T_WALL1) + 3);
     BitBlt(g_maindc, px, py, TILE_LX, TILE_LY, dc, src_px, 0 * TILE_LY, SRCCOPY);
     return;
   }
@@ -655,20 +666,16 @@ void draw_wall(int cx, int cy, HDC dc) {
     return;
   }
 
-  // KLUDGE: Try to make the function a little smaller so we can at least get back into phase.
-  px = cx * g_tile_lx;
   if (tile == T_DOOR_W_E || tile == T_DOOR_E_W) {
-    //px = cx * g_tile_lx;
+    px = cx * g_tile_lx;
     py = cy * g_tile_ly;
     BitBlt(g_maindc, px, py, TILE_LX, TILE_LY, dc, 14 * TILE_LX, 0 * TILE_LY, SRCCOPY);
     return;
   }
 
   if (tile == T_DOOR_N_S || tile == T_DOOR_S_N) {
-    //px = cx * g_tile_lx;
+    px = cx * g_tile_lx;
     py = cy * g_tile_ly;
-    // 3 effective no-op pairs of bytes gets us back into phase.
-    py++; py--; py++; py--; py++; py--;
     BitBlt(g_maindc, px, py, TILE_LX, TILE_LY, dc, 13 * TILE_LX, 0 * TILE_LY, SRCCOPY);
     return;
   }
