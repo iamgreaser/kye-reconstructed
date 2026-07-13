@@ -57,6 +57,15 @@ A `FAR PASCAL` Windows-callback-compatible function, 10 bytes of callee-cleanup 
 Compiler intrinsics
 ------------------------------
 
+*** abs(num) ***
+
+num can be constant or variable.
+
+  mov ax,num
+  cwd
+  xor ax,dx
+  sub ax,dx
+
 *** strcpy(ds:dst, src="const string") ***
 
 Constant string gets allocated onto DS.
