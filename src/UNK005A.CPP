@@ -17,9 +17,9 @@ char g_050C[128]; // DS:050C
 char g_058C[128]; // DS:058C
 char g_060C[128]; // DS:060C TODO CONFIRM SIZE
 
-char g_068C[11] = "*.kye"; // DS:068C
+char g_068C[13] = "*.kye"; // DS:068C
 char g_0699[5] = ".kye"; // DS:0699
-char g_069E[13] = "~~~~~~~~.*\\"; // DS:069E
+char g_069E[11] = "~~~~~~~~.*\\"; // DS:069E
 
 // CS:2A48 - ***CODE MATCH!***
 void cs_2A48(HWND hDlg) {
@@ -145,8 +145,7 @@ int FAR PASCAL _export DLG_FOPEN_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lPa
             if (g_2D90[0] != 0) {
               strcpy(g_060C, g_2D90);
             }
-            // TODO: I think this might be backwards, and this string might have to be modifiable --GM
-            cs_2BA6(g_068C, g_0699);
+            cs_2BA6(g_0699, g_068C);
             cs_2A48(hDlg);
             return 1;
           }
@@ -186,5 +185,4 @@ void cs_2F89(char *fname_buf) {
     cs_2C83(fname_buf, g_050C);
   }
 }
-
 
