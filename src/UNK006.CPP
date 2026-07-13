@@ -226,7 +226,7 @@ void respawn_kye(void) {
   }
 }
 
-// CS:34ED
+// CS:34ED - ***CODE MATCH!***
 int try_killing_adjacent_kye(int ai) {
   // stack: 0x02 bytes
   int cx; // BP/FE
@@ -242,7 +242,7 @@ int try_killing_adjacent_kye(int ai) {
       || g_level_tiles[cx+1][cy] == T_KYE);
 
   if (result) {
-    g_kye_lives--;
+    g_kye_lives = g_kye_lives - 1;
     respawn_kye();
     repaint_status_left();
   }
