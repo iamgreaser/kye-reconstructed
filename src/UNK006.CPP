@@ -249,29 +249,33 @@ int try_killing_adjacent_kye(int ai) {
   return result;
 }
 
-// CS:3562
+// CS:3562 - ***CODE MATCH!***
 void tick_all_timer_blocks(void) {
   int ai; // SI
   int cx; // DX
   int cy; // CX
 
-  if (g_tick_counter % 30 == 0) {
-    for (ai = 0; ai < g_actor_count; ai++) {
-      if (g_actors[ai].type >= T_TIMER_0
-          && g_actors[ai].type <= T_TIMER_9) {
-        //
+  if ((g_tick_counter % 30) == 0) {
+    ai = 0;
+    while (ai < g_actor_count) {
+      if (g_actors[ai].type >= T_TIMER_0 && g_actors[ai].type <= T_TIMER_9) {
         cx = g_actors[ai].cx;
         cy = g_actors[ai].cy;
+
         if (g_actors[ai].type > T_TIMER_0) {
-          g_actors[ai].type--;
+          g_actors[ai].type = g_actors[ai].type - 1;
           move_actor(ai, cx, cy);
+          ai++;
         } else {
           delete_and_draw_unacting_tile(cx, cy);
           mark_actor_for_deletion(ai);
         }
+      } else {
+        ai++;
       }
     }
   }
+
   garbage_collect_actors();
 }
 
