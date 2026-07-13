@@ -5,7 +5,7 @@
 
 #include "kyetypes.h"
 
-char _pad0003[0x6AC]; // Put this *somewhere*...
+char _pad0003[0x6B2]; // Put this *somewhere*...
 
 int g_door_anim_flag; // DS:0D6A
 

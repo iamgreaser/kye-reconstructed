@@ -42,7 +42,7 @@ extern int g_has_maintimer; // DS:0458
 // DS:06AB contains strings.
 
 extern char g_060C[128]; // DS:060C TODO CONFIRM SIZE
-extern char g_068C[13]; // DS:068C
+extern char g_068C[11]; // DS:068C
 
 // This map is at DS:06B8
 // TODO: Editor entity spec --GM
