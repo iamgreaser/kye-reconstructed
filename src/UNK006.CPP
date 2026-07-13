@@ -105,6 +105,61 @@ int actor_held_by_sticky_block(int ai) {
   return result;
 }
 
+// CS:3251 - ***CODE MATCH!***
+// This function calculates the movement delta to use when doing mouse movement. I think.
+void cs_3251(int ai, int targx, int targy, int *newxptr, int *newyptr) {
+  int cx; // [bp-0x2].w
+  int cy; // DI
+  int dx; // CX
+  int dy; // SI
+
+  cx = g_actors[ai].cx;
+  cy = g_actors[ai].cy;
+
+  *newxptr = cx;
+  *newyptr = cy;
+
+  if ((targx - cx) > 0) {
+    dx = 1;
+  } else if ((targx - cx) < 0) {
+    dx = -1;
+  } else {
+    dx = 0;
+  }
+
+  if ((targy - cy) > 0) {
+    dy = 1;
+  } else if ((targy - cy) < 0) {
+    dy = -1;
+  } else {
+    dy = 0;
+  }
+
+  if (abs(dx) > 0 && abs(dy) > 0) {
+    if (g_level_tiles[cx+dx][cy] == T_EMPTY && g_level_tiles[cx][cy+dy] == T_EMPTY) {
+      if (abs(dx) > abs(dy)) {
+        dy = 0;
+      } else {
+        dx = 0;
+      }
+    } else {
+      if (g_level_tiles[cx+dx][cy] == T_EMPTY) {
+        dy = 0;
+      } else if (g_level_tiles[cx][cy+dy] == T_EMPTY) {
+        dx = 0;
+      } else {
+        // Force one component of (dx,dy) to be 0 so it can be blocked by the check at the end.
+        dx = 0;
+      }
+    }
+  }
+
+  if (g_level_tiles[cx+dx][cy+dy] == T_EMPTY) {
+    *newxptr = cx+dx;
+    *newyptr = cy+dy;
+  }
+}
+
 // CS:3374
 void respawn_kye(void) {
   // Stack: 0x0A bytes
