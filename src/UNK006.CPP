@@ -427,13 +427,12 @@ void tick_game_state(void) {
       break;
 
     case T_ROCKY_N:
-      // This is *pretty close*, but TODO: Match this! --GM
       if (!apply_sticky_blocks(ai)) {
         if (actor_held_by_sticky_block(ai)) {
           // Do nothing
         } else {
-          int dx = g_level_tiles[cx][cy-1];
-          if (dx == T_EMPTY) {
+          int fw = g_level_tiles[cx][cy-1];
+          if (fw == T_EMPTY) {
             move_actor(ai, cx, cy-1);
           } else if (try_enter_blacky(ai, cx, cy-1)) {
             // Do nothing
@@ -443,110 +442,22 @@ void tick_game_state(void) {
             register int slide_left = g_level_tiles[cx-1][cy];
             int slide_fw_right = g_level_tiles[cx+1][cy-1];
             int slide_fw_left = g_level_tiles[cx-1][cy-1];
-            int hitting_rocky = (dx >= 0 && g_actors[dx].type >= T_ROCKY_N && g_actors[dx].type <= T_ROCKY_E);
-            int hitting_rblock = (dx >= 0 && g_actors[dx].type == T_RBLOCK);
-            register int can_slide_left = (slide_left == T_EMPTY && slide_fw_left == T_EMPTY && (dx == T_WALL1 || dx == T_WALL2 || dx == T_WALL4 || hitting_rocky || hitting_rblock));
-            register int can_slide_right = (slide_right == T_EMPTY && slide_fw_right == T_EMPTY && (dx == T_WALL3 || dx == T_WALL2 || dx == T_WALL6 || hitting_rocky || hitting_rblock));
-            if (can_slide_left && can_slide_right) {
-              // TODO: Decipher random number usage --GM
-              // (cy-1, 0, 0x8000) cwd << 1 into 0x57FE then << 1 ? huh...
-              // 00003AF0  8B46FC            mov ax,[bp-0x4]
-              // 00003AF3  48                dec ax
-              // 00003AF4  50                push ax
-              // 00003AF5  6A00              push word 0x0
-              // 00003AF7  680080            push word 0x8000
-              // 00003AFA  E83427            call 0x6231
-              // 00003AFD  99                cwd
-              // 00003AFE  D1E0              shl ax,1
-              // 00003B00  D1D2              rcl dx,1
-              // 00003B02  52                push dx
-              // 00003B03  50                push ax
-              // 00003B04  E87724            call 0x5f7e
-              // 00003B07  D1E0              shl ax,1
-              // 00003B09  8B56FE            mov dx,[bp-0x2]
-              // 00003B0C  42                inc dx
-              // 00003B0D  2BD0              sub dx,ax
-              // 00003B0F  52                push dx
-              // 00003B10  56                push si
-              // 00003B11  E8F2F4            call 0x3006
-              // 00003B14  83C406            add sp,0x6
+            int hitting_rocky = (fw >= 0 && g_actors[fw].type >= T_ROCKY_N && g_actors[fw].type <= T_ROCKY_E);
+            int hitting_rblock = (fw >= 0 && g_actors[fw].type == T_RBLOCK);
+            register int can_slide_left = (slide_left == T_EMPTY && slide_fw_left == T_EMPTY && (fw == T_WALL1 || fw == T_WALL2 || fw == T_WALL4 || hitting_rocky || hitting_rblock));
+            register int can_slide_right = (slide_right == T_EMPTY && slide_fw_right == T_EMPTY && (fw == T_WALL3 || fw == T_WALL2 || fw == T_WALL6 || hitting_rocky || hitting_rblock));
+            if (can_slide_right && can_slide_left) {
               move_actor(ai, cx+1-(random(2)*2), cy-1);
-
-              // 00003B17  E9460E            jmp 0x4960
-
-            // 00003B1A  0BDB              or bx,bx
-            // 00003B1C  7414              jz 0x3b32
-            } else if (can_slide_left) {
-              // 00003B1E  8B46FC            mov ax,[bp-0x4]
-              // 00003B21  48                dec ax
-              // 00003B22  50                push ax
-              // 00003B23  8B46FE            mov ax,[bp-0x2]
-              // 00003B26  40                inc ax
-              // 00003B27  50                push ax
-              // 00003B28  56                push si
-              // 00003B29  E8DAF4            call 0x3006
-              // 00003B2C  83C406            add sp,0x6
-              move_actor(ai, cx+1, cy-1);
-
-              // 00003B2F  E92E0E            jmp 0x4960
-
-            // 00003B32  0BD2              or dx,dx
-            // 00003B34  7414              jz 0x3b4a
             } else if (can_slide_right) {
-              // 00003B36  8B46FC            mov ax,[bp-0x4]
-              // 00003B39  48                dec ax
-              // 00003B3A  50                push ax
-              // 00003B3B  8B46FE            mov ax,[bp-0x2]
-              // 00003B3E  48                dec ax
-              // 00003B3F  50                push ax
-              // 00003B40  56                push si
-              // 00003B41  E8C2F4            call 0x3006
-              // 00003B44  83C406            add sp,0x6
+              move_actor(ai, cx+1, cy-1);
+            } else if (can_slide_left) {
               move_actor(ai, cx-1, cy-1);
-
-              // 00003B47  E9160E            jmp 0x4960
-
-            // 00003B4A  0BFF              or di,di
-            // 00003B4C  7C23              jl 0x3b71
-            // 00003B4E  8BDF              mov bx,di
-            // 00003B50  C1E303            shl bx,byte 0x3
-            // 00003B53  83BF2E1714        cmp word [bx+0x172e],0x14
-            // 00003B58  7517              jnz 0x3b71
-            } else if (dx >= 0 && g_actors[dx].type == T_ROT_A) {
-              // 00003B5A  8B5EF0            mov bx,[bp-0x10]
-              // 00003B5D  C7070E00          mov word [bx],0xe
+            } else if (fw >= 0 && g_actors[fw].type == T_ROT_A) {
               g_actors[ai].type = T_ROCKY_E;
-
-              // 00003B61  FF76FC            push word [bp-0x4]
-              // 00003B64  FF76FE            push word [bp-0x2]
-              // 00003B67  56                push si
-              // 00003B68  E89BF4            call 0x3006
-              // 00003B6B  83C406            add sp,0x6
               move_actor(ai, cx, cy);
-
-              // 00003B6E  E9EF0D            jmp 0x4960
-
-            // 00003B71  0BFF              or di,di
-            // 00003B73  7D03              jnl 0x3b78
-            // 00003B75  E9E80D            jmp 0x4960
-            // 00003B78  8BDF              mov bx,di
-            // 00003B7A  C1E303            shl bx,byte 0x3
-            // 00003B7D  83BF2E1715        cmp word [bx+0x172e],0x15
-            // 00003B82  7403              jz 0x3b87
-            // 00003B84  E9D90D            jmp 0x4960
-            } else if (dx >= 0 && g_actors[dx].type == T_ROT_C) {
-              // 00003B87  8B5EF0            mov bx,[bp-0x10]
-              // 00003B8A  C7070D00          mov word [bx],0xd
+            } else if (fw >= 0 && g_actors[fw].type == T_ROT_C) {
               g_actors[ai].type = T_ROCKY_W;
-
-              // 00003B8E  FF76FC            push word [bp-0x4]
-              // 00003B91  FF76FE            push word [bp-0x2]
-              // 00003B94  56                push si
-              // 00003B95  E86EF4            call 0x3006
-              // 00003B98  83C406            add sp,0x6
               move_actor(ai, cx, cy);
-
-              // 00003B9B  E9C20D            jmp 0x4960
             }
           }
         }
@@ -554,45 +465,35 @@ void tick_game_state(void) {
       break;
 
     case T_ROCKY_S:
-      if ((!apply_sticky_blocks(ai)) && (!actor_held_by_sticky_block(ai))) {
-        int other = g_level_tiles[cx][cy+1];
-        if (other == T_EMPTY) {
-          move_actor(ai, cx, cy+1);
+      if (!apply_sticky_blocks(ai)) {
+        if (actor_held_by_sticky_block(ai)) {
+          // Do nothing
         } else {
-          if (!try_enter_blacky(ai, cx, cy+1)) {
-            // FIXME this is coded differently --GM
-            int slide_left = 0;
-            int slide_right = 0;
-            if (other >= 0
-                && g_actors[other].type >= T_ROCKY_N
-                && g_actors[other].type <= T_ROCKY_E) {
-              slide_left = slide_right = 1;
-            } else if (other >= 0
-                && g_actors[other].type == T_RBLOCK) {
-              slide_left = slide_right = 1;
-            } else if (other == T_WALL8) {
-              slide_left = slide_right = 1;
-            } else if (other == T_WALL9 || other == T_WALL6) {
-              slide_left = 1;
-            } else if (other == T_WALL7 || other == T_WALL4) {
-              slide_right = 1;
-            }
-            slide_left = slide_left && g_level_tiles[cx+1][cy] == T_EMPTY;
-            slide_right = slide_right && g_level_tiles[cx-1][cy] == T_EMPTY;
-            slide_left = slide_left && g_level_tiles[cx+1][cy+1] == T_EMPTY;
-            slide_right = slide_right && g_level_tiles[cx-1][cy+1] == T_EMPTY;
-
-            if (slide_left && slide_right) {
-              // TODO understand rand() usage --GM
-              move_actor(ai, cx + 1 - (2*(rand()%2)), cy + 1);
-            } else if (slide_right) {
-              move_actor(ai, cx - 1, cy + 1);
-            } else if (slide_left) {
-              move_actor(ai, cx + 1, cy + 1);
-            } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
+          int fw = g_level_tiles[cx][cy+1];
+          if (fw == T_EMPTY) {
+            move_actor(ai, cx, cy+1);
+          } else if (try_enter_blacky(ai, cx, cy+1)) {
+            // Do nothing
+          } else {
+            // CX = row offset
+            int slide_right = g_level_tiles[cx-1][cy];
+            register int slide_left = g_level_tiles[cx+1][cy];
+            int slide_fw_right = g_level_tiles[cx-1][cy+1];
+            int slide_fw_left = g_level_tiles[cx+1][cy+1];
+            int hitting_rocky = (fw >= 0 && g_actors[fw].type >= T_ROCKY_N && g_actors[fw].type <= T_ROCKY_E);
+            int hitting_rblock = (fw >= 0 && g_actors[fw].type == T_RBLOCK);
+            register int can_slide_left = (slide_left == T_EMPTY && slide_fw_left == T_EMPTY && (fw == T_WALL9 || fw == T_WALL8 || fw == T_WALL6 || hitting_rocky || hitting_rblock));
+            register int can_slide_right = (slide_right == T_EMPTY && slide_fw_right == T_EMPTY && (fw == T_WALL7 || fw == T_WALL8 || fw == T_WALL4 || hitting_rocky || hitting_rblock));
+            if (can_slide_right && can_slide_left) {
+              move_actor(ai, cx+1-(random(2)*2), cy+1);
+            } else if (can_slide_right) {
+              move_actor(ai, cx-1, cy+1);
+            } else if (can_slide_left) {
+              move_actor(ai, cx+1, cy+1);
+            } else if (fw >= 0 && g_actors[fw].type == T_ROT_A) {
               g_actors[ai].type = T_ROCKY_W;
               move_actor(ai, cx, cy);
-            } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+            } else if (fw >= 0 && g_actors[fw].type == T_ROT_C) {
               g_actors[ai].type = T_ROCKY_E;
               move_actor(ai, cx, cy);
             }
@@ -602,45 +503,35 @@ void tick_game_state(void) {
       break;
 
     case T_ROCKY_W:
-      if ((!apply_sticky_blocks(ai)) && (!actor_held_by_sticky_block(ai))) {
-        int other = g_level_tiles[cx-1][cy];
-        if (other == T_EMPTY) {
-          move_actor(ai, cx-1, cy);
+      if (!apply_sticky_blocks(ai)) {
+        if (actor_held_by_sticky_block(ai)) {
+          // Do nothing
         } else {
-          if (!try_enter_blacky(ai, cx-1, cy)) {
-            // FIXME this is coded differently --GM
-            int slide_left = 0;
-            int slide_right = 0;
-            if (other >= 0
-                && g_actors[other].type >= T_ROCKY_N
-                && g_actors[other].type <= T_ROCKY_E) {
-              slide_left = slide_right = 1;
-            } else if (other >= 0
-                && g_actors[other].type == T_RBLOCK) {
-              slide_left = slide_right = 1;
-            } else if (other == T_WALL6) {
-              slide_left = slide_right = 1;
-            } else if (other == T_WALL3 || other == T_WALL2) {
-              slide_left = 1;
-            } else if (other == T_WALL9 || other == T_WALL8) {
-              slide_right = 1;
-            }
-            slide_left = slide_left && g_level_tiles[cx][cy+1] == T_EMPTY;
-            slide_right = slide_right && g_level_tiles[cx][cy-1] == T_EMPTY;
-            slide_left = slide_left && g_level_tiles[cx-1][cy+1] == T_EMPTY;
-            slide_right = slide_right && g_level_tiles[cx-1][cy-1] == T_EMPTY;
-
-            if (slide_left && slide_right) {
-              // TODO understand rand() usage --GM
-              move_actor(ai, cx - 1, cy + 1 - (2*(rand()%2)));
-            } else if (slide_right) {
-              move_actor(ai, cx - 1, cy - 1);
-            } else if (slide_left) {
-              move_actor(ai, cx - 1, cy + 1);
-            } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
+          int fw = g_level_tiles[cx-1][cy];
+          if (fw == T_EMPTY) {
+            move_actor(ai, cx-1, cy);
+          } else if (try_enter_blacky(ai, cx-1, cy)) {
+            // Do nothing
+          } else {
+            // CX = row offset
+            int slide_right = g_level_tiles[cx][cy-1];
+            register int slide_left = g_level_tiles[cx][cy+1];
+            int slide_fw_right = g_level_tiles[cx-1][cy-1];
+            int slide_fw_left = g_level_tiles[cx-1][cy+1];
+            int hitting_rocky = (fw >= 0 && g_actors[fw].type >= T_ROCKY_N && g_actors[fw].type <= T_ROCKY_E);
+            int hitting_rblock = (fw >= 0 && g_actors[fw].type == T_RBLOCK);
+            register int can_slide_left = (slide_left == T_EMPTY && slide_fw_left == T_EMPTY && (fw == T_WALL3 || fw == T_WALL6 || fw == T_WALL2 || hitting_rocky || hitting_rblock));
+            register int can_slide_right = (slide_right == T_EMPTY && slide_fw_right == T_EMPTY && (fw == T_WALL9 || fw == T_WALL6 || fw == T_WALL8 || hitting_rocky || hitting_rblock));
+            if (can_slide_right && can_slide_left) {
+              move_actor(ai, cx-1, cy+1-(random(2)*2));
+            } else if (can_slide_right) {
+              move_actor(ai, cx-1, cy-1);
+            } else if (can_slide_left) {
+              move_actor(ai, cx-1, cy+1);
+            } else if (fw >= 0 && g_actors[fw].type == T_ROT_A) {
               g_actors[ai].type = T_ROCKY_N;
               move_actor(ai, cx, cy);
-            } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+            } else if (fw >= 0 && g_actors[fw].type == T_ROT_C) {
               g_actors[ai].type = T_ROCKY_S;
               move_actor(ai, cx, cy);
             }
@@ -650,46 +541,35 @@ void tick_game_state(void) {
       break;
 
     case T_ROCKY_E:
-      if ((!apply_sticky_blocks(ai))
-          && (!actor_held_by_sticky_block(ai))) {
-        int other = g_level_tiles[cx+1][cy];
-        if (other == T_EMPTY) {
-          move_actor(ai, cx+1, cy);
+      if (!apply_sticky_blocks(ai)) {
+        if (actor_held_by_sticky_block(ai)) {
+          // Do nothing
         } else {
-          if (!try_enter_blacky(ai, cx+1, cy)) {
-            // FIXME this is coded differently --GM
-            int slide_left = 0;
-            int slide_right = 0;
-            if (other >= 0
-                && g_actors[other].type >= T_ROCKY_N
-                && g_actors[other].type <= T_ROCKY_E) {
-              slide_left = slide_right = 1;
-            } else if (other >= 0
-                && g_actors[other].type == T_RBLOCK) {
-              slide_left = slide_right = 1;
-            } else if (other == T_WALL4) {
-              slide_left = slide_right = 1;
-            } else if (other == T_WALL7 || other == T_WALL8) {
-              slide_left = 1;
-            } else if (other == T_WALL1 || other == T_WALL2) {
-              slide_right = 1;
-            }
-            slide_left = slide_left && g_level_tiles[cx][cy-1] == T_EMPTY;
-            slide_right = slide_right && g_level_tiles[cx][cy+1] == T_EMPTY;
-            slide_left = slide_left && g_level_tiles[cx+1][cy-1] == T_EMPTY;
-            slide_right = slide_right && g_level_tiles[cx+1][cy+1] == T_EMPTY;
-
-            if (slide_left && slide_right) {
-              // TODO understand rand() usage --GM
-              move_actor(ai, cx + 1, cy + 1 - (2*(rand()%2)));
-            } else if (slide_right) {
-              move_actor(ai, cx + 1, cy + 1);
-            } else if (slide_left) {
-              move_actor(ai, cx + 1, cy - 1);
-            } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
+          int fw = g_level_tiles[cx+1][cy];
+          if (fw == T_EMPTY) {
+            move_actor(ai, cx+1, cy);
+          } else if (try_enter_blacky(ai, cx+1, cy)) {
+            // Do nothing
+          } else {
+            // CX = row offset
+            int slide_right = g_level_tiles[cx][cy+1];
+            register int slide_left = g_level_tiles[cx][cy-1];
+            int slide_fw_right = g_level_tiles[cx+1][cy+1];
+            int slide_fw_left = g_level_tiles[cx+1][cy-1];
+            int hitting_rocky = (fw >= 0 && g_actors[fw].type >= T_ROCKY_N && g_actors[fw].type <= T_ROCKY_E);
+            int hitting_rblock = (fw >= 0 && g_actors[fw].type == T_RBLOCK);
+            register int can_slide_left = (slide_left == T_EMPTY && slide_fw_left == T_EMPTY && (fw == T_WALL7 || fw == T_WALL4 || fw == T_WALL8 || hitting_rocky || hitting_rblock));
+            register int can_slide_right = (slide_right == T_EMPTY && slide_fw_right == T_EMPTY && (fw == T_WALL1 || fw == T_WALL4 || fw == T_WALL2 || hitting_rocky || hitting_rblock));
+            if (can_slide_right && can_slide_left) {
+              move_actor(ai, cx+1, cy+1-(random(2)*2));
+            } else if (can_slide_right) {
+              move_actor(ai, cx+1, cy+1);
+            } else if (can_slide_left) {
+              move_actor(ai, cx+1, cy-1);
+            } else if (fw >= 0 && g_actors[fw].type == T_ROT_A) {
               g_actors[ai].type = T_ROCKY_S;
               move_actor(ai, cx, cy);
-            } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+            } else if (fw >= 0 && g_actors[fw].type == T_ROT_C) {
               g_actors[ai].type = T_ROCKY_N;
               move_actor(ai, cx, cy);
             }
@@ -881,6 +761,56 @@ void tick_game_state(void) {
     case T_TIMER_8:
     case T_TIMER_9:
       apply_sticky_blocks(ai);
+      break;
+
+    // FIXME: DUMMY OLD T_ROCKY_E PLACEHOLDER IMPLEMENTATION TO FORCE SOME SYNCHRONISATION --GM
+    case T_TIMER_9+1:
+      if ((!apply_sticky_blocks(ai))
+          && (!actor_held_by_sticky_block(ai))) {
+        int other = g_level_tiles[cx+1][cy];
+        if (other == T_EMPTY) {
+          move_actor(ai, cx+1, cy);
+        } else {
+          if (!try_enter_blacky(ai, cx+1, cy)) {
+            // FIXME this is coded differently --GM
+            int slide_left = 0;
+            int slide_right = 0;
+            if (other >= 0
+                && g_actors[other].type >= T_ROCKY_N
+                && g_actors[other].type <= T_ROCKY_E) {
+              slide_left = slide_right = 1;
+            } else if (other >= 0
+                && g_actors[other].type == T_RBLOCK) {
+              slide_left = slide_right = 1;
+            } else if (other == T_WALL4) {
+              slide_left = slide_right = 1;
+            } else if (other == T_WALL7 || other == T_WALL8) {
+              slide_left = 1;
+            } else if (other == T_WALL1 || other == T_WALL2) {
+              slide_right = 1;
+            }
+            slide_left = slide_left && g_level_tiles[cx][cy-1] == T_EMPTY;
+            slide_right = slide_right && g_level_tiles[cx][cy+1] == T_EMPTY;
+            slide_left = slide_left && g_level_tiles[cx+1][cy-1] == T_EMPTY;
+            slide_right = slide_right && g_level_tiles[cx+1][cy+1] == T_EMPTY;
+
+            if (slide_left && slide_right) {
+              // TODO understand rand() usage --GM
+              move_actor(ai, cx + 1, cy + 1 - (2*(rand()%2)));
+            } else if (slide_right) {
+              move_actor(ai, cx + 1, cy + 1);
+            } else if (slide_left) {
+              move_actor(ai, cx + 1, cy - 1);
+            } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
+              g_actors[ai].type = T_ROCKY_S;
+              move_actor(ai, cx, cy);
+            } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
+              g_actors[ai].type = T_ROCKY_N;
+              move_actor(ai, cx, cy);
+            }
+          }
+        }
+      }
       break;
     }
   }
