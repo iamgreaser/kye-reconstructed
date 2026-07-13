@@ -311,51 +311,58 @@ int try_enter_blacky(int ai, int cx, int cy) {
 // CS:3684
 void tick_game_state(void) {
   // stack: 0x12 bytes
-  int newy; // BP/EE
-  actor_s *actor; // BP/F0
-  int unkFFF2; // BP/F2
-  // BP/F4
-  int dy; // BP/FA
-  int cy; // BP/FC
-  int cx; // BP/FE
   // BP-0x00
-
-  int ai; // SI
-  int other; // DI - other tile type
-  int dx; // DI
-  int newx; // CX
-
+  int cx; // BP/FE
+  int cy; // BP/FC
+  int dy; // BP/FA
   // TODO: Work out how this actually goes --GM
   int slide_left;
   int slide_right;
+  // BP/F4
+  //int unkFFF2; // BP/F2 - automatically created
+  //actor_s *actor; // BP/F0 - automatically created
+  int newy; // BP/EE
+
+  register int ai; // SI
+  register int other; // DI - other tile type
+  int dx; // DI
+  register int newx; // CX
+
 
   // BUG: Counter wraparound is not seamless.
   // We cover 32001 different values.
   // If left alone, this takes less than an hour.
   // A counter wraparound breaks DEFAULT.KYE's COUNTERS level,
   // as the bouncer at the bottom steps ahead a bit too early.
-  g_tick_counter++;
+  g_tick_counter = g_tick_counter + 1;
   if (g_tick_counter > 32000) {
     g_tick_counter = 0;
   }
 
   tick_all_timer_blocks();
-  for (ai = 0, unkFFF2 = 0, actor = &g_actors[0];
+  for (ai = 0;
       ai < g_actor_count;
-      ai++, actor++, unkFFF2 += 8) {
+      ai++) {
     //
-    cx = actor->cx;
-    cy = actor->cy;
-    switch(actor->type) {
+    cx = g_actors[ai].cx;
+    cy = g_actors[ai].cy;
+    switch (g_actors[ai].type) {
+    // TODO: Find how these are split so the switch conditions can be correct, because there are two identical code branches here! --GM
     case T_SBLOCK:
     case T_ROT_A:
     case T_ROT_C:
     case T_RBLOCK:
+      if (apply_sticky_blocks(ai)) {
+        // Do nothing
+      }
+      break;
     case T_AUTOSLIDER1:
     case T_AUTOSLIDER2:
     case T_AUTOSLIDER3:
     case T_AUTOSLIDER4:
-      apply_sticky_blocks(ai);
+      if (apply_sticky_blocks(ai)) {
+        // Do nothing
+      }
       break;
 
     // BUG: North-facing sliders do not redraw on rotation.
@@ -368,10 +375,10 @@ void tick_game_state(void) {
         } else {
           if (!try_enter_blacky(ai, cx, cy-1)) {
             if (other >= 0 && g_actors[other].type == T_ROT_A) {
-              actor->type = T_SLIDER_E;
+              g_actors[ai].type = T_SLIDER_E;
               // BUG: This needs to redraw the actor!
             } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
-              actor->type = T_SLIDER_W;
+              g_actors[ai].type = T_SLIDER_W;
               // BUG: This needs to redraw the actor!
             }
           }
@@ -388,10 +395,10 @@ void tick_game_state(void) {
         } else {
           if (!try_enter_blacky(ai, cx, cy+1)) {
             if (other >= 0 && g_actors[other].type == T_ROT_A) {
-              actor->type = T_SLIDER_W;
+              g_actors[ai].type = T_SLIDER_W;
               move_actor(ai, cx, cy);
             } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
-              actor->type = T_SLIDER_E;
+              g_actors[ai].type = T_SLIDER_E;
               move_actor(ai, cx, cy);
             }
           }
@@ -408,10 +415,10 @@ void tick_game_state(void) {
         } else {
           if (!try_enter_blacky(ai, cx-1, cy)) {
             if (other >= 0 && g_actors[other].type == T_ROT_A) {
-              actor->type = T_SLIDER_N;
+              g_actors[ai].type = T_SLIDER_N;
               move_actor(ai, cx, cy);
             } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
-              actor->type = T_SLIDER_S;
+              g_actors[ai].type = T_SLIDER_S;
               move_actor(ai, cx, cy);
             }
           }
@@ -428,10 +435,10 @@ void tick_game_state(void) {
         } else {
           if (!try_enter_blacky(ai, cx+1, cy)) {
             if (other >= 0 && g_actors[other].type == T_ROT_A) {
-              actor->type = T_SLIDER_S;
+              g_actors[ai].type = T_SLIDER_S;
               move_actor(ai, cx, cy);
             } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
-              actor->type = T_SLIDER_N;
+              g_actors[ai].type = T_SLIDER_N;
               move_actor(ai, cx, cy);
             }
           }
@@ -483,7 +490,7 @@ void tick_game_state(void) {
         if (g_level_tiles[cx][cy-1] == T_EMPTY) {
           move_actor(ai, cx, cy-1);
         } else if (!try_enter_blacky(ai, cx, cy-1)) {
-          actor->type = T_BOUNCER_S;
+          g_actors[ai].type = T_BOUNCER_S;
           move_actor(ai, cx, cy);
           if (g_level_tiles[cx][cy-1] >= 0) {
             other = g_level_tiles[cx][cy-1];
@@ -510,7 +517,7 @@ void tick_game_state(void) {
         if (g_level_tiles[cx][cy+1] == T_EMPTY) {
           move_actor(ai, cx, cy+1);
         } else if (!try_enter_blacky(ai, cx, cy+1)) {
-          actor->type = T_BOUNCER_N;
+          g_actors[ai].type = T_BOUNCER_N;
           move_actor(ai, cx, cy);
           if (g_level_tiles[cx][cy+1] >= 0) {
             other = g_level_tiles[cx][cy+1];
@@ -537,7 +544,7 @@ void tick_game_state(void) {
         if (g_level_tiles[cx-1][cy] == T_EMPTY) {
           move_actor(ai, cx-1, cy);
         } else if (!try_enter_blacky(ai, cx-1, cy)) {
-          actor->type = T_BOUNCER_E;
+          g_actors[ai].type = T_BOUNCER_E;
           move_actor(ai, cx, cy);
           if (g_level_tiles[cx-1][cy] >= 0) {
             other = g_level_tiles[cx-1][cy];
@@ -564,7 +571,7 @@ void tick_game_state(void) {
         if (g_level_tiles[cx+1][cy] == T_EMPTY) {
           move_actor(ai, cx+1, cy);
         } else if (!try_enter_blacky(ai, cx+1, cy)) {
-          actor->type = T_BOUNCER_W;
+          g_actors[ai].type = T_BOUNCER_W;
           move_actor(ai, cx, cy);
           if (g_level_tiles[cx+1][cy] >= 0) {
             other = g_level_tiles[cx+1][cy];
@@ -620,10 +627,10 @@ void tick_game_state(void) {
             } else if (slide_left) {
               move_actor(ai, cx - 1, cy - 1);
             } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
-              actor->type = T_ROCKY_E;
+              g_actors[ai].type = T_ROCKY_E;
               move_actor(ai, cx, cy);
             } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
-              actor->type = T_ROCKY_W;
+              g_actors[ai].type = T_ROCKY_W;
               move_actor(ai, cx, cy);
             }
           }
@@ -668,10 +675,10 @@ void tick_game_state(void) {
             } else if (slide_left) {
               move_actor(ai, cx + 1, cy + 1);
             } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
-              actor->type = T_ROCKY_W;
+              g_actors[ai].type = T_ROCKY_W;
               move_actor(ai, cx, cy);
             } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
-              actor->type = T_ROCKY_E;
+              g_actors[ai].type = T_ROCKY_E;
               move_actor(ai, cx, cy);
             }
           }
@@ -716,10 +723,10 @@ void tick_game_state(void) {
             } else if (slide_left) {
               move_actor(ai, cx - 1, cy + 1);
             } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
-              actor->type = T_ROCKY_N;
+              g_actors[ai].type = T_ROCKY_N;
               move_actor(ai, cx, cy);
             } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
-              actor->type = T_ROCKY_S;
+              g_actors[ai].type = T_ROCKY_S;
               move_actor(ai, cx, cy);
             }
           }
@@ -764,10 +771,10 @@ void tick_game_state(void) {
             } else if (slide_left) {
               move_actor(ai, cx + 1, cy - 1);
             } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
-              actor->type = T_ROCKY_S;
+              g_actors[ai].type = T_ROCKY_S;
               move_actor(ai, cx, cy);
             } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
-              actor->type = T_ROCKY_N;
+              g_actors[ai].type = T_ROCKY_N;
               move_actor(ai, cx, cy);
             }
           }
