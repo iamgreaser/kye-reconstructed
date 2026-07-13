@@ -68,30 +68,38 @@ int apply_sticky_blocks(int ai) {
   return result;
 }
 
-// CS:31AC
+// CS:31AC - ***CODE MATCH!***
 int actor_held_by_sticky_block(int ai) {
   // need 0x2 bytes of stack
   int cx; // BP/FE
 
   int cy; // SI
-  int result; // CX
+  int result; // CX - this is a variable and there is one "return" statement at the end.
+  int tmp0; // DX
 
   result = 0;
+
   cx = g_actors[ai].cx;
   cy = g_actors[ai].cy;
 
-  if (g_level_tiles[cx][cy+1] >= 0
-      && g_actors[g_level_tiles[cx][cy+1]].type == T_STICKY_V) {
+  tmp0 = g_level_tiles[cx][cy+1];
+  if (tmp0 >= 0 && g_actors[tmp0].type == T_STICKY_V) {
     result = 1;
-  } else if (g_level_tiles[cx][cy-1] >= 0
-      && g_actors[g_level_tiles[cx][cy-1]].type == T_STICKY_V) {
-    result = 1;
-  } else if (g_level_tiles[cx+1][cy] >= 0
-      && g_actors[g_level_tiles[cx+1][cy]].type == T_STICKY_H) {
-    result = 1;
-  } else if (g_level_tiles[cx-1][cy] >= 0
-      && g_actors[g_level_tiles[cx-1][cy]].type == T_STICKY_H) {
-    result = 1;
+  } else {
+    tmp0 = g_level_tiles[cx][cy-1];
+    if (tmp0 >= 0 && g_actors[tmp0].type == T_STICKY_V) {
+      result = 1;
+    } else {
+      tmp0 = g_level_tiles[cx+1][cy];
+      if (tmp0 >= 0 && g_actors[tmp0].type == T_STICKY_H) {
+        result = 1;
+      } else {
+        tmp0 = g_level_tiles[cx-1][cy];
+        if (tmp0 >= 0 && g_actors[tmp0].type == T_STICKY_H) {
+          result = 1;
+        }
+      }
+    }
   }
 
   return result;

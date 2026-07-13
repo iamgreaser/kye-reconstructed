@@ -5,9 +5,7 @@
 
 #include "kyetypes.h"
 
-char g_060C[128]; // DS:060C TODO CONFIRM SIZE
-
-char _pad0003[0x738]; // Put this *somewhere*...
+char _pad0003[0x6AC]; // Put this *somewhere*...
 
 int g_door_anim_flag; // DS:0D6A
 
