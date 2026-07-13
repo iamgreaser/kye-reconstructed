@@ -578,42 +578,6 @@ void tick_game_state(void) {
       }
       break;
 
-    case T_STICKY_V:
-      if (g_level_tiles[cx][cy+1] == T_EMPTY
-          && g_level_tiles[cx][cy+2] == T_KYE) {
-        move_actor(ai, cx, cy+1);
-      } else if (g_level_tiles[cx][cy-1] == T_EMPTY
-          && g_level_tiles[cx][cy-2] == T_KYE) {
-        move_actor(ai, cx, cy-1);
-      } else if (g_level_tiles[cx+1][cy] == T_EMPTY
-          && g_level_tiles[cx+2][cy] >= 1
-          && g_actors[g_level_tiles[cx+2][cy]].type == T_STICKY_H) {
-        move_actor(ai, cx+1, cy);
-      } else if (g_level_tiles[cx-1][cy] == T_EMPTY
-          && g_level_tiles[cx-2][cy] >= 1
-          && g_actors[g_level_tiles[cx-2][cy]].type == T_STICKY_H) {
-        move_actor(ai, cx-1, cy);
-      }
-      break;
-
-    case T_STICKY_H:
-      if (g_level_tiles[cx+1][cy] == T_EMPTY
-          && g_level_tiles[cx+2][cy] == T_KYE) {
-        move_actor(ai, cx+1, cy);
-      } else if (g_level_tiles[cx-1][cy] == T_EMPTY
-          && g_level_tiles[cx-2][cy] == T_KYE) {
-        move_actor(ai, cx-1, cy);
-      } else if (g_level_tiles[cx][cy+1] == T_EMPTY
-          && g_level_tiles[cx][cy+2] >= 1
-          && g_actors[g_level_tiles[cx][cy+2]].type == T_STICKY_V) {
-        move_actor(ai, cx, cy+1);
-      } else if (g_level_tiles[cx][cy-1] == T_EMPTY
-          && g_level_tiles[cx][cy-2] >= 1
-          && g_actors[g_level_tiles[cx][cy-2]].type == T_STICKY_V) {
-        move_actor(ai, cx, cy-1);
-      }
-      break;
-
     case T_BOUNCER_N:
       if (g_tick_counter % 5 == 0
           && (!apply_sticky_blocks(ai))
@@ -719,6 +683,42 @@ void tick_game_state(void) {
             }
           }
         }
+      }
+      break;
+
+    case T_STICKY_V:
+      if (g_level_tiles[cx][cy+1] == T_EMPTY
+          && g_level_tiles[cx][cy+2] == T_KYE) {
+        move_actor(ai, cx, cy+1);
+      } else if (g_level_tiles[cx][cy-1] == T_EMPTY
+          && g_level_tiles[cx][cy-2] == T_KYE) {
+        move_actor(ai, cx, cy-1);
+      } else if (g_level_tiles[cx+1][cy] == T_EMPTY
+          && g_level_tiles[cx+2][cy] >= 0
+          && g_actors[g_level_tiles[cx+2][cy]].type == T_STICKY_H) {
+        move_actor(ai, cx+1, cy);
+      } else if (g_level_tiles[cx-1][cy] == T_EMPTY
+          && g_level_tiles[cx-2][cy] >= 0
+          && g_actors[g_level_tiles[cx-2][cy]].type == T_STICKY_H) {
+        move_actor(ai, cx-1, cy);
+      }
+      break;
+
+    case T_STICKY_H:
+      if (g_level_tiles[cx+1][cy] == T_EMPTY
+          && g_level_tiles[cx+2][cy] == T_KYE) {
+        move_actor(ai, cx+1, cy);
+      } else if (g_level_tiles[cx-1][cy] == T_EMPTY
+          && g_level_tiles[cx-2][cy] == T_KYE) {
+        move_actor(ai, cx-1, cy);
+      } else if (g_level_tiles[cx][cy+1] == T_EMPTY
+          && g_level_tiles[cx][cy+2] >= 0
+          && g_actors[g_level_tiles[cx][cy+2]].type == T_STICKY_V) {
+        move_actor(ai, cx, cy+1);
+      } else if (g_level_tiles[cx][cy-1] == T_EMPTY
+          && g_level_tiles[cx][cy-2] >= 0
+          && g_actors[g_level_tiles[cx][cy-2]].type == T_STICKY_V) {
+        move_actor(ai, cx, cy-1);
       }
       break;
 
