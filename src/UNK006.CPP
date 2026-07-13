@@ -106,7 +106,7 @@ int actor_held_by_sticky_block(int ai) {
 }
 
 // CS:3251 - ***CODE MATCH!***
-// This function calculates the movement delta to use when doing mouse movement. I think.
+// This function calculates the movement delta to use when doing mouse movement. I think. OK, it's used for monsters at least.
 void cs_3251(int ai, int targx, int targy, int *newxptr, int *newyptr) {
   int cx; // [bp-0x2].w
   int cy; // DI
@@ -336,14 +336,24 @@ void tick_game_state(void) {
     case T_ROT_A:
     case T_ROT_C:
     case T_RBLOCK:
-      if (apply_sticky_blocks(ai)) {
-        // Do nothing
-      }
-      break;
     case T_AUTOSLIDER1:
     case T_AUTOSLIDER2:
     case T_AUTOSLIDER3:
     case T_AUTOSLIDER4:
+      if (apply_sticky_blocks(ai)) {
+        // Do nothing
+      }
+      break;
+    case T_TIMER_0:
+    case T_TIMER_1:
+    case T_TIMER_2:
+    case T_TIMER_3:
+    case T_TIMER_4:
+    case T_TIMER_5:
+    case T_TIMER_6:
+    case T_TIMER_7:
+    case T_TIMER_8:
+    case T_TIMER_9:
       if (apply_sticky_blocks(ai)) {
         // Do nothing
       }
@@ -729,85 +739,36 @@ void tick_game_state(void) {
     case T_B_SPIKE:
       // BUG: If a monster kills kye on its tick, it loses that tick
       if ((!try_killing_adjacent_kye(ai)) && g_tick_counter % 3 == 0) {
-        int dx = 0;
-        int dy = 0;
+        register int dx = 0; // DI
+        int dy = 0; // [BP-0x6]
+
         if (!apply_sticky_blocks(ai)) {
           if (!actor_held_by_sticky_block(ai)) {
+            // Compute direction
+            if (random(2) == 1) {
+              cs_3251(ai, g_kye_main_cx, g_kye_main_cy, &cx, &cy);
+            } else {
+              if (random(2) == 1) {
+                dx = random(3)-1;
+              } else {
+                dy = random(3)-1;
+              }
+            }
 
             // Apply direction
-            int newx = cx + dx;
-            int newy = cy + dy;
-            if (g_level_tiles[cx][cy] == T_EMPTY
-                || g_level_tiles[cx][cy] == T_BLACKY1) {
+            register int newx = cx + dx; // CX
+            int newy = cy + dy; // [BP-0x12]
+
+            if (g_level_tiles[newx][newy] == T_EMPTY
+                || (g_level_tiles[newx][newy] >= 0
+                  && g_actors[g_level_tiles[newx][newy]].type == T_BLACKY1)) {
               cx = newx;
               cy = newy;
             }
           }
+
           if (!try_enter_blacky(ai, cx, cy)) {
             move_actor(ai, cx, cy);
-          }
-        }
-      }
-      break;
-
-    case T_TIMER_0:
-    case T_TIMER_1:
-    case T_TIMER_2:
-    case T_TIMER_3:
-    case T_TIMER_4:
-    case T_TIMER_5:
-    case T_TIMER_6:
-    case T_TIMER_7:
-    case T_TIMER_8:
-    case T_TIMER_9:
-      apply_sticky_blocks(ai);
-      break;
-
-    // FIXME: DUMMY OLD T_ROCKY_E PLACEHOLDER IMPLEMENTATION TO FORCE SOME SYNCHRONISATION --GM
-    case T_TIMER_9+1:
-      if ((!apply_sticky_blocks(ai))
-          && (!actor_held_by_sticky_block(ai))) {
-        int other = g_level_tiles[cx+1][cy];
-        if (other == T_EMPTY) {
-          move_actor(ai, cx+1, cy);
-        } else {
-          if (!try_enter_blacky(ai, cx+1, cy)) {
-            // FIXME this is coded differently --GM
-            int slide_left = 0;
-            int slide_right = 0;
-            if (other >= 0
-                && g_actors[other].type >= T_ROCKY_N
-                && g_actors[other].type <= T_ROCKY_E) {
-              slide_left = slide_right = 1;
-            } else if (other >= 0
-                && g_actors[other].type == T_RBLOCK) {
-              slide_left = slide_right = 1;
-            } else if (other == T_WALL4) {
-              slide_left = slide_right = 1;
-            } else if (other == T_WALL7 || other == T_WALL8) {
-              slide_left = 1;
-            } else if (other == T_WALL1 || other == T_WALL2) {
-              slide_right = 1;
-            }
-            slide_left = slide_left && g_level_tiles[cx][cy-1] == T_EMPTY;
-            slide_right = slide_right && g_level_tiles[cx][cy+1] == T_EMPTY;
-            slide_left = slide_left && g_level_tiles[cx+1][cy-1] == T_EMPTY;
-            slide_right = slide_right && g_level_tiles[cx+1][cy+1] == T_EMPTY;
-
-            if (slide_left && slide_right) {
-              // TODO understand rand() usage --GM
-              move_actor(ai, cx + 1, cy + 1 - (2*(rand()%2)));
-            } else if (slide_right) {
-              move_actor(ai, cx + 1, cy + 1);
-            } else if (slide_left) {
-              move_actor(ai, cx + 1, cy - 1);
-            } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
-              g_actors[ai].type = T_ROCKY_S;
-              move_actor(ai, cx, cy);
-            } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
-              g_actors[ai].type = T_ROCKY_N;
-              move_actor(ai, cx, cy);
-            }
           }
         }
       }
