@@ -160,14 +160,14 @@ void cs_3251(int ai, int targx, int targy, int *newxptr, int *newyptr) {
   }
 }
 
-// CS:3374
+// CS:337F - ***CODE MATCH!***
 void respawn_kye(void) {
   // Stack: 0x0A bytes
-  int cy1; // BP/F6
-  int cx1; // BP/F8
-  int cy0; // BP/FA
-  int cx0; // BP/FC
   int radius; // BP/FE
+  int cx0; // BP/FC
+  int cy0; // BP/FA
+  int cx1; // BP/F8
+  int cy1; // BP/F6
 
   int rad2; // SI
   int i; // CX
@@ -184,35 +184,39 @@ void respawn_kye(void) {
         rad2 = 2,
         cx1 = g_kye_spawn_cx + 1,
         cy1 = g_kye_spawn_cy - 1;
-        radius <= 4; cx0--, cy0++, rad2 += 2, cx1--, cy1++, radius++) {
+        radius < 5; cx0--, cy0++, rad2 = rad2 + 2, cx1++, cy1--, radius++) {
 
       g_kye_target_cx = cx0;
       g_kye_target_cy = cy0;
-      for (i = 0; i < rad2; g_kye_target_cx++, i++) {
+      for (i = 0; rad2 > i; i++) {
         if (g_level_tiles[g_kye_target_cx][g_kye_target_cy] == T_EMPTY) {
           return;
         }
+        g_kye_target_cx = g_kye_target_cx + 1;
       }
       g_kye_target_cx = cx1;
       g_kye_target_cy = cy0;
-      for (i = 0; i < rad2; g_kye_target_cy--, i++) {
+      for (i = 0; rad2 > i; i++) {
         if (g_level_tiles[g_kye_target_cx][g_kye_target_cy] == T_EMPTY) {
           return;
         }
+        g_kye_target_cy = g_kye_target_cy - 1;
       }
       g_kye_target_cx = cx1;
       g_kye_target_cy = cy1;
-      for (i = 0; i < rad2; g_kye_target_cx--, i++) {
+      for (i = 0; rad2 > i; i++) {
         if (g_level_tiles[g_kye_target_cx][g_kye_target_cy] == T_EMPTY) {
           return;
         }
+        g_kye_target_cx = g_kye_target_cx - 1;
       }
       g_kye_target_cx = cx0;
       g_kye_target_cy = cy1;
-      for (i = 0; i < rad2; g_kye_target_cy++, i++) {
+      for (i = 0; rad2 > i; i++) {
         if (g_level_tiles[g_kye_target_cx][g_kye_target_cy] == T_EMPTY) {
           return;
         }
+        g_kye_target_cy = g_kye_target_cy + 1;
       }
     }
 
