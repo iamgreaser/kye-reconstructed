@@ -12,10 +12,850 @@
 
 // Word alignment mandates that this starts the module.
 
+// CS:49F2 - ***CODE MATCH!***
+int kye_is_in_level(void) {
+  int x, y;
+  for (x = 0; x < LEVEL_LX; x++) {
+    for (y = 0; y < LEVEL_LY; y++) {
+      if (g_level_tiles[x][y] == T_KYE) {
+        return 1;
+      }
+    }
+  }
+  return 0;
+}
+
+// CS:4A1F
+void cs_4A1F(void) {
+  // TODO! --GM
+  // 00004A1F  55                push bp
+  // 00004A20  8BEC              mov bp,sp
+  // 00004A22  83EC08            sub sp,0x8
+
+  RECT r;
+
+  // 00004A25  E8CAFF            call 0x49f2
+  // 00004A28  0BC0              or ax,ax
+  // 00004A2A  7408              jz 0x4a34
+  if (kye_is_in_level()) {
+    // 00004A2C  C706BC060000      mov word [0x6bc],0x0
+    // 00004A32  EB06              jmp 0x4a3a
+  } else {
+    // 00004A34  C706BC060100      mov word [0x6bc],0x1
+  }
+
+  // 00004A3A  FF36902E          push word [0x2e90]
+  // 00004A3E  16                push ss
+  // 00004A3F  8D46F8            lea ax,[bp-0x8]
+  // 00004A42  50                push ax
+  // 00004A43  9AFFFF0000        call word 0x0:word 0xffff
+  //GetClientRect(g_2E90, &r);
+
+  // 00004A48  FF36902E          push word [0x2e90]
+  // 00004A4C  16                push ss
+  // 00004A4D  8D46F8            lea ax,[bp-0x8]
+  // 00004A50  50                push ax
+  // 00004A51  6A00              push word 0x0
+  // 00004A53  9AFFFF0000        call word 0x0:word 0xffff
+  // InvalidateRect(g_2E90, &r, 0);
+
+  // 00004A58  FF36902E          push word [0x2e90]
+  // 00004A5C  9AFFFF0000        call word 0x0:word 0xffff
+  // UpdateWindow(g_2E90);
+
+  // 00004A61  C9                leave
+  // 00004A62  C3                ret
+}
+
+// CS:4A63
+void cs_4A63(int a0, int a1, int a2, int a3) {
+  // TODO! --GM
+  // 00004A63  55                push bp
+  // 00004A64  8BEC              mov bp,sp
+  // 00004A66  56                push si
+  // 00004A67  57                push di
+  // 00004A68  8B7E06            mov di,[bp+0x6]
+  // 00004A6B  8B4E08            mov cx,[bp+0x8]
+  // 00004A6E  8B760A            mov si,[bp+0xa]
+  // 00004A71  0BC9              or cx,cx
+  // 00004A73  7E0E              jng 0x4a83
+  // 00004A75  83F91D            cmp cx,0x1d
+  // 00004A78  7D09              jnl 0x4a83
+  // 00004A7A  0BF6              or si,si
+  // 00004A7C  7E05              jng 0x4a83
+  // 00004A7E  83FE13            cmp si,0x13
+  // 00004A81  7C05              jl 0x4a88
+  // 00004A83  B80100            mov ax,0x1
+  // 00004A86  EB02              jmp 0x4a8a
+  // 00004A88  33C0              xor ax,ax
+  // 00004A8A  8BD0              mov dx,ax
+  // 00004A8C  8B4604            mov ax,[bp+0x4]
+  // 00004A8F  3D0100            cmp ax,0x1
+  // 00004A92  740E              jz 0x4aa2
+  // 00004A94  3D0200            cmp ax,0x2
+  // 00004A97  7445              jz 0x4ade
+  // 00004A99  3D0300            cmp ax,0x3
+  // 00004A9C  7451              jz 0x4aef
+  // 00004A9E  5F                pop di
+  // 00004A9F  5E                pop si
+  // 00004AA0  5D                pop bp
+  // 00004AA1  C3                ret
+  // 00004AA2  83FFF5            cmp di,0xfffffffffffffff5
+  // 00004AA5  7C1C              jl 0x4ac3
+  // 00004AA7  83FFFD            cmp di,0xfffffffffffffffd
+  // 00004AAA  7F17              jg 0x4ac3
+  // 00004AAC  8BC1              mov ax,cx
+  // 00004AAE  BA2800            mov dx,0x28
+  // 00004AB1  F7EA              imul dx
+  // 00004AB3  8BD6              mov dx,si
+  // 00004AB5  D1E2              shl dx,1
+  // 00004AB7  03C2              add ax,dx
+  // 00004AB9  8BD8              mov bx,ax
+  // 00004ABB  89BF7E12          mov [bx+0x127e],di
+  // 00004ABF  5F                pop di
+  // 00004AC0  5E                pop si
+  // 00004AC1  5D                pop bp
+  // 00004AC2  C3                ret
+  // 00004AC3  0BD2              or dx,dx
+  // 00004AC5  754C              jnz 0x4b13
+  // 00004AC7  8BC1              mov ax,cx
+  // 00004AC9  BA2800            mov dx,0x28
+  // 00004ACC  F7EA              imul dx
+  // 00004ACE  8BD6              mov dx,si
+  // 00004AD0  D1E2              shl dx,1
+  // 00004AD2  03C2              add ax,dx
+  // 00004AD4  8BD8              mov bx,ax
+  // 00004AD6  89BF7E12          mov [bx+0x127e],di
+  // 00004ADA  5F                pop di
+  // 00004ADB  5E                pop si
+  // 00004ADC  5D                pop bp
+  // 00004ADD  C3                ret
+  // 00004ADE  0BD2              or dx,dx
+  // 00004AE0  7531              jnz 0x4b13
+  // 00004AE2  56                push si
+  // 00004AE3  51                push cx
+  // 00004AE4  57                push di
+  // 00004AE5  E8EAD1            call 0x1cd2
+  // 00004AE8  83C406            add sp,0x6
+  // 00004AEB  5F                pop di
+  // 00004AEC  5E                pop si
+  // 00004AED  5D                pop bp
+  // 00004AEE  C3                ret
+  // 00004AEF  0BD2              or dx,dx
+  // 00004AF1  7520              jnz 0x4b13
+  // 00004AF3  8BC1              mov ax,cx
+  // 00004AF5  BA2800            mov dx,0x28
+  // 00004AF8  F7EA              imul dx
+  // 00004AFA  8BD6              mov dx,si
+  // 00004AFC  D1E2              shl dx,1
+  // 00004AFE  03C2              add ax,dx
+  // 00004B00  8BD8              mov bx,ax
+  // 00004B02  C7877E12FEFF      mov word [bx+0x127e],0xfffe
+  // 00004B08  890EF829          mov [0x29f8],cx
+  // 00004B0C  8936F629          mov [0x29f6],si
+  // 00004B10  E80CFF            call 0x4a1f
+  // 00004B13  5F                pop di
+  // 00004B14  5E                pop si
+  // 00004B15  5D                pop bp
+  // 00004B16  C3                ret
+}
+
+// CS:4B17
+void cs_4B17(int a0, int a1) {
+  // TODO! --GM
+  // 00004B17  55                push bp
+  // 00004B18  8BEC              mov bp,sp
+  // 00004B1A  83EC02            sub sp,0x2
+  // 00004B1D  56                push si
+  // 00004B1E  57                push di
+  // 00004B1F  8B7606            mov si,[bp+0x6]
+  // 00004B22  8B4604            mov ax,[bp+0x4]
+  // 00004B25  BA2800            mov dx,0x28
+  // 00004B28  F7EA              imul dx
+  // 00004B2A  8946FE            mov [bp-0x2],ax
+  // 00004B2D  8BD6              mov dx,si
+  // 00004B2F  D1E2              shl dx,1
+  // 00004B31  03C2              add ax,dx
+  // 00004B33  8BD8              mov bx,ax
+  // 00004B35  8BBF7E12          mov di,[bx+0x127e]
+  // 00004B39  0BFF              or di,di
+  // 00004B3B  7E1F              jng 0x4b5c
+  // 00004B3D  57                push di
+  // 00004B3E  E8FFD1            call 0x1d40
+  // 00004B41  83C402            add sp,0x2
+  // 00004B44  8B4604            mov ax,[bp+0x4]
+  // 00004B47  BA2800            mov dx,0x28
+  // 00004B4A  F7EA              imul dx
+  // 00004B4C  8BD6              mov dx,si
+  // 00004B4E  D1E2              shl dx,1
+  // 00004B50  03C2              add ax,dx
+  // 00004B52  8BD8              mov bx,ax
+  // 00004B54  C7877E12FFFF      mov word [bx+0x127e],0xffff
+  // 00004B5A  EB0F              jmp 0x4b6b
+  // 00004B5C  8B5EFE            mov bx,[bp-0x2]
+  // 00004B5F  8BC6              mov ax,si
+  // 00004B61  D1E0              shl ax,1
+  // 00004B63  03D8              add bx,ax
+  // 00004B65  C7877E12FFFF      mov word [bx+0x127e],0xffff
+  // 00004B6B  E8E3D1            call 0x1d51
+  // 00004B6E  83FFFE            cmp di,0xfffffffffffffffe
+  // 00004B71  7503              jnz 0x4b76
+  // 00004B73  E8A9FE            call 0x4a1f
+  // 00004B76  5F                pop di
+  // 00004B77  5E                pop si
+  // 00004B78  C9                leave
+  // 00004B79  C3                ret
+}
+
 // CS:4B7A
 void cs_4B7A(int cx, int cy) {
   // TODO! --GM
+  // 00004B7A  55                push bp
+  // 00004B7B  8BEC              mov bp,sp
+  // 00004B7D  56                push si
+  // 00004B7E  57                push di
+  // 00004B7F  8B4E04            mov cx,[bp+0x4]
+  // 00004B82  8B7E06            mov di,[bp+0x6]
+  // 00004B85  8BC1              mov ax,cx
+  // 00004B87  BA2800            mov dx,0x28
+  // 00004B8A  F7EA              imul dx
+  // 00004B8C  8BD7              mov dx,di
+  // 00004B8E  D1E2              shl dx,1
+  // 00004B90  03C2              add ax,dx
+  // 00004B92  8BD8              mov bx,ax
+  // 00004B94  83BF7E12FF        cmp word [bx+0x127e],0xffffffffffffffff
+  // 00004B99  7527              jnz 0x4bc2
+  // 00004B9B  A1380D            mov ax,[0xd38]
+  // 00004B9E  BA1A00            mov dx,0x1a
+  // 00004BA1  F7EA              imul dx
+  // 00004BA3  8BF0              mov si,ax
+  // 00004BA5  8BD8              mov bx,ax
+  // 00004BA7  83BFBC0600        cmp word [bx+0x6bc],0x0
+  // 00004BAC  741C              jz 0x4bca
+  // 00004BAE  57                push di
+  // 00004BAF  51                push cx
+  // 00004BB0  FFB4BA06          push word [si+0x6ba]
+  // 00004BB4  FFB4B806          push word [si+0x6b8]
+  // 00004BB8  E8A8FE            call 0x4a63
+  // 00004BBB  83C408            add sp,0x8
+  // 00004BBE  5F                pop di
+  // 00004BBF  5E                pop si
+  // 00004BC0  5D                pop bp
+  // 00004BC1  C3                ret
+  // 00004BC2  57                push di
+  // 00004BC3  51                push cx
+  // 00004BC4  E850FF            call 0x4b17
+  // 00004BC7  83C404            add sp,0x4
+  // 00004BCA  5F                pop di
+  // 00004BCB  5E                pop si
+  // 00004BCC  5D                pop bp
+  // 00004BCD  C3                ret
 }
+
+// CS:4BCE
+void cs_4BCE(int a0, int a1) {
+  // TODO! --GM
+  // 00004BCE  55                push bp
+  // 00004BCF  8BEC              mov bp,sp
+  // 00004BD1  83EC08            sub sp,0x8
+  // 00004BD4  56                push si
+  // 00004BD5  8B4E04            mov cx,[bp+0x4]
+  // 00004BD8  8B7606            mov si,[bp+0x6]
+  // 00004BDB  8BC1              mov ax,cx
+  // 00004BDD  BB1000            mov bx,0x10
+  // 00004BE0  99                cwd
+  // 00004BE1  F7FB              idiv bx
+  // 00004BE3  8946FE            mov [bp-0x2],ax
+  // 00004BE6  8BC1              mov ax,cx
+  // 00004BE8  99                cwd
+  // 00004BE9  F7FB              idiv bx
+  // 00004BEB  8956FC            mov [bp-0x4],dx
+  // 00004BEE  56                push si
+  // 00004BEF  FF36562B          push word [0x2b56]
+  // 00004BF3  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004BF8  56                push si
+  // 00004BF9  FF36622B          push word [0x2b62]
+  // 00004BFD  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004C02  56                push si
+  // 00004C03  8B46FE            mov ax,[bp-0x2]
+  // 00004C06  BA1400            mov dx,0x14
+  // 00004C09  F7EA              imul dx
+  // 00004C0B  8946FA            mov [bp-0x6],ax
+  // 00004C0E  050200            add ax,0x2
+  // 00004C11  50                push ax
+  // 00004C12  8B46FC            mov ax,[bp-0x4]
+  // 00004C15  BA1400            mov dx,0x14
+  // 00004C18  F7EA              imul dx
+  // 00004C1A  8946F8            mov [bp-0x8],ax
+  // 00004C1D  050200            add ax,0x2
+  // 00004C20  50                push ax
+  // 00004C21  8B46FA            mov ax,[bp-0x6]
+  // 00004C24  051200            add ax,0x12
+  // 00004C27  50                push ax
+  // 00004C28  8B46F8            mov ax,[bp-0x8]
+  // 00004C2B  051200            add ax,0x12
+  // 00004C2E  50                push ax
+  // 00004C2F  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004C34  5E                pop si
+  // 00004C35  C9                leave
+  // 00004C36  C3                ret
+}
+
+// CS:4C37
+void cs_4C37(int a0, int a1, int a2) {
+  // TODO! --GM
+  // 00004C37  55                push bp
+  // 00004C38  8BEC              mov bp,sp
+  // 00004C3A  83EC14            sub sp,0x14
+  // 00004C3D  56                push si
+  // 00004C3E  57                push di
+  // 00004C3F  8B4604            mov ax,[bp+0x4]
+  // 00004C42  BB1000            mov bx,0x10
+  // 00004C45  99                cwd
+  // 00004C46  F7FB              idiv bx
+  // 00004C48  8946F6            mov [bp-0xa],ax
+  // 00004C4B  8B4604            mov ax,[bp+0x4]
+  // 00004C4E  99                cwd
+  // 00004C4F  F7FB              idiv bx
+  // 00004C51  8956F8            mov [bp-0x8],dx
+  // 00004C54  8B46F6            mov ax,[bp-0xa]
+  // 00004C57  BA1400            mov dx,0x14
+  // 00004C5A  F7EA              imul dx
+  // 00004C5C  8BD8              mov bx,ax
+  // 00004C5E  050200            add ax,0x2
+  // 00004C61  8946FC            mov [bp-0x4],ax
+  // 00004C64  8B46F8            mov ax,[bp-0x8]
+  // 00004C67  BA1400            mov dx,0x14
+  // 00004C6A  F7EA              imul dx
+  // 00004C6C  8BD0              mov dx,ax
+  // 00004C6E  050200            add ax,0x2
+  // 00004C71  8946FA            mov [bp-0x6],ax
+  // 00004C74  8B4604            mov ax,[bp+0x4]
+  // 00004C77  3B06380D          cmp ax,[0xd38]
+  // 00004C7B  7508              jnz 0x4c85
+  // 00004C7D  A1642B            mov ax,[0x2b64]
+  // 00004C80  8946EC            mov [bp-0x14],ax
+  // 00004C83  EB06              jmp 0x4c8b
+  // 00004C85  A1622B            mov ax,[0x2b62]
+  // 00004C88  8946EC            mov [bp-0x14],ax
+  // 00004C8B  16                push ss
+  // 00004C8C  8D46EE            lea ax,[bp-0x12]
+  // 00004C8F  50                push ax
+  // 00004C90  53                push bx
+  // 00004C91  52                push dx
+  // 00004C92  8BC3              mov ax,bx
+  // 00004C94  051400            add ax,0x14
+  // 00004C97  50                push ax
+  // 00004C98  8BC2              mov ax,dx
+  // 00004C9A  051400            add ax,0x14
+  // 00004C9D  50                push ax
+  // 00004C9E  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004CA3  FF7606            push word [bp+0x6]
+  // 00004CA6  16                push ss
+  // 00004CA7  8D46EE            lea ax,[bp-0x12]
+  // 00004CAA  50                push ax
+  // 00004CAB  FF76EC            push word [bp-0x14]
+  // 00004CAE  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004CB3  16                push ss
+  // 00004CB4  8D46EE            lea ax,[bp-0x12]
+  // 00004CB7  50                push ax
+  // 00004CB8  6AFF              push word 0xffffffffffffffff
+  // 00004CBA  6AFF              push word 0xffffffffffffffff
+  // 00004CBC  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004CC1  FF7606            push word [bp+0x6]
+  // 00004CC4  16                push ss
+  // 00004CC5  8D46EE            lea ax,[bp-0x12]
+  // 00004CC8  50                push ax
+  // 00004CC9  FF76EC            push word [bp-0x14]
+  // 00004CCC  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004CD1  8B4604            mov ax,[bp+0x4]
+  // 00004CD4  BA1A00            mov dx,0x1a
+  // 00004CD7  F7EA              imul dx
+  // 00004CD9  8BD0              mov dx,ax
+  // 00004CDB  8BD8              mov bx,ax
+  // 00004CDD  83BFBC0600        cmp word [bx+0x6bc],0x0
+  // 00004CE2  7510              jnz 0x4cf4
+  // 00004CE4  FF7606            push word [bp+0x6]
+  // 00004CE7  FF7604            push word [bp+0x4]
+  // 00004CEA  E8E1FE            call 0x4bce
+  // 00004CED  83C404            add sp,0x4
+  // 00004CF0  5F                pop di
+  // 00004CF1  5E                pop si
+  // 00004CF2  C9                leave
+  // 00004CF3  C3                ret
+  // 00004CF4  8BDA              mov bx,dx
+  // 00004CF6  8B87B806          mov ax,[bx+0x6b8]
+  // 00004CFA  8946FE            mov [bp-0x2],ax
+  // 00004CFD  8B97BA06          mov dx,[bx+0x6ba]
+  // 00004D01  8B5EFE            mov bx,[bp-0x2]
+  // 00004D04  83FB03            cmp bx,0x3
+  // 00004D07  7603              jna 0x4d0c
+  // 00004D09  E92701            jmp 0x4e33
+  // 00004D0C  D1E3              shl bx,1
+  // 00004D0E  2EFFA7374E        jmp word near [cs:bx+0x4e37]
+  // 00004D13  FF7606            push word [bp+0x6]
+  // 00004D16  FF7604            push word [bp+0x4]
+  // 00004D19  E8B2FE            call 0x4bce
+  // 00004D1C  83C404            add sp,0x4
+  // 00004D1F  5F                pop di
+  // 00004D20  5E                pop si
+  // 00004D21  C9                leave
+  // 00004D22  C3                ret
+  // 00004D23  83FAFD            cmp dx,0xfffffffffffffffd
+  // 00004D26  7F22              jg 0x4d4a
+  // 00004D28  83FAF5            cmp dx,0xfffffffffffffff5
+  // 00004D2B  7C1D              jl 0x4d4a
+  // 00004D2D  8BC2              mov ax,dx
+  // 00004D2F  99                cwd
+  // 00004D30  33C2              xor ax,dx
+  // 00004D32  2BC2              sub ax,dx
+  // 00004D34  50                push ax
+  // 00004D35  B8FDFF            mov ax,0xfffd
+  // 00004D38  99                cwd
+  // 00004D39  33C2              xor ax,dx
+  // 00004D3B  2BC2              sub ax,dx
+  // 00004D3D  5E                pop si
+  // 00004D3E  2BF0              sub si,ax
+  // 00004D40  C1E604            shl si,byte 0x4
+  // 00004D43  83C630            add si,0x30
+  // 00004D46  33FF              xor di,di
+  // 00004D48  EB37              jmp 0x4d81
+  // 00004D4A  83FAF4            cmp dx,0xfffffffffffffff4
+  // 00004D4D  7506              jnz 0x4d55
+  // 00004D4F  33F6              xor si,si
+  // 00004D51  33FF              xor di,di
+  // 00004D53  EB2C              jmp 0x4d81
+  // 00004D55  83FAF3            cmp dx,0xfffffffffffffff3
+  // 00004D58  7507              jnz 0x4d61
+  // 00004D5A  BEC000            mov si,0xc0
+  // 00004D5D  33FF              xor di,di
+  // 00004D5F  EB20              jmp 0x4d81
+  // 00004D61  83FAF2            cmp dx,0xfffffffffffffff2
+  // 00004D64  7405              jz 0x4d6b
+  // 00004D66  83FAF1            cmp dx,0xfffffffffffffff1
+  // 00004D69  7507              jnz 0x4d72
+  // 00004D6B  BEE000            mov si,0xe0
+  // 00004D6E  33FF              xor di,di
+  // 00004D70  EB0F              jmp 0x4d81
+  // 00004D72  83FAF0            cmp dx,0xfffffffffffffff0
+  // 00004D75  7405              jz 0x4d7c
+  // 00004D77  83FAEF            cmp dx,0xffffffffffffffef
+  // 00004D7A  7505              jnz 0x4d81
+  // 00004D7C  BED000            mov si,0xd0
+  // 00004D7F  33FF              xor di,di
+  // 00004D81  FF7608            push word [bp+0x8]
+  // 00004D84  FF364E2B          push word [0x2b4e]
+  // 00004D88  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004D8D  FF7606            push word [bp+0x6]
+  // 00004D90  FF76FC            push word [bp-0x4]
+  // 00004D93  FF76FA            push word [bp-0x6]
+  // 00004D96  6A10              push word 0x10
+  // 00004D98  6A10              push word 0x10
+  // 00004D9A  FF7608            push word [bp+0x8]
+  // 00004D9D  56                push si
+  // 00004D9E  57                push di
+  // 00004D9F  68CC00            push word 0xcc
+  // 00004DA2  6A20              push word 0x20
+  // 00004DA4  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004DA9  5F                pop di
+  // 00004DAA  5E                pop si
+  // 00004DAB  C9                leave
+  // 00004DAC  C3                ret
+  // 00004DAD  83FA17            cmp dx,0x17
+  // 00004DB0  7C0E              jl 0x4dc0
+  // 00004DB2  8BF2              mov si,dx
+  // 00004DB4  C1E604            shl si,byte 0x4
+  // 00004DB7  81C690FE          add si,0xfe90
+  // 00004DBB  BF4000            mov di,0x40
+  // 00004DBE  EB07              jmp 0x4dc7
+  // 00004DC0  8BF2              mov si,dx
+  // 00004DC2  C1E604            shl si,byte 0x4
+  // 00004DC5  33FF              xor di,di
+  // 00004DC7  83FA32            cmp dx,0x32
+  // 00004DCA  7C11              jl 0x4ddd
+  // 00004DCC  83FA3B            cmp dx,0x3b
+  // 00004DCF  7F0C              jg 0x4ddd
+  // 00004DD1  8BF2              mov si,dx
+  // 00004DD3  C1E604            shl si,byte 0x4
+  // 00004DD6  81C6E0FC          add si,0xfce0
+  // 00004DDA  BF1000            mov di,0x10
+  // 00004DDD  FF7608            push word [bp+0x8]
+  // 00004DE0  FF36502B          push word [0x2b50]
+  // 00004DE4  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004DE9  FF7606            push word [bp+0x6]
+  // 00004DEC  FF76FC            push word [bp-0x4]
+  // 00004DEF  FF76FA            push word [bp-0x6]
+  // 00004DF2  6A10              push word 0x10
+  // 00004DF4  6A10              push word 0x10
+  // 00004DF6  FF7608            push word [bp+0x8]
+  // 00004DF9  56                push si
+  // 00004DFA  57                push di
+  // 00004DFB  68CC00            push word 0xcc
+  // 00004DFE  6A20              push word 0x20
+  // 00004E00  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004E05  5F                pop di
+  // 00004E06  5E                pop si
+  // 00004E07  C9                leave
+  // 00004E08  C3                ret
+  // 00004E09  FF7608            push word [bp+0x8]
+  // 00004E0C  FF36522B          push word [0x2b52]
+  // 00004E10  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004E15  FF7606            push word [bp+0x6]
+  // 00004E18  FF76FC            push word [bp-0x4]
+  // 00004E1B  FF76FA            push word [bp-0x6]
+  // 00004E1E  6A10              push word 0x10
+  // 00004E20  6A10              push word 0x10
+  // 00004E22  FF7608            push word [bp+0x8]
+  // 00004E25  6A00              push word 0x0
+  // 00004E27  6A00              push word 0x0
+  // 00004E29  68CC00            push word 0xcc
+  // 00004E2C  6A20              push word 0x20
+  // 00004E2E  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004E33  5F                pop di
+  // 00004E34  5E                pop si
+  // 00004E35  C9                leave
+  // 00004E36  C3                ret
+}
+// A branch table follows.
+
+// CS:4E3F
+void cs_4E3F(int a0) {
+  // TODO! --GM
+  // 00004E3F  55                push bp
+  // 00004E40  8BEC              mov bp,sp
+  // 00004E42  83EC02            sub sp,0x2
+  // 00004E45  56                push si
+  // 00004E46  57                push di
+  // 00004E47  8B7E04            mov di,[bp+0x4]
+  // 00004E4A  57                push di
+  // 00004E4B  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004E50  8946FE            mov [bp-0x2],ax
+  // 00004E53  33F6              xor si,si
+  // 00004E55  FF76FE            push word [bp-0x2]
+  // 00004E58  57                push di
+  // 00004E59  56                push si
+  // 00004E5A  E8DAFD            call 0x4c37
+  // 00004E5D  83C406            add sp,0x6
+  // 00004E60  46                inc si
+  // 00004E61  83FE40            cmp si,0x40
+  // 00004E64  7CEF              jl 0x4e55
+  // 00004E66  FF76FE            push word [bp-0x2]
+  // 00004E69  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004E6E  5F                pop di
+  // 00004E6F  5E                pop si
+  // 00004E70  C9                leave
+  // 00004E71  C3                ret
+}
+
+// CS:4E72
+void cs_4E72(void) {
+  // TODO! --GM
+  // 00004E72  55                push bp
+  // 00004E73  8BEC              mov bp,sp
+  // 00004E75  83EC20            sub sp,0x20
+  // 00004E78  56                push si
+  // 00004E79  FF36902E          push word [0x2e90]
+  // 00004E7D  16                push ss
+  // 00004E7E  8D46E0            lea ax,[bp-0x20]
+  // 00004E81  50                push ax
+  // 00004E82  9AFFFF0000        call word 0x0:word 0xffff
+  // BeginPaint();
+
+  // 00004E87  8BF0              mov si,ax
+  // 00004E89  50                push ax
+  // 00004E8A  FF36562B          push word [0x2b56]
+  // 00004E8E  9AFFFF0000        call word 0x0:word 0xffff
+  // SelectObject();
+
+  // 00004E93  56                push si
+  // 00004E94  E8A8FF            call 0x4e3f
+  // 00004E97  83C402            add sp,0x2
+  // 00004E9A  FF36902E          push word [0x2e90]
+  // 00004E9E  56                push si
+  // 00004E9F  9AFFFF0000        call word 0x0:word 0xffff
+  // ReleaseDC();
+
+  // 00004EA4  FF36902E          push word [0x2e90]
+  // 00004EA8  16                push ss
+  // 00004EA9  8D46E0            lea ax,[bp-0x20]
+  // 00004EAC  50                push ax
+  // 00004EAD  9AFFFF0000        call word 0x0:word 0xffff
+  // EndPaint();
+
+  // 00004EB2  5E                pop si
+  // 00004EB3  C9                leave
+  // 00004EB4  C3                ret
+}
+
+// CS:4EB5
+void cs_4EB5(int a0, int a1, int a2) {
+  // TODO! --GM
+  // 00004EB5  55                push bp
+  // 00004EB6  8BEC              mov bp,sp
+  // 00004EB8  83EC16            sub sp,0x16
+  // 00004EBB  56                push si
+  // 00004EBC  57                push di
+  // 00004EBD  8B7E04            mov di,[bp+0x4]
+  // 00004EC0  8B4606            mov ax,[bp+0x6]
+  // 00004EC3  8946EC            mov [bp-0x14],ax
+  // 00004EC6  8B4608            mov ax,[bp+0x8]
+  // 00004EC9  8946EE            mov [bp-0x12],ax
+  // 00004ECC  57                push di
+  // 00004ECD  16                push ss
+  // 00004ECE  8D46F0            lea ax,[bp-0x10]
+  // 00004ED1  50                push ax
+  // 00004ED2  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004ED7  16                push ss
+  // 00004ED8  8D46F0            lea ax,[bp-0x10]
+  // 00004EDB  50                push ax
+  // 00004EDC  FF76EE            push word [bp-0x12]
+  // 00004EDF  FF76EC            push word [bp-0x14]
+  // 00004EE2  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004EE7  0BC0              or ax,ax
+  // 00004EE9  7503              jnz 0x4eee
+  // 00004EEB  E9B400            jmp 0x4fa2
+  // 00004EEE  57                push di
+  // 00004EEF  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004EF4  8BF0              mov si,ax
+  // 00004EF6  50                push ax
+  // 00004EF7  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004EFC  8946EA            mov [bp-0x16],ax
+  // 00004EFF  A1380D            mov ax,[0xd38]
+  // 00004F02  8946FA            mov [bp-0x6],ax
+  // 00004F05  8B46EC            mov ax,[bp-0x14]
+  // 00004F08  BB1400            mov bx,0x14
+  // 00004F0B  99                cwd
+  // 00004F0C  F7FB              idiv bx
+  // 00004F0E  8946FE            mov [bp-0x2],ax
+  // 00004F11  8B46EE            mov ax,[bp-0x12]
+  // 00004F14  99                cwd
+  // 00004F15  F7FB              idiv bx
+  // 00004F17  8946FC            mov [bp-0x4],ax
+  // 00004F1A  8B46FE            mov ax,[bp-0x2]
+  // 00004F1D  C1E004            shl ax,byte 0x4
+  // 00004F20  0346FC            add ax,[bp-0x4]
+  // 00004F23  8946F8            mov [bp-0x8],ax
+  // 00004F26  BA1A00            mov dx,0x1a
+  // 00004F29  F7EA              imul dx
+  // 00004F2B  8BD8              mov bx,ax
+  // 00004F2D  83BFBC0600        cmp word [bx+0x6bc],0x0
+  // 00004F32  7424              jz 0x4f58
+  // 00004F34  C706380DFFFF      mov word [0xd38],0xffff
+  // 00004F3A  FF76EA            push word [bp-0x16]
+  // 00004F3D  56                push si
+  // 00004F3E  FF76FA            push word [bp-0x6]
+  // 00004F41  E8F3FC            call 0x4c37
+  // 00004F44  83C406            add sp,0x6
+  // 00004F47  8B46F8            mov ax,[bp-0x8]
+  // 00004F4A  A3380D            mov [0xd38],ax
+  // 00004F4D  FF76EA            push word [bp-0x16]
+  // 00004F50  56                push si
+  // 00004F51  50                push ax
+  // 00004F52  E8E2FC            call 0x4c37
+  // 00004F55  83C406            add sp,0x6
+  // 00004F58  FF76EA            push word [bp-0x16]
+  // 00004F5B  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004F60  57                push di
+  // 00004F61  56                push si
+  // 00004F62  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004F67  A1380D            mov ax,[0xd38]
+  // 00004F6A  BA1A00            mov dx,0x1a
+  // 00004F6D  F7EA              imul dx
+  // 00004F6F  05BE06            add ax,0x6be
+  // 00004F72  BF5E2D            mov di,0x2d5e
+  // 00004F75  FC                cld
+  // 00004F76  1E                push ds
+  // 00004F77  07                pop es
+  // 00004F78  57                push di
+  // 00004F79  8BF8              mov di,ax
+  // 00004F7B  33C0              xor ax,ax
+  // 00004F7D  B9FFFF            mov cx,0xffff
+  // 00004F80  F2AE              repne scasb
+  // 00004F82  F7D1              not cx
+  // 00004F84  2BF9              sub di,cx
+  // 00004F86  D1E9              shr cx,1
+  // 00004F88  57                push di
+  // 00004F89  06                push es
+  // 00004F8A  1E                push ds
+  // 00004F8B  07                pop es
+  // 00004F8C  58                pop ax
+  // 00004F8D  5E                pop si
+  // 00004F8E  5F                pop di
+  // 00004F8F  1E                push ds
+  // 00004F90  8ED8              mov ds,ax
+  // 00004F92  F3A5              rep movsw
+  // 00004F94  13C9              adc cx,cx
+  // 00004F96  F3A4              rep movsb
+  // 00004F98  1F                pop ds
+  // 00004F99  E8D0C8            call 0x186c
+  // 00004F9C  E8A8D8            call 0x2847
+  // 00004F9F  E8E4C8            call 0x1886
+  // 00004FA2  5F                pop di
+  // 00004FA3  5E                pop si
+  // 00004FA4  C9                leave
+  // 00004FA5  C3                ret
+  // 00004EB5  55                push bp
+  // 00004EB6  8BEC              mov bp,sp
+  // 00004EB8  83EC16            sub sp,0x16
+  // 00004EBB  56                push si
+  // 00004EBC  57                push di
+  // 00004EBD  8B7E04            mov di,[bp+0x4]
+  // 00004EC0  8B4606            mov ax,[bp+0x6]
+  // 00004EC3  8946EC            mov [bp-0x14],ax
+  // 00004EC6  8B4608            mov ax,[bp+0x8]
+  // 00004EC9  8946EE            mov [bp-0x12],ax
+  // 00004ECC  57                push di
+  // 00004ECD  16                push ss
+  // 00004ECE  8D46F0            lea ax,[bp-0x10]
+  // 00004ED1  50                push ax
+  // 00004ED2  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004ED7  16                push ss
+  // 00004ED8  8D46F0            lea ax,[bp-0x10]
+  // 00004EDB  50                push ax
+  // 00004EDC  FF76EE            push word [bp-0x12]
+  // 00004EDF  FF76EC            push word [bp-0x14]
+  // 00004EE2  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004EE7  0BC0              or ax,ax
+  // 00004EE9  7503              jnz 0x4eee
+  // 00004EEB  E9B400            jmp 0x4fa2
+  // 00004EEE  57                push di
+  // 00004EEF  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004EF4  8BF0              mov si,ax
+  // 00004EF6  50                push ax
+  // 00004EF7  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004EFC  8946EA            mov [bp-0x16],ax
+  // 00004EFF  A1380D            mov ax,[0xd38]
+  // 00004F02  8946FA            mov [bp-0x6],ax
+  // 00004F05  8B46EC            mov ax,[bp-0x14]
+  // 00004F08  BB1400            mov bx,0x14
+  // 00004F0B  99                cwd
+  // 00004F0C  F7FB              idiv bx
+  // 00004F0E  8946FE            mov [bp-0x2],ax
+  // 00004F11  8B46EE            mov ax,[bp-0x12]
+  // 00004F14  99                cwd
+  // 00004F15  F7FB              idiv bx
+  // 00004F17  8946FC            mov [bp-0x4],ax
+  // 00004F1A  8B46FE            mov ax,[bp-0x2]
+  // 00004F1D  C1E004            shl ax,byte 0x4
+  // 00004F20  0346FC            add ax,[bp-0x4]
+  // 00004F23  8946F8            mov [bp-0x8],ax
+  // 00004F26  BA1A00            mov dx,0x1a
+  // 00004F29  F7EA              imul dx
+  // 00004F2B  8BD8              mov bx,ax
+  // 00004F2D  83BFBC0600        cmp word [bx+0x6bc],0x0
+  // 00004F32  7424              jz 0x4f58
+  // 00004F34  C706380DFFFF      mov word [0xd38],0xffff
+  // 00004F3A  FF76EA            push word [bp-0x16]
+  // 00004F3D  56                push si
+  // 00004F3E  FF76FA            push word [bp-0x6]
+  // 00004F41  E8F3FC            call 0x4c37
+  // 00004F44  83C406            add sp,0x6
+  // 00004F47  8B46F8            mov ax,[bp-0x8]
+  // 00004F4A  A3380D            mov [0xd38],ax
+  // 00004F4D  FF76EA            push word [bp-0x16]
+  // 00004F50  56                push si
+  // 00004F51  50                push ax
+  // 00004F52  E8E2FC            call 0x4c37
+  // 00004F55  83C406            add sp,0x6
+  // 00004F58  FF76EA            push word [bp-0x16]
+  // 00004F5B  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004F60  57                push di
+  // 00004F61  56                push si
+  // 00004F62  9AFFFF0000        call word 0x0:word 0xffff
+  // 00004F67  A1380D            mov ax,[0xd38]
+  // 00004F6A  BA1A00            mov dx,0x1a
+  // 00004F6D  F7EA              imul dx
+  // 00004F6F  05BE06            add ax,0x6be
+  // 00004F72  BF5E2D            mov di,0x2d5e
+  // 00004F75  FC                cld
+  // 00004F76  1E                push ds
+  // 00004F77  07                pop es
+  // 00004F78  57                push di
+  // 00004F79  8BF8              mov di,ax
+  // 00004F7B  33C0              xor ax,ax
+  // 00004F7D  B9FFFF            mov cx,0xffff
+  // 00004F80  F2AE              repne scasb
+  // 00004F82  F7D1              not cx
+  // 00004F84  2BF9              sub di,cx
+  // 00004F86  D1E9              shr cx,1
+  // 00004F88  57                push di
+  // 00004F89  06                push es
+  // 00004F8A  1E                push ds
+  // 00004F8B  07                pop es
+  // 00004F8C  58                pop ax
+  // 00004F8D  5E                pop si
+  // 00004F8E  5F                pop di
+  // 00004F8F  1E                push ds
+  // 00004F90  8ED8              mov ds,ax
+  // 00004F92  F3A5              rep movsw
+  // 00004F94  13C9              adc cx,cx
+  // 00004F96  F3A4              rep movsb
+  // 00004F98  1F                pop ds
+  // 00004F99  E8D0C8            call 0x186c
+  // 00004F9C  E8A8D8            call 0x2847
+  // 00004F9F  E8E4C8            call 0x1886
+  // 00004FA2  5F                pop di
+  // 00004FA3  5E                pop si
+  // 00004FA4  C9                leave
+  // 00004FA5  C3                ret
+}
+
+// TODO: This far callback function --GM
+// ToolboxWndProc(), Ordinal 10
+// 00004FA6  8CD8              mov ax,ds
+// 00004FA8  90                nop
+// 00004FA9  45                inc bp
+// 00004FAA  55                push bp
+// 00004FAB  8BEC              mov bp,sp
+// 00004FAD  1E                push ds
+// 00004FAE  8ED8              mov ds,ax
+// 00004FB0  8B560E            mov dx,[bp+0xe]
+// 00004FB3  8B5E0C            mov bx,[bp+0xc]
+// 00004FB6  8B4E0A            mov cx,[bp+0xa]
+// 00004FB9  8BC3              mov ax,bx
+// 00004FBB  3D0F00            cmp ax,0xf
+// 00004FBE  7428              jz 0x4fe8
+// 00004FC0  770C              ja 0x4fce
+// 00004FC2  3D0100            cmp ax,0x1
+// 00004FC5  744E              jz 0x5015
+// 00004FC7  3D0200            cmp ax,0x2
+// 00004FCA  7421              jz 0x4fed
+// 00004FCC  EB33              jmp 0x5001
+// 00004FCE  3D0002            cmp ax,0x200
+// 00004FD1  7423              jz 0x4ff6
+// 00004FD3  3D0102            cmp ax,0x201
+// 00004FD6  7529              jnz 0x5001
+// 00004FD8  51                push cx
+// 00004FD9  FF7608            push word [bp+0x8]
+// 00004FDC  FF7606            push word [bp+0x6]
+// 00004FDF  52                push dx
+// 00004FE0  E8D2FE            call 0x4eb5
+// 00004FE3  83C408            add sp,0x8
+// 00004FE6  EB2D              jmp 0x5015
+// 00004FE8  E887FE            call 0x4e72
+// 00004FEB  EB28              jmp 0x5015
+// 00004FED  6A00              push word 0x0
+// 00004FEF  9AFFFF0000        call word 0x0:word 0xffff
+// 00004FF4  EB1F              jmp 0x5015
+// 00004FF6  FF36342D          push word [0x2d34]
+// 00004FFA  9AFFFF0000        call word 0x0:word 0xffff
+// 00004FFF  EB14              jmp 0x5015
+// 00005001  52                push dx
+// 00005002  53                push bx
+// 00005003  51                push cx
+// 00005004  FF7608            push word [bp+0x8]
+// 00005007  FF7606            push word [bp+0x6]
+// 0000500A  9AFFFF0000        call word 0x0:word 0xffff
+// 0000500F  1F                pop ds
+// 00005010  5D                pop bp
+// 00005011  4D                dec bp
+// 00005012  CA0A00            retf word 0xa
+// 00005015  33D2              xor dx,dx
+// 00005017  33C0              xor ax,ax
+// 00005019  1F                pop ds
+// 0000501A  5D                pop bp
+// 0000501B  4D                dec bp
+// 0000501C  CA0A00            retf word 0xa
 
 // CS:501F
 int cs_501F(void) {
