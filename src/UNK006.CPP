@@ -283,8 +283,8 @@ void tick_all_timer_blocks(void) {
 int try_enter_blacky(int ai, int cx, int cy) {
   // stack: 0x06 bytes
   // BP/FA = tile row ptr
-  int src_cy; // BP/FC
   int src_cx; // BP/FE
+  int src_cy; // BP/FC
 
   int dst_ai; // DX?
   // SI = ai
