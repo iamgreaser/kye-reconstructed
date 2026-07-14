@@ -25,280 +25,106 @@ int kye_is_in_level(void) {
   return 0;
 }
 
-// CS:4A1F
+// CS:4A1F - ***CODE MATCH!***
 void cs_4A1F(void) {
-  // TODO! --GM
-  // 00004A1F  55                push bp
-  // 00004A20  8BEC              mov bp,sp
-  // 00004A22  83EC08            sub sp,0x8
-
   RECT r;
 
-  // 00004A25  E8CAFF            call 0x49f2
-  // 00004A28  0BC0              or ax,ax
-  // 00004A2A  7408              jz 0x4a34
   if (kye_is_in_level()) {
-    // 00004A2C  C706BC060000      mov word [0x6bc],0x0
-    // 00004A32  EB06              jmp 0x4a3a
+    g_06B8[0].tx = 0;
   } else {
-    // 00004A34  C706BC060100      mov word [0x6bc],0x1
+    g_06B8[0].tx = 1;
   }
 
-  // 00004A3A  FF36902E          push word [0x2e90]
-  // 00004A3E  16                push ss
-  // 00004A3F  8D46F8            lea ax,[bp-0x8]
-  // 00004A42  50                push ax
-  // 00004A43  9AFFFF0000        call word 0x0:word 0xffff
-  //GetClientRect(g_2E90, &r);
-
-  // 00004A48  FF36902E          push word [0x2e90]
-  // 00004A4C  16                push ss
-  // 00004A4D  8D46F8            lea ax,[bp-0x8]
-  // 00004A50  50                push ax
-  // 00004A51  6A00              push word 0x0
-  // 00004A53  9AFFFF0000        call word 0x0:word 0xffff
-  // InvalidateRect(g_2E90, &r, 0);
-
-  // 00004A58  FF36902E          push word [0x2e90]
-  // 00004A5C  9AFFFF0000        call word 0x0:word 0xffff
-  // UpdateWindow(g_2E90);
-
-  // 00004A61  C9                leave
-  // 00004A62  C3                ret
+  GetClientRect(g_2E90, &r);
+  InvalidateRect(g_2E90, &r, 0);
+  UpdateWindow(g_2E90);
 }
 
-// CS:4A63
-void cs_4A63(int a0, int a1, int a2, int a3) {
-  // TODO! --GM
-  // 00004A63  55                push bp
-  // 00004A64  8BEC              mov bp,sp
-  // 00004A66  56                push si
-  // 00004A67  57                push di
-  // 00004A68  8B7E06            mov di,[bp+0x6]
-  // 00004A6B  8B4E08            mov cx,[bp+0x8]
-  // 00004A6E  8B760A            mov si,[bp+0xa]
-  // 00004A71  0BC9              or cx,cx
-  // 00004A73  7E0E              jng 0x4a83
-  // 00004A75  83F91D            cmp cx,0x1d
-  // 00004A78  7D09              jnl 0x4a83
-  // 00004A7A  0BF6              or si,si
-  // 00004A7C  7E05              jng 0x4a83
-  // 00004A7E  83FE13            cmp si,0x13
-  // 00004A81  7C05              jl 0x4a88
-  // 00004A83  B80100            mov ax,0x1
-  // 00004A86  EB02              jmp 0x4a8a
-  // 00004A88  33C0              xor ax,ax
-  // 00004A8A  8BD0              mov dx,ax
-  // 00004A8C  8B4604            mov ax,[bp+0x4]
-  // 00004A8F  3D0100            cmp ax,0x1
-  // 00004A92  740E              jz 0x4aa2
-  // 00004A94  3D0200            cmp ax,0x2
-  // 00004A97  7445              jz 0x4ade
-  // 00004A99  3D0300            cmp ax,0x3
-  // 00004A9C  7451              jz 0x4aef
-  // 00004A9E  5F                pop di
-  // 00004A9F  5E                pop si
-  // 00004AA0  5D                pop bp
-  // 00004AA1  C3                ret
-  // 00004AA2  83FFF5            cmp di,0xfffffffffffffff5
-  // 00004AA5  7C1C              jl 0x4ac3
-  // 00004AA7  83FFFD            cmp di,0xfffffffffffffffd
-  // 00004AAA  7F17              jg 0x4ac3
-  // 00004AAC  8BC1              mov ax,cx
-  // 00004AAE  BA2800            mov dx,0x28
-  // 00004AB1  F7EA              imul dx
-  // 00004AB3  8BD6              mov dx,si
-  // 00004AB5  D1E2              shl dx,1
-  // 00004AB7  03C2              add ax,dx
-  // 00004AB9  8BD8              mov bx,ax
-  // 00004ABB  89BF7E12          mov [bx+0x127e],di
-  // 00004ABF  5F                pop di
-  // 00004AC0  5E                pop si
-  // 00004AC1  5D                pop bp
-  // 00004AC2  C3                ret
-  // 00004AC3  0BD2              or dx,dx
-  // 00004AC5  754C              jnz 0x4b13
-  // 00004AC7  8BC1              mov ax,cx
-  // 00004AC9  BA2800            mov dx,0x28
-  // 00004ACC  F7EA              imul dx
-  // 00004ACE  8BD6              mov dx,si
-  // 00004AD0  D1E2              shl dx,1
-  // 00004AD2  03C2              add ax,dx
-  // 00004AD4  8BD8              mov bx,ax
-  // 00004AD6  89BF7E12          mov [bx+0x127e],di
-  // 00004ADA  5F                pop di
-  // 00004ADB  5E                pop si
-  // 00004ADC  5D                pop bp
-  // 00004ADD  C3                ret
-  // 00004ADE  0BD2              or dx,dx
-  // 00004AE0  7531              jnz 0x4b13
-  // 00004AE2  56                push si
-  // 00004AE3  51                push cx
-  // 00004AE4  57                push di
-  // 00004AE5  E8EAD1            call 0x1cd2
-  // 00004AE8  83C406            add sp,0x6
-  // 00004AEB  5F                pop di
-  // 00004AEC  5E                pop si
-  // 00004AED  5D                pop bp
-  // 00004AEE  C3                ret
-  // 00004AEF  0BD2              or dx,dx
-  // 00004AF1  7520              jnz 0x4b13
-  // 00004AF3  8BC1              mov ax,cx
-  // 00004AF5  BA2800            mov dx,0x28
-  // 00004AF8  F7EA              imul dx
-  // 00004AFA  8BD6              mov dx,si
-  // 00004AFC  D1E2              shl dx,1
-  // 00004AFE  03C2              add ax,dx
-  // 00004B00  8BD8              mov bx,ax
-  // 00004B02  C7877E12FEFF      mov word [bx+0x127e],0xfffe
-  // 00004B08  890EF829          mov [0x29f8],cx
-  // 00004B0C  8936F629          mov [0x29f6],si
-  // 00004B10  E80CFF            call 0x4a1f
-  // 00004B13  5F                pop di
-  // 00004B14  5E                pop si
-  // 00004B15  5D                pop bp
-  // 00004B16  C3                ret
+// CS:4A63 - ***CODE MATCH!***
+void cs_4A63(int mode, int type, int cx, int cy) {
+  int on_border = (cx <= 0 || cx >= LEVEL_LX-1 || cy <= 0 || cy >= LEVEL_LY-1); // DX
+
+  switch (mode) {
+    default:
+      return;
+
+    case 1:
+      if (type >= T_WALL9 && type <= T_WALL1) {
+        g_level_tiles[cx][cy] = type;
+        return;
+      }
+      if (!on_border) {
+        g_level_tiles[cx][cy] = type;
+        return;
+      }
+      break;
+
+    case 2:
+      if (!on_border) {
+        create_actor(type, cx, cy);
+        return;
+      }
+      break;
+
+    case 3:
+      if (!on_border) {
+        g_level_tiles[cx][cy] = T_KYE;
+        g_kye_main_cx = cx;
+        g_kye_main_cy = cy;
+        cs_4A1F();
+      }
+      break;
+  }
 }
 
-// CS:4B17
-void cs_4B17(int a0, int a1) {
-  // TODO! --GM
-  // 00004B17  55                push bp
-  // 00004B18  8BEC              mov bp,sp
-  // 00004B1A  83EC02            sub sp,0x2
-  // 00004B1D  56                push si
-  // 00004B1E  57                push di
-  // 00004B1F  8B7606            mov si,[bp+0x6]
-  // 00004B22  8B4604            mov ax,[bp+0x4]
-  // 00004B25  BA2800            mov dx,0x28
-  // 00004B28  F7EA              imul dx
-  // 00004B2A  8946FE            mov [bp-0x2],ax
-  // 00004B2D  8BD6              mov dx,si
-  // 00004B2F  D1E2              shl dx,1
-  // 00004B31  03C2              add ax,dx
-  // 00004B33  8BD8              mov bx,ax
-  // 00004B35  8BBF7E12          mov di,[bx+0x127e]
-  // 00004B39  0BFF              or di,di
-  // 00004B3B  7E1F              jng 0x4b5c
-  // 00004B3D  57                push di
-  // 00004B3E  E8FFD1            call 0x1d40
-  // 00004B41  83C402            add sp,0x2
-  // 00004B44  8B4604            mov ax,[bp+0x4]
-  // 00004B47  BA2800            mov dx,0x28
-  // 00004B4A  F7EA              imul dx
-  // 00004B4C  8BD6              mov dx,si
-  // 00004B4E  D1E2              shl dx,1
-  // 00004B50  03C2              add ax,dx
-  // 00004B52  8BD8              mov bx,ax
-  // 00004B54  C7877E12FFFF      mov word [bx+0x127e],0xffff
-  // 00004B5A  EB0F              jmp 0x4b6b
-  // 00004B5C  8B5EFE            mov bx,[bp-0x2]
-  // 00004B5F  8BC6              mov ax,si
-  // 00004B61  D1E0              shl ax,1
-  // 00004B63  03D8              add bx,ax
-  // 00004B65  C7877E12FFFF      mov word [bx+0x127e],0xffff
-  // 00004B6B  E8E3D1            call 0x1d51
-  // 00004B6E  83FFFE            cmp di,0xfffffffffffffffe
-  // 00004B71  7503              jnz 0x4b76
-  // 00004B73  E8A9FE            call 0x4a1f
-  // 00004B76  5F                pop di
-  // 00004B77  5E                pop si
-  // 00004B78  C9                leave
-  // 00004B79  C3                ret
+// CS:4B17 - ***CODE MATCH!***
+void cs_4B17(int cx, int cy) {
+  int tile; // DI
+
+  tile = g_level_tiles[cx][cy];
+  // BUG? This seems to be an off-by-one and won't delete the first actor?
+  if (tile > 0) {
+    mark_actor_for_deletion(tile);
+    g_level_tiles[cx][cy] = T_EMPTY;
+  } else {
+    g_level_tiles[cx][cy] = T_EMPTY;
+  }
+  garbage_collect_actors();
+
+  if (tile == T_KYE) {
+    cs_4A1F();
+  }
 }
 
-// CS:4B7A
+// CS:4B7A - ***CODE MATCH!***
 void cs_4B7A(int cx, int cy) {
-  // TODO! --GM
-  // 00004B7A  55                push bp
-  // 00004B7B  8BEC              mov bp,sp
-  // 00004B7D  56                push si
-  // 00004B7E  57                push di
-  // 00004B7F  8B4E04            mov cx,[bp+0x4]
-  // 00004B82  8B7E06            mov di,[bp+0x6]
-  // 00004B85  8BC1              mov ax,cx
-  // 00004B87  BA2800            mov dx,0x28
-  // 00004B8A  F7EA              imul dx
-  // 00004B8C  8BD7              mov dx,di
-  // 00004B8E  D1E2              shl dx,1
-  // 00004B90  03C2              add ax,dx
-  // 00004B92  8BD8              mov bx,ax
-  // 00004B94  83BF7E12FF        cmp word [bx+0x127e],0xffffffffffffffff
-  // 00004B99  7527              jnz 0x4bc2
-  // 00004B9B  A1380D            mov ax,[0xd38]
-  // 00004B9E  BA1A00            mov dx,0x1a
-  // 00004BA1  F7EA              imul dx
-  // 00004BA3  8BF0              mov si,ax
-  // 00004BA5  8BD8              mov bx,ax
-  // 00004BA7  83BFBC0600        cmp word [bx+0x6bc],0x0
-  // 00004BAC  741C              jz 0x4bca
-  // 00004BAE  57                push di
-  // 00004BAF  51                push cx
-  // 00004BB0  FFB4BA06          push word [si+0x6ba]
-  // 00004BB4  FFB4B806          push word [si+0x6b8]
-  // 00004BB8  E8A8FE            call 0x4a63
-  // 00004BBB  83C408            add sp,0x8
-  // 00004BBE  5F                pop di
-  // 00004BBF  5E                pop si
-  // 00004BC0  5D                pop bp
-  // 00004BC1  C3                ret
-  // 00004BC2  57                push di
-  // 00004BC3  51                push cx
-  // 00004BC4  E850FF            call 0x4b17
-  // 00004BC7  83C404            add sp,0x4
-  // 00004BCA  5F                pop di
-  // 00004BCB  5E                pop si
-  // 00004BCC  5D                pop bp
-  // 00004BCD  C3                ret
+  if (g_level_tiles[cx][cy] == T_EMPTY) {
+    if (g_06B8[g_0D38].tx != 0) {
+      cs_4A63(g_06B8[g_0D38].mode, g_06B8[g_0D38].type, cx, cy);
+    }
+    return;
+  } else {
+    cs_4B17(cx, cy);
+  }
 }
 
-// CS:4BCE
-void cs_4BCE(int a0, int a1) {
-  // TODO! --GM
-  // 00004BCE  55                push bp
-  // 00004BCF  8BEC              mov bp,sp
-  // 00004BD1  83EC08            sub sp,0x8
-  // 00004BD4  56                push si
-  // 00004BD5  8B4E04            mov cx,[bp+0x4]
-  // 00004BD8  8B7606            mov si,[bp+0x6]
-  // 00004BDB  8BC1              mov ax,cx
-  // 00004BDD  BB1000            mov bx,0x10
-  // 00004BE0  99                cwd
-  // 00004BE1  F7FB              idiv bx
-  // 00004BE3  8946FE            mov [bp-0x2],ax
-  // 00004BE6  8BC1              mov ax,cx
-  // 00004BE8  99                cwd
-  // 00004BE9  F7FB              idiv bx
-  // 00004BEB  8956FC            mov [bp-0x4],dx
-  // 00004BEE  56                push si
-  // 00004BEF  FF36562B          push word [0x2b56]
-  // 00004BF3  9AFFFF0000        call word 0x0:word 0xffff
-  // 00004BF8  56                push si
-  // 00004BF9  FF36622B          push word [0x2b62]
-  // 00004BFD  9AFFFF0000        call word 0x0:word 0xffff
-  // 00004C02  56                push si
-  // 00004C03  8B46FE            mov ax,[bp-0x2]
-  // 00004C06  BA1400            mov dx,0x14
-  // 00004C09  F7EA              imul dx
-  // 00004C0B  8946FA            mov [bp-0x6],ax
-  // 00004C0E  050200            add ax,0x2
-  // 00004C11  50                push ax
-  // 00004C12  8B46FC            mov ax,[bp-0x4]
-  // 00004C15  BA1400            mov dx,0x14
-  // 00004C18  F7EA              imul dx
-  // 00004C1A  8946F8            mov [bp-0x8],ax
-  // 00004C1D  050200            add ax,0x2
-  // 00004C20  50                push ax
-  // 00004C21  8B46FA            mov ax,[bp-0x6]
-  // 00004C24  051200            add ax,0x12
-  // 00004C27  50                push ax
-  // 00004C28  8B46F8            mov ax,[bp-0x8]
-  // 00004C2B  051200            add ax,0x12
-  // 00004C2E  50                push ax
-  // 00004C2F  9AFFFF0000        call word 0x0:word 0xffff
-  // 00004C34  5E                pop si
-  // 00004C35  C9                leave
-  // 00004C36  C3                ret
+// CS:4BCE - ***CODE MATCH!***
+void cs_4BCE(int idx, HWND hWnd) {
+  int cx; // [BP-0x2].w
+  int cy; // [BP-0x4].w
+  // [BP-0x6].w is a spilled value
+  // [BP-0x8].w is a spilled value
+
+  cx = idx/16;
+  cy = idx%16;
+
+  SelectObject(hWnd, g_hpenWhite);
+  SelectObject(hWnd, g_hbrWhite);
+  Rectangle(hWnd,
+    cx*(TILE_LX+(2*2))+2,
+    cy*(TILE_LY+(2*2))+2,
+    cx*(TILE_LX+(2*2))+TILE_LX-2,
+    cy*(TILE_LY+(2*2))+TILE_LY-2);
 }
 
 // CS:4C37
@@ -516,7 +342,7 @@ void cs_4C37(int a0, int a1, int a2) {
   // 00004E35  C9                leave
   // 00004E36  C3                ret
 }
-// A branch table follows.
+// A 3-entry branch table follows.
 
 // CS:4E3F
 void cs_4E3F(int a0) {

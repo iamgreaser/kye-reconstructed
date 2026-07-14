@@ -46,10 +46,13 @@ extern char g_068C[13]; // DS:068C
 
 // This map is at DS:06B8
 // TODO: Editor entity spec --GM
+extern tilespec_s g_06B8[];
 
 // DS:0D38 = 0x000A
 // DS:0D3A = 0x0000
 // DS:0D3C contains at least one string...
+extern int g_0D38; // DS:0D38
+extern int g_0D3A; // DS:0D3A
 
 // const int g_CIRCLE_X[4]; // DS:0D5A
 // const int g_CIRCLE_Y[4]; // DS:0D62
@@ -99,3 +102,4 @@ extern HANDLE g_hInstance; // DS:2D5A
 extern HWND g_mainwnd; // DS:2D5C
 extern char g_toolname[50]; // DS:2D5E
 extern char g_2D90[50]; // DS:2D90 TODO CONFIRM SIZE
+extern HWND g_2E90; // DS:2E60

@@ -88,6 +88,13 @@ typedef struct {
 } tileconv_map_entry_s;
 
 typedef struct {
+  int mode;
+  int type;
+  int tx, ty;
+  char __pad0001[26-(2*4)];
+} tilespec_s;
+
+typedef struct {
   int type;
   int cx, cy;
   int var0;

@@ -5,8 +5,18 @@
 
 #include "kyetypes.h"
 
-char _pad0003[0x6B2]; // Put this *somewhere*...
+//char _pad0004[0x004]; // Put this *somewhere*...
 
+// TODO: SIZE --GM
+// TODO: Fill this in! --GM
+tilespec_s g_06B8[1] = {
+  {0},
+};
+char _pad0003[0x680-(26*1)]; // Put this *somewhere*...
+
+int g_0D38; // DS:0D38
+int g_0D3A; // DS:0D3A
+char _pad0006[0x02E]; // Put this *somewhere*...
 int g_door_anim_flag; // DS:0D6A
 
 char _pad0001[0x512]; // Put this *somewhere*...
@@ -57,3 +67,5 @@ HANDLE g_hInstance; // DS:2D5A
 HWND g_mainwnd; // DS:2D5C
 char g_toolname[50]; // DS:2D5E
 char g_2D90[50]; // DS:2D90 TODO CONFIRM SIZE
+char _pad0005[0x0CE]; // Put this *somewhere*...
+HWND g_2E90; // DS:2E60
