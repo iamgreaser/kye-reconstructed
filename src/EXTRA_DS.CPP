@@ -5,13 +5,10 @@
 
 #include "kyetypes.h"
 
-//char _pad0004[0x004]; // Put this *somewhere*...
-
-// TODO: Fill this in! --GM
-//char _pad0006[0x010]; // Put this *somewhere*...
-int g_door_anim_flag; // DS:0D6A
-
-char _pad0001[0x512]; // Put this *somewhere*...
+// TODO: This "padding" is actually some Borland C++ standard runtime initialised data.
+// Kye seems to separate out uninitialised data and dump it at the end.
+// Find out how that works! --GM
+char _pad0001[0x512];
 
 int g_level_tiles[LEVEL_LX][LEVEL_LY]; // DS:127E
 actor_s g_actors[MAX_ACTORS]; // DS:172E
@@ -38,8 +35,7 @@ HBRUSH g_hbrGreen; // DS:2B5E
 HBRUSH g_hbrRed;   // DS:2B60
 HBRUSH g_hbrWhite; // DS:2B62
 HBRUSH g_hbrBlack; // DS:2B64
-
-char _pad0002[0x2];
+HBRUSH g_unused_2B66; // DS:2B66
 
 RECT g_r_maincli; // DS:2B68
 RECT g_r_status_left; // DS:2B70
@@ -58,6 +54,5 @@ HDC g_maindc; // DS:2D58
 HANDLE g_hInstance; // DS:2D5A
 HWND g_mainwnd; // DS:2D5C
 char g_toolname[50]; // DS:2D5E
-char g_2D90[50]; // DS:2D90 TODO CONFIRM SIZE
-char _pad0005[0x0CE]; // Put this *somewhere*...
-HWND g_2E90; // DS:2E60
+char g_2D90[256]; // DS:2D90
+HWND g_2E90; // DS:2E90

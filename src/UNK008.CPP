@@ -11,6 +11,7 @@
 #include "kyevars.h"
 
 // Data segment and the fact that this isn't the editor tool window code hints at a split around about here.
+int g_door_anim_flag = 1; // DS:0D6A
 
 // CS:5128 - ***CODE MATCH!***
 void count_all_diamonds(void) {

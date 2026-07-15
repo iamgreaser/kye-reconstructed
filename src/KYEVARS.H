@@ -101,5 +101,5 @@ extern HDC g_maindc; // DS:2D58
 extern HANDLE g_hInstance; // DS:2D5A
 extern HWND g_mainwnd; // DS:2D5C
 extern char g_toolname[50]; // DS:2D5E
-extern char g_2D90[50]; // DS:2D90 TODO CONFIRM SIZE
+extern char g_2D90[256]; // DS:2D90
 extern HWND g_2E90; // DS:2E60
