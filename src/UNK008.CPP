@@ -157,7 +157,7 @@ void try_move_kye(int dx, int dy) {
   int pushx; // BP/F2
   int pushy; // BP/F0
   int didmove; // BP/EE
-  int mousenotblocked; // BP/EC
+  int foundmousedir; // BP/EC
   int distsqr; // BP/EA
   int circle_x[4] = {1,0,-1,0}; // BP/E2 const from DS:0D5A
   int circle_y[4] = {0,1,0,-1}; // BP/DA const from DS:0D62
@@ -295,7 +295,7 @@ void try_move_kye(int dx, int dy) {
     // 00005761  8956EA            mov [bp-0x16],dx
     distsqr = (dx2*dx2)+(dy2*dy2);
     // 00005764  C746EC0000        mov word [bp-0x14],0x0
-    mousenotblocked = 0;
+    foundmousedir = 0;
     // 00005769  C746FE0000        mov word [bp-0x2],0x0
     // 0000576E  C746D80000        mov word [bp-0x28],0x0
     // 00005773  EB62              jmp 0x57d7
@@ -309,7 +309,7 @@ void try_move_kye(int dx, int dy) {
     // 000057CF  8346D802          add word [bp-0x28],0x2
     // 000057D3  40                inc ax
     // 000057D4  8946FE            mov [bp-0x2],ax
-    for (i = 0; i < 4; i++) {
+    for (i = 0; foundmousedir && i < 4; i++) {
       // 00005775  8B5ED8            mov bx,[bp-0x28]
       // 00005778  8D46E2            lea ax,[bp-0x1e]
       // 0000577B  03D8              add bx,ax
@@ -351,14 +351,14 @@ void try_move_kye(int dx, int dy) {
         // 000057C5  7D05              jnl 0x57cc
         if (((g_kye_target_cx-newx)*(g_kye_target_cx-newx)) + ((g_kye_target_cy-newy)*(g_kye_target_cy-newy)) < distsqr) {
           // 000057C7  C746EC0100        mov word [bp-0x14],0x1
-            mousenotblocked = 1;
+            foundmousedir = 1;
         }
       }
     }
 
     // 000057E3  837EEC00          cmp word [bp-0x14],0x0
     // 000057E7  7408              jz 0x57f1
-    if (mousenotblocked != 0) {
+    if (foundmousedir != 0) {
       // 000057E9  56                push si
       // 000057EA  57                push di
       // 000057EB  E8FCFA            call 0x52ea
