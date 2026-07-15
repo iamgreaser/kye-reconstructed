@@ -434,14 +434,25 @@ void animate_doors(void) {
   }
 }
 
-// CS:5A54
+// CS:5A54 - FIXME: Register autoallocation allocates registers to the wrong place --GM
 void animate_autospawners(void) {
-  // TODO! --GM
+  int spawn_type; // [bp-0x2].w
+  int ai; // [bp-0x4].w
+  int cx; // [bp-0x6].w
+  int cy; // [bp-0x8].w -- it likes to assign a register to this, and spill into a stack local. Not sure why. Planetary alignment failure, perhaps?
+  int spawn_x; // [bp-0xA].w
+  int spawn_y; // [bp-0xC].w
+  //int v0E; // [bp-0xE].w - auto offset
+
+  // FIXME: Fix the borked register allocation and then remove this resyncing hack --GM
+  g_tick_counter++; g_tick_counter++; g_tick_counter++; g_tick_counter-=3;
+
   // 00005A54  55                push bp
   // 00005A55  8BEC              mov bp,sp
   // 00005A57  83EC0E            sub sp,0xe
   // 00005A5A  56                push si
   // 00005A5B  57                push di
+
   // 00005A5C  A1BE02            mov ax,[0x2be]
   // 00005A5F  BB0700            mov bx,0x7
   // 00005A62  99                cwd
@@ -449,216 +460,326 @@ void animate_autospawners(void) {
   // 00005A65  0BD2              or dx,dx
   // 00005A67  7403              jz 0x5a6c
   // 00005A69  E90702            jmp 0x5c73
-  // 00005A6C  C746FC0000        mov word [bp-0x4],0x0
-  // 00005A71  C746F20000        mov word [bp-0xe],0x0
-  // 00005A76  BE2E17            mov si,0x172e
-  // 00005A79  BF3417            mov di,0x1734
-  // 00005A7C  8B46FC            mov ax,[bp-0x4]
-  // 00005A7F  3B06BA02          cmp ax,[0x2ba]
-  // 00005A83  7C03              jl 0x5a88
-  // 00005A85  E9EB01            jmp 0x5c73
-  // 00005A88  833C17            cmp word [si],0x17
-  // 00005A8B  7D03              jnl 0x5a90
-  // 00005A8D  E9E400            jmp 0x5b74
-  // 00005A90  833C1A            cmp word [si],0x1a
-  // 00005A93  7E03              jng 0x5a98
-  // 00005A95  E9DC00            jmp 0x5b74
-  // 00005A98  8B5EF2            mov bx,[bp-0xe]
-  // 00005A9B  8B873017          mov ax,[bx+0x1730]
-  // 00005A9F  8946FA            mov [bp-0x6],ax
-  // 00005AA2  8B873217          mov ax,[bx+0x1732]
-  // 00005AA6  8946F8            mov [bp-0x8],ax
-  // 00005AA9  8B04              mov ax,[si]
-  // 00005AAB  40                inc ax
-  // 00005AAC  8904              mov [si],ax
-  // 00005AAE  833C1A            cmp word [si],0x1a
-  // 00005AB1  7E04              jng 0x5ab7
-  // 00005AB3  C7041700          mov word [si],0x17
-  // 00005AB7  FF76F8            push word [bp-0x8]
-  // 00005ABA  FF76FA            push word [bp-0x6]
-  // 00005ABD  FF76FC            push word [bp-0x4]
-  // 00005AC0  E843D5            call 0x3006
-  // 00005AC3  83C406            add sp,0x6
-  // 00005AC6  8B05              mov ax,[di]
-  // 00005AC8  8BD0              mov dx,ax
-  // 00005ACA  3B46F8            cmp ax,[bp-0x8]
-  // 00005ACD  7D06              jnl 0x5ad5
-  // 00005ACF  40                inc ax
-  // 00005AD0  8905              mov [di],ax
-  // 00005AD2  E98501            jmp 0x5c5a
-  // 00005AD5  8B1C              mov bx,[si]
-  // 00005AD7  83EB17            sub bx,0x17
-  // 00005ADA  83FB03            cmp bx,0x3
-  // 00005ADD  7755              ja 0x5b34
-  // 00005ADF  D1E3              shl bx,1
-  // 00005AE1  2EFFA7825C        jmp word near [cs:bx+0x5c82]
-  // 00005AE6  C746FE0400        mov word [bp-0x2],0x4
-  // 00005AEB  8B46FA            mov ax,[bp-0x6]
-  // 00005AEE  40                inc ax
-  // 00005AEF  8946F6            mov [bp-0xa],ax
-  // 00005AF2  8B46F8            mov ax,[bp-0x8]
-  // 00005AF5  8946F4            mov [bp-0xc],ax
-  // 00005AF8  EB3A              jmp 0x5b34
-  // 00005AFA  C746FE0100        mov word [bp-0x2],0x1
-  // 00005AFF  8B46FA            mov ax,[bp-0x6]
-  // 00005B02  8946F6            mov [bp-0xa],ax
-  // 00005B05  8B46F8            mov ax,[bp-0x8]
-  // 00005B08  48                dec ax
-  // 00005B09  8946F4            mov [bp-0xc],ax
-  // 00005B0C  EB26              jmp 0x5b34
-  // 00005B0E  C746FE0300        mov word [bp-0x2],0x3
-  // 00005B13  8B46FA            mov ax,[bp-0x6]
-  // 00005B16  48                dec ax
-  // 00005B17  8946F6            mov [bp-0xa],ax
-  // 00005B1A  8B46F8            mov ax,[bp-0x8]
-  // 00005B1D  8946F4            mov [bp-0xc],ax
-  // 00005B20  EB12              jmp 0x5b34
-  // 00005B22  C746FE0200        mov word [bp-0x2],0x2
-  // 00005B27  8B46FA            mov ax,[bp-0x6]
-  // 00005B2A  8946F6            mov [bp-0xa],ax
-  // 00005B2D  8B46F8            mov ax,[bp-0x8]
-  // 00005B30  40                inc ax
-  // 00005B31  8946F4            mov [bp-0xc],ax
-  // 00005B34  8B46F6            mov ax,[bp-0xa]
-  // 00005B37  BA2800            mov dx,0x28
-  // 00005B3A  F7EA              imul dx
-  // 00005B3C  8B56F4            mov dx,[bp-0xc]
-  // 00005B3F  D1E2              shl dx,1
-  // 00005B41  03C2              add ax,dx
-  // 00005B43  8BD8              mov bx,ax
-  // 00005B45  83BF7E12FF        cmp word [bx+0x127e],0xffffffffffffffff
-  // 00005B4A  7403              jz 0x5b4f
-  // 00005B4C  E90B01            jmp 0x5c5a
-  // 00005B4F  C7050000          mov word [di],0x0
-  // 00005B53  FF76F4            push word [bp-0xc]
-  // 00005B56  FF76F6            push word [bp-0xa]
-  // 00005B59  FF76FE            push word [bp-0x2]
-  // 00005B5C  E873C1            call 0x1cd2
-  // 00005B5F  83C406            add sp,0x6
-  // 00005B62  8BD0              mov dx,ax
-  // 00005B64  FF76F4            push word [bp-0xc]
-  // 00005B67  FF76F6            push word [bp-0xa]
-  // 00005B6A  50                push ax
-  // 00005B6B  E898D4            call 0x3006
-  // 00005B6E  83C406            add sp,0x6
-  // 00005B71  E9E600            jmp 0x5c5a
-  // 00005B74  833C1B            cmp word [si],0x1b
-  // 00005B77  7D03              jnl 0x5b7c
-  // 00005B79  E9DE00            jmp 0x5c5a
-  // 00005B7C  833C1E            cmp word [si],0x1e
-  // 00005B7F  7E03              jng 0x5b84
-  // 00005B81  E9D600            jmp 0x5c5a
-  // 00005B84  8B5EF2            mov bx,[bp-0xe]
-  // 00005B87  8B873017          mov ax,[bx+0x1730]
-  // 00005B8B  8946FA            mov [bp-0x6],ax
-  // 00005B8E  8B873217          mov ax,[bx+0x1732]
-  // 00005B92  8946F8            mov [bp-0x8],ax
-  // 00005B95  8B04              mov ax,[si]
-  // 00005B97  40                inc ax
-  // 00005B98  8904              mov [si],ax
-  // 00005B9A  833C1E            cmp word [si],0x1e
-  // 00005B9D  7E04              jng 0x5ba3
-  // 00005B9F  C7041B00          mov word [si],0x1b
-  // 00005BA3  FF76F8            push word [bp-0x8]
-  // 00005BA6  FF76FA            push word [bp-0x6]
-  // 00005BA9  FF76FC            push word [bp-0x4]
-  // 00005BAC  E857D4            call 0x3006
-  // 00005BAF  83C406            add sp,0x6
-  // 00005BB2  8B05              mov ax,[di]
-  // 00005BB4  8BD0              mov dx,ax
-  // 00005BB6  3B46F8            cmp ax,[bp-0x8]
-  // 00005BB9  7D06              jnl 0x5bc1
-  // 00005BBB  40                inc ax
-  // 00005BBC  8905              mov [di],ax
-  // 00005BBE  E99900            jmp 0x5c5a
-  // 00005BC1  8B1C              mov bx,[si]
-  // 00005BC3  83EB1B            sub bx,0x1b
-  // 00005BC6  83FB03            cmp bx,0x3
-  // 00005BC9  7755              ja 0x5c20
-  // 00005BCB  D1E3              shl bx,1
-  // 00005BCD  2EFFA77A5C        jmp word near [cs:bx+0x5c7a]
-  // 00005BD2  C746FE0E00        mov word [bp-0x2],0xe
-  // 00005BD7  8B46FA            mov ax,[bp-0x6]
-  // 00005BDA  40                inc ax
-  // 00005BDB  8946F6            mov [bp-0xa],ax
-  // 00005BDE  8B46F8            mov ax,[bp-0x8]
-  // 00005BE1  8946F4            mov [bp-0xc],ax
-  // 00005BE4  EB3A              jmp 0x5c20
-  // 00005BE6  C746FE0B00        mov word [bp-0x2],0xb
-  // 00005BEB  8B46FA            mov ax,[bp-0x6]
-  // 00005BEE  8946F6            mov [bp-0xa],ax
-  // 00005BF1  8B46F8            mov ax,[bp-0x8]
-  // 00005BF4  48                dec ax
-  // 00005BF5  8946F4            mov [bp-0xc],ax
-  // 00005BF8  EB26              jmp 0x5c20
-  // 00005BFA  C746FE0D00        mov word [bp-0x2],0xd
-  // 00005BFF  8B46FA            mov ax,[bp-0x6]
-  // 00005C02  48                dec ax
-  // 00005C03  8946F6            mov [bp-0xa],ax
-  // 00005C06  8B46F8            mov ax,[bp-0x8]
-  // 00005C09  8946F4            mov [bp-0xc],ax
-  // 00005C0C  EB12              jmp 0x5c20
-  // 00005C0E  C746FE0C00        mov word [bp-0x2],0xc
-  // 00005C13  8B46FA            mov ax,[bp-0x6]
-  // 00005C16  8946F6            mov [bp-0xa],ax
-  // 00005C19  8B46F8            mov ax,[bp-0x8]
-  // 00005C1C  40                inc ax
-  // 00005C1D  8946F4            mov [bp-0xc],ax
-  // 00005C20  8B46F6            mov ax,[bp-0xa]
-  // 00005C23  BA2800            mov dx,0x28
-  // 00005C26  F7EA              imul dx
-  // 00005C28  8B56F4            mov dx,[bp-0xc]
-  // 00005C2B  D1E2              shl dx,1
-  // 00005C2D  03C2              add ax,dx
-  // 00005C2F  8BD8              mov bx,ax
-  // 00005C31  83BF7E12FF        cmp word [bx+0x127e],0xffffffffffffffff
-  // 00005C36  7522              jnz 0x5c5a
-  // 00005C38  C7050000          mov word [di],0x0
-  // 00005C3C  FF76F4            push word [bp-0xc]
-  // 00005C3F  FF76F6            push word [bp-0xa]
-  // 00005C42  FF76FE            push word [bp-0x2]
-  // 00005C45  E88AC0            call 0x1cd2
-  // 00005C48  83C406            add sp,0x6
-  // 00005C4B  8BD0              mov dx,ax
-  // 00005C4D  FF76F4            push word [bp-0xc]
-  // 00005C50  FF76F6            push word [bp-0xa]
-  // 00005C53  50                push ax
-  // 00005C54  E8AFD3            call 0x3006
-  // 00005C57  83C406            add sp,0x6
-  // 00005C5A  8346F208          add word [bp-0xe],0x8
-  // 00005C5E  83C608            add si,0x8
-  // 00005C61  83C708            add di,0x8
-  // 00005C64  FF46FC            inc word [bp-0x4]
-  // 00005C67  8B46FC            mov ax,[bp-0x4]
-  // 00005C6A  3B06BA02          cmp ax,[0x2ba]
-  // 00005C6E  7D03              jnl 0x5c73
-  // 00005C70  E915FE            jmp 0x5a88
+  if ((g_tick_counter % 7) == 0) {
+    // 00005A6C  C746FC0000        mov word [bp-0x4],0x0
+    // 00005A71  C746F20000        mov word [bp-0xe],0x0
+    // 00005A76  BE2E17            mov si,0x172e = &g_actors[ai].type
+    // 00005A79  BF3417            mov di,0x1734 = &g_actors[ai].var0
+    // --------
+    // 00005A7C  8B46FC            mov ax,[bp-0x4]
+    // 00005A7F  3B06BA02          cmp ax,[0x2ba]
+    // 00005A83  7C03              jl 0x5a88
+    // 00005A85  E9EB01            jmp 0x5c73
+    // --------
+      // appears at end:
+      // 00005C5A  8346F208          add word [bp-0xe],0x8
+      // 00005C5E  83C608            add si,0x8
+      // 00005C61  83C708            add di,0x8
+      // 00005C64  FF46FC            inc word [bp-0x4]
+    for (ai = 0; ai < g_actor_count; ai++) {
+      // 00005A88  833C17            cmp word [si],0x17
+      // 00005A8B  7D03              jnl 0x5a90
+      // 00005A8D  E9E400            jmp 0x5b74
+      // 00005A90  833C1A            cmp word [si],0x1a
+      // 00005A93  7E03              jng 0x5a98
+      // 00005A95  E9DC00            jmp 0x5b74
+      if (g_actors[ai].type >= T_AUTOSLIDER1 && g_actors[ai].type <= T_AUTOSLIDER4) {
+        // 00005A98  8B5EF2            mov bx,[bp-0xe]
+        // 00005A9B  8B873017          mov ax,[bx+0x1730]  = g_actors[ai].x
+        // 00005A9F  8946FA            mov [bp-0x6],ax
+        cx = g_actors[ai].cx;
+        // 00005AA2  8B873217          mov ax,[bx+0x1732]  = g_actors[ai].y
+        // 00005AA6  8946F8            mov [bp-0x8],ax
+        cy = g_actors[ai].cy;
+
+        // 00005AA9  8B04              mov ax,[si]
+        // 00005AAB  40                inc ax
+        // 00005AAC  8904              mov [si],ax
+        g_actors[ai].type = g_actors[ai].type + 1;
+        // 00005AAE  833C1A            cmp word [si],0x1a
+        // 00005AB1  7E04              jng 0x5ab7
+        if (g_actors[ai].type > T_AUTOSLIDER4) {
+          // 00005AB3  C7041700          mov word [si],0x17
+          g_actors[ai].type = T_AUTOSLIDER1;
+        }
+
+        // 00005AB7  FF76F8            push word [bp-0x8]
+        // 00005ABA  FF76FA            push word [bp-0x6]
+        // 00005ABD  FF76FC            push word [bp-0x4]
+        // 00005AC0  E843D5            call 0x3006
+        // 00005AC3  83C406            add sp,0x6
+        move_actor(ai, cx, cy);
+
+        // 00005AC6  8B05              mov ax,[di]
+        // 00005AC8  8BD0              mov dx,ax
+        // 00005ACA  3B46F8            cmp ax,[bp-0x8]
+        // 00005ACD  7D06              jnl 0x5ad5
+        if (g_actors[ai].var0 < cy) {
+          // 00005ACF  40                inc ax
+          // 00005AD0  8905              mov [di],ax
+          // 00005AD2  E98501            jmp 0x5c5a
+          g_actors[ai].var0 = g_actors[ai].var0 + 1;
+
+        } else {
+          // 00005AD5  8B1C              mov bx,[si]
+          // 00005AD7  83EB17            sub bx,0x17
+          // 00005ADA  83FB03            cmp bx,0x3
+          // 00005ADD  7755              ja 0x5b34
+          // 00005ADF  D1E3              shl bx,1
+          // 00005AE1  2EFFA7825C        jmp word near [cs:bx+0x5c82]
+          switch (g_actors[ai].type) {
+              // 00: 5AE6
+              // 01: 5AFA
+              // 02: 5B0E
+              // 03: 5B22
+
+            case T_AUTOSLIDER1:
+              // 00005AE6  C746FE0400        mov word [bp-0x2],0x4
+              spawn_type = T_SLIDER_E;
+              // 00005AEB  8B46FA            mov ax,[bp-0x6]
+              // 00005AEE  40                inc ax
+              // 00005AEF  8946F6            mov [bp-0xa],ax
+              // 00005AF2  8B46F8            mov ax,[bp-0x8]
+              // 00005AF5  8946F4            mov [bp-0xc],ax
+              // 00005AF8  EB3A              jmp 0x5b34
+              spawn_x = cx + 1;
+              spawn_y = cy;
+              break;
+
+            case T_AUTOSLIDER2:
+              // 00005AFA  C746FE0100        mov word [bp-0x2],0x1
+              spawn_type = T_SLIDER_N;
+              // 00005AFF  8B46FA            mov ax,[bp-0x6]
+              // 00005B02  8946F6            mov [bp-0xa],ax
+              // 00005B05  8B46F8            mov ax,[bp-0x8]
+              // 00005B08  48                dec ax
+              // 00005B09  8946F4            mov [bp-0xc],ax
+              // 00005B0C  EB26              jmp 0x5b34
+              spawn_x = cx;
+              spawn_y = cy - 1;
+              break;
+
+            case T_AUTOSLIDER3:
+              // 00005B0E  C746FE0300        mov word [bp-0x2],0x3
+              spawn_type = T_SLIDER_W;
+              // 00005B13  8B46FA            mov ax,[bp-0x6]
+              // 00005B16  48                dec ax
+              // 00005B17  8946F6            mov [bp-0xa],ax
+              // 00005B1A  8B46F8            mov ax,[bp-0x8]
+              // 00005B1D  8946F4            mov [bp-0xc],ax
+              // 00005B20  EB12              jmp 0x5b34
+              spawn_x = cx - 1;
+              spawn_y = cy;
+              break;
+
+            case T_AUTOSLIDER4:
+              // 00005B22  C746FE0200        mov word [bp-0x2],0x2
+              spawn_type = T_SLIDER_S;
+              // 00005B27  8B46FA            mov ax,[bp-0x6]
+              // 00005B2A  8946F6            mov [bp-0xa],ax
+              // 00005B2D  8B46F8            mov ax,[bp-0x8]
+              // 00005B30  40                inc ax
+              // 00005B31  8946F4            mov [bp-0xc],ax
+              spawn_x = cx;
+              spawn_y = cy + 1;
+              break;
+          }
+          // 00005B34  8B46F6            mov ax,[bp-0xa]
+          // 00005B37  BA2800            mov dx,0x28
+          // 00005B3A  F7EA              imul dx
+          // 00005B3C  8B56F4            mov dx,[bp-0xc]
+          // 00005B3F  D1E2              shl dx,1
+          // 00005B41  03C2              add ax,dx
+          // 00005B43  8BD8              mov bx,ax
+          // 00005B45  83BF7E12FF        cmp word [bx+0x127e],0xffffffffffffffff
+          // 00005B4A  7403              jz 0x5b4f
+          // 00005B4C  E90B01            jmp 0x5c5a
+          if (g_level_tiles[spawn_x][spawn_y] == T_EMPTY) {
+            // 00005B4F  C7050000          mov word [di],0x0
+            g_actors[ai].var0 = 0;
+            // 00005B53  FF76F4            push word [bp-0xc]
+            // 00005B56  FF76F6            push word [bp-0xa]
+            // 00005B59  FF76FE            push word [bp-0x2]
+            // 00005B5C  E873C1            call 0x1cd2
+            // 00005B5F  83C406            add sp,0x6
+            create_actor(spawn_type, spawn_x, spawn_y);
+            // 00005B62  8BD0              mov dx,ax
+            // 00005B64  FF76F4            push word [bp-0xc]
+            // 00005B67  FF76F6            push word [bp-0xa]
+            // 00005B6A  50                push ax
+            // 00005B6B  E898D4            call 0x3006
+            // 00005B6E  83C406            add sp,0x6
+            // 00005B71  E9E600            jmp 0x5c5a
+            move_actor(ai, cx, cy);
+          }
+        }
+
+      // 00005B74  833C1B            cmp word [si],0x1b
+      // 00005B77  7D03              jnl 0x5b7c
+      // 00005B79  E9DE00            jmp 0x5c5a
+      // 00005B7C  833C1E            cmp word [si],0x1e
+      // 00005B7F  7E03              jng 0x5b84
+      // 00005B81  E9D600            jmp 0x5c5a
+      } else if (g_actors[ai].type >= T_AUTOROCKY1 && g_actors[ai].type <= T_AUTOROCKY4) {
+        // 00005B84  8B5EF2            mov bx,[bp-0xe]
+        // 00005B87  8B873017          mov ax,[bx+0x1730]
+        // 00005B8B  8946FA            mov [bp-0x6],ax
+        cx = g_actors[ai].cx;
+        // 00005B8E  8B873217          mov ax,[bx+0x1732]
+        // 00005B92  8946F8            mov [bp-0x8],ax
+        cy = g_actors[ai].cy;
+
+        // 00005B95  8B04              mov ax,[si]
+        // 00005B97  40                inc ax
+        // 00005B98  8904              mov [si],ax
+        g_actors[ai].type = g_actors[ai].type + 1;
+        // 00005B9A  833C1E            cmp word [si],0x1e
+        // 00005B9D  7E04              jng 0x5ba3
+        if (g_actors[ai].type > T_AUTOROCKY4) {
+          // 00005B9F  C7041B00          mov word [si],0x1b
+          g_actors[ai].type = T_AUTOROCKY1;
+        }
+
+        // 00005BA3  FF76F8            push word [bp-0x8]
+        // 00005BA6  FF76FA            push word [bp-0x6]
+        // 00005BA9  FF76FC            push word [bp-0x4]
+        // 00005BAC  E857D4            call 0x3006
+        // 00005BAF  83C406            add sp,0x6
+        move_actor(ai, cx, cy);
+
+        // 00005BB2  8B05              mov ax,[di]
+        // 00005BB4  8BD0              mov dx,ax
+        // 00005BB6  3B46F8            cmp ax,[bp-0x8]
+        // 00005BB9  7D06              jnl 0x5bc1
+        if (g_actors[ai].var0 < cy) {
+          // 00005BBB  40                inc ax
+          // 00005BBC  8905              mov [di],ax
+          // 00005BBE  E99900            jmp 0x5c5a
+          g_actors[ai].var0 = g_actors[ai].var0 + 1;
+
+        } else {
+          // 00005BC1  8B1C              mov bx,[si]
+          // 00005BC3  83EB1B            sub bx,0x1b
+          // 00005BC6  83FB03            cmp bx,0x3
+          // 00005BC9  7755              ja 0x5c20
+          // 00005BCB  D1E3              shl bx,1
+          // 00005BCD  2EFFA77A5C        jmp word near [cs:bx+0x5c7a]
+            // 00: 5BD2
+            // 01: 5BE6
+            // 02: 5BFA
+            // 03: 5C0E
+          switch (g_actors[ai].type) {
+            case T_AUTOROCKY1:
+              // 00005BD2  C746FE0E00        mov word [bp-0x2],0xe
+              spawn_type = T_ROCKY_E;
+              // 00005BD7  8B46FA            mov ax,[bp-0x6]
+              // 00005BDA  40                inc ax
+              // 00005BDB  8946F6            mov [bp-0xa],ax
+              // 00005BDE  8B46F8            mov ax,[bp-0x8]
+              // 00005BE1  8946F4            mov [bp-0xc],ax
+              // 00005BE4  EB3A              jmp 0x5c20
+              spawn_x = cx + 1;
+              spawn_y = cy;
+              break;
+
+            case T_AUTOROCKY2:
+              // 00005BE6  C746FE0B00        mov word [bp-0x2],0xb
+              spawn_type = T_ROCKY_N;
+              // 00005BEB  8B46FA            mov ax,[bp-0x6]
+              // 00005BEE  8946F6            mov [bp-0xa],ax
+              // 00005BF1  8B46F8            mov ax,[bp-0x8]
+              // 00005BF4  48                dec ax
+              // 00005BF5  8946F4            mov [bp-0xc],ax
+              // 00005BF8  EB26              jmp 0x5c20
+              spawn_x = cx;
+              spawn_y = cy - 1;
+              break;
+
+            case T_AUTOROCKY3:
+              // 00005BFA  C746FE0D00        mov word [bp-0x2],0xd
+              spawn_type = T_ROCKY_W;
+              // 00005BFF  8B46FA            mov ax,[bp-0x6]
+              // 00005C02  48                dec ax
+              // 00005C03  8946F6            mov [bp-0xa],ax
+              // 00005C06  8B46F8            mov ax,[bp-0x8]
+              // 00005C09  8946F4            mov [bp-0xc],ax
+              // 00005C0C  EB12              jmp 0x5c20
+              spawn_x = cx - 1;
+              spawn_y = cy;
+              break;
+
+            case T_AUTOROCKY4:
+              // 00005C0E  C746FE0C00        mov word [bp-0x2],0xc
+              spawn_type = T_ROCKY_S;
+              // 00005C13  8B46FA            mov ax,[bp-0x6]
+              // 00005C16  8946F6            mov [bp-0xa],ax
+              // 00005C19  8B46F8            mov ax,[bp-0x8]
+              // 00005C1C  40                inc ax
+              // 00005C1D  8946F4            mov [bp-0xc],ax
+              spawn_x = cx;
+              spawn_y = cy + 1;
+              break;
+          }
+
+          // 00005C20  8B46F6            mov ax,[bp-0xa]
+          // 00005C23  BA2800            mov dx,0x28
+          // 00005C26  F7EA              imul dx
+          // 00005C28  8B56F4            mov dx,[bp-0xc]
+          // 00005C2B  D1E2              shl dx,1
+          // 00005C2D  03C2              add ax,dx
+          // 00005C2F  8BD8              mov bx,ax
+          // 00005C31  83BF7E12FF        cmp word [bx+0x127e],0xffffffffffffffff
+          // 00005C36  7522              jnz 0x5c5a
+          if (g_level_tiles[spawn_x][spawn_y] == T_EMPTY) {
+            // 00005C38  C7050000          mov word [di],0x0
+            g_actors[ai].var0 = 0;
+            // 00005C3C  FF76F4            push word [bp-0xc]
+            // 00005C3F  FF76F6            push word [bp-0xa]
+            // 00005C42  FF76FE            push word [bp-0x2]
+            // 00005C45  E88AC0            call 0x1cd2
+            // 00005C48  83C406            add sp,0x6
+            create_actor(spawn_type, spawn_x, spawn_y);
+            // 00005C4B  8BD0              mov dx,ax
+            // 00005C4D  FF76F4            push word [bp-0xc]
+            // 00005C50  FF76F6            push word [bp-0xa]
+            // 00005C53  50                push ax
+            // 00005C54  E8AFD3            call 0x3006
+            // 00005C57  83C406            add sp,0x6
+            move_actor(ai, cx, cy);
+          }
+        }
+      }
+      // handled above:
+        // 00005C5A  8346F208          add word [bp-0xe],0x8
+        // 00005C5E  83C608            add si,0x8
+        // 00005C61  83C708            add di,0x8
+        // 00005C64  FF46FC            inc word [bp-0x4]
+      // 00005C67  8B46FC            mov ax,[bp-0x4]
+      // 00005C6A  3B06BA02          cmp ax,[0x2ba]
+      // 00005C6E  7D03              jnl 0x5c73
+      // 00005C70  E915FE            jmp 0x5a88
+    }
+  }
+
   // 00005C73  E8DBC0            call 0x1d51
+  garbage_collect_actors();
+
   // 00005C76  5F                pop di
   // 00005C77  5E                pop si
   // 00005C78  C9                leave
   // 00005C79  C3                ret
-  // switch table:
-  // 00: 5BD2
-  // 01: 5BE6
-  // 02: 5BFA
-  // 03: 5B0E
-  // 04: 5AE6
-  // 05: 5AFA
-  // 06: 5B0E
-  // 07: 5B22
 }
 
-// CS:5C8A
+// CS:5C8A - ***CODE MATCH!*** (not sure how though, because it sure feels wrong!)
 void animate_blackies(void) {
   // stack: 0x08 bytes (/F8)
-  // BP/F8
-  HDC dc; // BP/FA
-  int py; // BP/FC
   int i; // BP/FE
+  int py; // BP/FC
+  HDC dc; // BP/FA
+  // BP/F8
 
-  int px; // CX
-  int src_py; // DX
+  register int px; // CX
+  register int src_py; // DX
 
   // DI = actor table offset
   // BP/F8 = actor ptr
@@ -668,8 +789,7 @@ void animate_blackies(void) {
     dc = CreateCompatibleDC(g_maindc);
     SelectObject(dc, g_hbmpBlock);
     for (i = 0; i < g_actor_count; i++) {
-      switch (g_actors[i].type) {
-      case T_BLACKY1:
+      if (g_actors[i].type == T_BLACKY1) {
         px = g_actors[i].cx * g_tile_lx;
         py = g_actors[i].cy * g_tile_ly;
         src_py = (g_actors[i].var0 * TILE_LY) + (4 * TILE_LY);
@@ -681,8 +801,7 @@ void animate_blackies(void) {
           src_py,
           SRCCOPY);
         g_actors[i].var0 = (g_actors[i].var0 + 1) % 4;
-        break;
-      case T_BLACKY2:
+      } else if (g_actors[i].type == T_BLACKY2) {
         px = g_actors[i].cx * g_tile_lx;
         py = g_actors[i].cy * g_tile_ly;
         src_py = (g_actors[i].var0 * TILE_LY) + (4 * TILE_LY);
@@ -697,24 +816,23 @@ void animate_blackies(void) {
           g_actors[i].type = T_BLACKY1;
         }
         g_actors[i].var0 = (g_actors[i].var0 + 1) % 4;
-        break;
       }
     }
     DeleteDC(dc);
   }
 }
 
-// CS:5D9C
+// CS:5D9C - ***CODE MATCH!***
 void animate_monsters(void) {
   // needs 0x8 bytes of stack (/F8)
-  int actor_type; // BP/F8
-  HDC dc; // BP/FA
-  int py; // BP/FC
   int i; // BP/FE
-
   int px; // CX
-  int src_px; // DX
-  int src_py; // BX
+  int py; // BP/FC
+  HDC dc; // BP/FA
+  //int actor_type; // BP/F8
+
+  register int src_px; // DX
+  register int src_py; // BX
   // SI = i*sizeof(g_actors[i]);
   // DI = running counter for &g_actors[i].var0;
 
@@ -722,8 +840,7 @@ void animate_monsters(void) {
     dc = CreateCompatibleDC(g_maindc);
     SelectObject(dc, g_hbmpBlock);
     for (i = 0; i < g_actor_count; i++) {
-      actor_type = g_actors[i].type;
-      switch (actor_type) {
+      switch (g_actors[i].type) {
       case T_B_TWISTER:
       case T_B_GNASHER:
       case T_B_BLOB:
@@ -731,7 +848,7 @@ void animate_monsters(void) {
       case T_B_SPIKE:
         px = g_actors[i].cx * g_tile_lx;
         py = g_actors[i].cy * g_tile_ly;
-        src_px = actor_type * TILE_LX;
+        src_px = g_actors[i].type * TILE_LX;
         src_py = g_actors[i].var0 * TILE_LY;
         BitBlt(g_maindc,
           px, py,
@@ -748,7 +865,7 @@ void animate_monsters(void) {
   }
 }
 
-// CS:5E61
+// CS:5E61 - ***CODE MATCH!***
 void animate_everything(void) {
   animate_monsters();
   animate_diamonds();
