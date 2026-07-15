@@ -160,6 +160,7 @@ int FAR PASCAL _export DLG_FOPEN_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lPa
           g_050C[0] = 0;
           return 1;
       }
+      break;
 
     case WM_INITDIALOG:
       cs_2A48(hDlg);
