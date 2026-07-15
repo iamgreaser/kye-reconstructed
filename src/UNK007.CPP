@@ -11,6 +11,19 @@
 #include "kyevars.h"
 
 // Word alignment mandates that this starts the module.
+tilespec_s g_06B8[64] = {
+  {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0},
+  {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0},
+  {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0},
+  {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0},
+  {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0},
+  {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0},
+  {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0},
+  {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0},
+};
+int g_0D38; // DS:0D38
+int g_0D3A; // DS:0D3A
+char g_0D3C[20] = "Kye-Tools"; // DS:0D3C
 
 // CS:49F2 - ***CODE MATCH!***
 int kye_is_in_level(void) {
@@ -293,7 +306,7 @@ void cs_4EB5(HWND hWnd, int mouse_x, int mouse_y, int wParam) {
   }
 }
 
-// ToolboxWndProc(), Ordinal 10
+// CS:4FA6 - ToolboxWndProc(), Ordinal 10 - ***CODE MATCH!***
 LONG FAR PASCAL _export ToolboxWndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
   switch (msg) {
     case WM_CREATE:
@@ -321,21 +334,63 @@ LONG FAR PASCAL _export ToolboxWndProc(HWND hWnd, WORD msg, WORD wParam, LONG lP
   return 0;
 }
 
-// CS:501F
+// CS:501F - ***CODE MATCH!***
 int cs_501F(void) {
-  // TODO: Optionally register + open the editor tools window --GM
-  // TODO: Show the editor tools window --GM
+  WNDCLASS wcls; // [bp-0x1a]/001A
+
+  if (g_0D3A == 0) {
+    wcls.style = CS_VREDRAW|CS_HREDRAW|CS_DBLCLKS; // 0x000B
+    wcls.lpfnWndProc = ToolboxWndProc;
+    wcls.cbClsExtra = 0;
+    wcls.cbWndExtra = 0;
+    wcls.hInstance = g_hInstance;
+    wcls.hIcon = 0;
+    wcls.hCursor = 0;
+    wcls.hbrBackground = GetStockObject(WHITE_BRUSH);
+    wcls.lpszMenuName = NULL;
+    wcls.lpszClassName = g_0D3C; // DS:0D3C
+    if (RegisterClass(&wcls) == 0) {
+      return 0;
+    }
+
+    g_2E90 = CreateWindow(
+      g_0D3C, // DS:0D3C
+      "Kye-Tools", // DS:0D50
+      WS_POPUP|WS_CAPTION, // 0x80C00000
+      50,
+      90,
+      ((TILE_LX+(2*2))*4)+2,
+      ((TILE_LY+(2*2))*16)+20,
+      g_mainwnd,
+      NULL,
+      g_hInstance,
+      NULL);
+    if (g_2E90 == 0) {
+      return 0;
+    }
+    g_0D3A = 1;
+  }
+
+  cs_4A1F();
+
+  ShowWindow(g_2E90, SW_SHOW);
+
+  strcpy(g_toolname, g_06B8[g_0D38].name);
+
+  acquire_main_dc();
+  repaint_status_left();
+  release_main_dc();
+
   return 1;
 }
 
-// CS:5119
+// CS:5119 - ***CODE MATCH!***
 int cs_5119(void) {
-  // TODO: Hide the editor tools window --GM
-  // ShowWindow(DS:2E90, SW_HIDE);
+  ShowWindow(g_2E90, SW_HIDE);
   return 1;
 }
 
-// CS:5128
+// CS:5128 - ***CODE MATCH!***
 void count_all_diamonds(void) {
   // needs 0x2 bytes of stack
   // BP/FE - running row pointer
@@ -357,11 +412,11 @@ void count_all_diamonds(void) {
   }
 }
 
-// CS:5165
+// CS:5165 - ***CODE MATCH!***
 void draw_kye_mouse_ghost(void) {
   // stack: 0x04 bytes
-  int py; // BP/FC
   int px; // BP/FE
+  int py; // BP/FC
 
   HDC dc; // SI
 
@@ -379,7 +434,7 @@ void draw_kye_mouse_ghost(void) {
   DeleteDC(dc);
 }
 
-// CS:51B9
+// CS:51B9 - ***CODE MATCH!***
 void clear_kye_mouse_ghost(void) {
   if (g_02AA != 0 && g_level_tiles[g_kye_mouse_cx][g_kye_mouse_cy] == T_EMPTY) {
     delete_and_draw_unacting_tile(g_kye_mouse_cx, g_kye_mouse_cy);
