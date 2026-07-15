@@ -218,11 +218,9 @@ void mark_actor_for_deletion(int ai) {
 
 // CS:1D51 - ***CODE MATCH!***
 void garbage_collect_actors(void) {
-#if 1
-  // This is the real implementation.
   // stack: 0x04 bytes (BP/FC)
-  // BP/FC - temporary actor pointer
   // BP/FE - temporary column pointer
+  // BP/FC - temporary actor pointer
 
   // These are probably called i, j, k.
   int ai; // CX
@@ -254,27 +252,6 @@ void garbage_collect_actors(void) {
       ai++;
     }
   }
-
-#else
-  // This is how I implemented it before attempting to match the code. --GM
-  // It's O(n) instead of O(n^2) and it's easier to understand.
-  // It does not have the bugs identified. As a result, due to one of the bugs being triggered frequently in practice, this is inaccurate.
-
-  int ai;
-  int deleted;
-
-  ai = 0;
-  deleted = 0;
-  for (ai = 0; ai < g_actor_count; ai++) {
-    if (g_actors[ai].type == T_DEAD_ACTOR) {
-      deleted += 1;
-    } else if (deleted != 0) {
-      g_level_tiles[g_actors[ai].cx][g_actors[ai].cy] -= deleted;
-      memcpy(&g_actors[ai-deleted], &g_actors[ai], sizeof(g_actors[0]));
-    }
-  }
-  g_actor_count -= deleted;
-#endif
 }
 
 // CS:1DF3 - ***CODE MATCH!***

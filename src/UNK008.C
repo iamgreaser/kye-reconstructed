@@ -11,7 +11,6 @@
 #include "kyevars.h"
 
 // Data segment and the fact that this isn't the editor tool window code hints at a split around about here.
-int g_door_anim_flag = 1; // DS:0D6A
 
 // CS:5128 - ***CODE MATCH!***
 void count_all_diamonds(void) {
@@ -65,7 +64,7 @@ void clear_kye_mouse_ghost(void) {
   g_02AA = 0;
 }
 
-// CS:51EE - FIXME: This likes to spill the abs() inputs into never-read stack locals! Using some hacks to get it in sync. --GM
+// CS:51EE - ***CODE MATCH!***
 void update_kye_mouse_target(int cx, int cy) {
   register int t0, t1;
   // SI = cx
@@ -74,11 +73,7 @@ void update_kye_mouse_target(int cx, int cy) {
     clear_kye_mouse_ghost();
     g_kye_mouse_cx = cx;
     g_kye_mouse_cy = cy;
-    // Actual behaviour is something like:
-    // if (abs(cx - g_kye_main_cx) > 1 || abs(cy - g_kye_main_cy) > 1) { }
-    t0 = cx - g_kye_main_cx;
-    t1 = cy - g_kye_main_cy;
-    if ((abs(t0) | abs(t1)) > 1) {
+    if (abs(cx - g_kye_main_cx) > 1 || abs(cy - g_kye_main_cy) > 1) {
       if (g_level_tiles[g_kye_mouse_cx][g_kye_mouse_cy] == T_EMPTY) {
         draw_kye_mouse_ghost();
         g_02AA = 1;
@@ -145,7 +140,7 @@ void move_kye(int dx, int dy) {
   repaint_kye(0);
 }
 
-// CS:5395 - FIXME: This uses the wrong register in one place. Otherwise it matches? --GM
+// CS:5395 - ***CODE MATCH!***
 void try_move_kye(int indx, int indy) {
   // Stack: 0x2E bytes (BP/D2 start)
   int i; // BP/FE
@@ -291,7 +286,6 @@ void try_move_kye(int indx, int indy) {
       newx = g_kye_main_cx + dx;
       newy = g_kye_main_cy + dy;
       if (g_level_tiles[newx][newy] == T_EMPTY) {
-        // FIXME: Why does it pop DX at CS:57BF, instead of BX like it should? --GM
         if (((g_kye_target_cx-newx)*(g_kye_target_cx-newx)) + ((g_kye_target_cy-newy)*(g_kye_target_cy-newy)) < distsqr) {
             foundmousedir = 1;
         }
