@@ -109,7 +109,7 @@ void cs_4B7A(int cx, int cy) {
 }
 
 // CS:4BCE - ***CODE MATCH!***
-void cs_4BCE(int idx, HWND hWnd) {
+void cs_4BCE(int idx, HDC dc) {
   int cx; // [BP-0x2].w
   int cy; // [BP-0x4].w
   // [BP-0x6].w is a spilled value
@@ -118,299 +118,134 @@ void cs_4BCE(int idx, HWND hWnd) {
   cx = idx/16;
   cy = idx%16;
 
-  SelectObject(hWnd, g_hpenWhite);
-  SelectObject(hWnd, g_hbrWhite);
-  Rectangle(hWnd,
+  SelectObject(dc, g_hpenWhite);
+  SelectObject(dc, g_hbrWhite);
+  Rectangle(dc,
     cx*(TILE_LX+(2*2))+2,
     cy*(TILE_LY+(2*2))+2,
     cx*(TILE_LX+(2*2))+TILE_LX-2,
     cy*(TILE_LY+(2*2))+TILE_LY-2);
 }
 
-// CS:4C37
-void cs_4C37(int a0, int a1, int a2) {
-  // TODO! --GM
-  // 00004C37  55                push bp
-  // 00004C38  8BEC              mov bp,sp
-  // 00004C3A  83EC14            sub sp,0x14
-  // 00004C3D  56                push si
-  // 00004C3E  57                push di
-  // 00004C3F  8B4604            mov ax,[bp+0x4]
-  // 00004C42  BB1000            mov bx,0x10
-  // 00004C45  99                cwd
-  // 00004C46  F7FB              idiv bx
-  // 00004C48  8946F6            mov [bp-0xa],ax
-  // 00004C4B  8B4604            mov ax,[bp+0x4]
-  // 00004C4E  99                cwd
-  // 00004C4F  F7FB              idiv bx
-  // 00004C51  8956F8            mov [bp-0x8],dx
-  // 00004C54  8B46F6            mov ax,[bp-0xa]
-  // 00004C57  BA1400            mov dx,0x14
-  // 00004C5A  F7EA              imul dx
-  // 00004C5C  8BD8              mov bx,ax
-  // 00004C5E  050200            add ax,0x2
-  // 00004C61  8946FC            mov [bp-0x4],ax
-  // 00004C64  8B46F8            mov ax,[bp-0x8]
-  // 00004C67  BA1400            mov dx,0x14
-  // 00004C6A  F7EA              imul dx
-  // 00004C6C  8BD0              mov dx,ax
-  // 00004C6E  050200            add ax,0x2
-  // 00004C71  8946FA            mov [bp-0x6],ax
-  // 00004C74  8B4604            mov ax,[bp+0x4]
-  // 00004C77  3B06380D          cmp ax,[0xd38]
-  // 00004C7B  7508              jnz 0x4c85
-  // 00004C7D  A1642B            mov ax,[0x2b64]
-  // 00004C80  8946EC            mov [bp-0x14],ax
-  // 00004C83  EB06              jmp 0x4c8b
-  // 00004C85  A1622B            mov ax,[0x2b62]
-  // 00004C88  8946EC            mov [bp-0x14],ax
-  // 00004C8B  16                push ss
-  // 00004C8C  8D46EE            lea ax,[bp-0x12]
-  // 00004C8F  50                push ax
-  // 00004C90  53                push bx
-  // 00004C91  52                push dx
-  // 00004C92  8BC3              mov ax,bx
-  // 00004C94  051400            add ax,0x14
-  // 00004C97  50                push ax
-  // 00004C98  8BC2              mov ax,dx
-  // 00004C9A  051400            add ax,0x14
-  // 00004C9D  50                push ax
-  // 00004C9E  9AFFFF0000        call word 0x0:word 0xffff
-  // 00004CA3  FF7606            push word [bp+0x6]
-  // 00004CA6  16                push ss
-  // 00004CA7  8D46EE            lea ax,[bp-0x12]
-  // 00004CAA  50                push ax
-  // 00004CAB  FF76EC            push word [bp-0x14]
-  // 00004CAE  9AFFFF0000        call word 0x0:word 0xffff
-  // 00004CB3  16                push ss
-  // 00004CB4  8D46EE            lea ax,[bp-0x12]
-  // 00004CB7  50                push ax
-  // 00004CB8  6AFF              push word 0xffffffffffffffff
-  // 00004CBA  6AFF              push word 0xffffffffffffffff
-  // 00004CBC  9AFFFF0000        call word 0x0:word 0xffff
-  // 00004CC1  FF7606            push word [bp+0x6]
-  // 00004CC4  16                push ss
-  // 00004CC5  8D46EE            lea ax,[bp-0x12]
-  // 00004CC8  50                push ax
-  // 00004CC9  FF76EC            push word [bp-0x14]
-  // 00004CCC  9AFFFF0000        call word 0x0:word 0xffff
-  // 00004CD1  8B4604            mov ax,[bp+0x4]
-  // 00004CD4  BA1A00            mov dx,0x1a
-  // 00004CD7  F7EA              imul dx
-  // 00004CD9  8BD0              mov dx,ax
-  // 00004CDB  8BD8              mov bx,ax
-  // 00004CDD  83BFBC0600        cmp word [bx+0x6bc],0x0
-  // 00004CE2  7510              jnz 0x4cf4
-  // 00004CE4  FF7606            push word [bp+0x6]
-  // 00004CE7  FF7604            push word [bp+0x4]
-  // 00004CEA  E8E1FE            call 0x4bce
-  // 00004CED  83C404            add sp,0x4
-  // 00004CF0  5F                pop di
-  // 00004CF1  5E                pop si
-  // 00004CF2  C9                leave
-  // 00004CF3  C3                ret
-  // 00004CF4  8BDA              mov bx,dx
-  // 00004CF6  8B87B806          mov ax,[bx+0x6b8]
-  // 00004CFA  8946FE            mov [bp-0x2],ax
-  // 00004CFD  8B97BA06          mov dx,[bx+0x6ba]
-  // 00004D01  8B5EFE            mov bx,[bp-0x2]
-  // 00004D04  83FB03            cmp bx,0x3
-  // 00004D07  7603              jna 0x4d0c
-  // 00004D09  E92701            jmp 0x4e33
-  // 00004D0C  D1E3              shl bx,1
-  // 00004D0E  2EFFA7374E        jmp word near [cs:bx+0x4e37]
-  // 00004D13  FF7606            push word [bp+0x6]
-  // 00004D16  FF7604            push word [bp+0x4]
-  // 00004D19  E8B2FE            call 0x4bce
-  // 00004D1C  83C404            add sp,0x4
-  // 00004D1F  5F                pop di
-  // 00004D20  5E                pop si
-  // 00004D21  C9                leave
-  // 00004D22  C3                ret
-  // 00004D23  83FAFD            cmp dx,0xfffffffffffffffd
-  // 00004D26  7F22              jg 0x4d4a
-  // 00004D28  83FAF5            cmp dx,0xfffffffffffffff5
-  // 00004D2B  7C1D              jl 0x4d4a
-  // 00004D2D  8BC2              mov ax,dx
-  // 00004D2F  99                cwd
-  // 00004D30  33C2              xor ax,dx
-  // 00004D32  2BC2              sub ax,dx
-  // 00004D34  50                push ax
-  // 00004D35  B8FDFF            mov ax,0xfffd
-  // 00004D38  99                cwd
-  // 00004D39  33C2              xor ax,dx
-  // 00004D3B  2BC2              sub ax,dx
-  // 00004D3D  5E                pop si
-  // 00004D3E  2BF0              sub si,ax
-  // 00004D40  C1E604            shl si,byte 0x4
-  // 00004D43  83C630            add si,0x30
-  // 00004D46  33FF              xor di,di
-  // 00004D48  EB37              jmp 0x4d81
-  // 00004D4A  83FAF4            cmp dx,0xfffffffffffffff4
-  // 00004D4D  7506              jnz 0x4d55
-  // 00004D4F  33F6              xor si,si
-  // 00004D51  33FF              xor di,di
-  // 00004D53  EB2C              jmp 0x4d81
-  // 00004D55  83FAF3            cmp dx,0xfffffffffffffff3
-  // 00004D58  7507              jnz 0x4d61
-  // 00004D5A  BEC000            mov si,0xc0
-  // 00004D5D  33FF              xor di,di
-  // 00004D5F  EB20              jmp 0x4d81
-  // 00004D61  83FAF2            cmp dx,0xfffffffffffffff2
-  // 00004D64  7405              jz 0x4d6b
-  // 00004D66  83FAF1            cmp dx,0xfffffffffffffff1
-  // 00004D69  7507              jnz 0x4d72
-  // 00004D6B  BEE000            mov si,0xe0
-  // 00004D6E  33FF              xor di,di
-  // 00004D70  EB0F              jmp 0x4d81
-  // 00004D72  83FAF0            cmp dx,0xfffffffffffffff0
-  // 00004D75  7405              jz 0x4d7c
-  // 00004D77  83FAEF            cmp dx,0xffffffffffffffef
-  // 00004D7A  7505              jnz 0x4d81
-  // 00004D7C  BED000            mov si,0xd0
-  // 00004D7F  33FF              xor di,di
-  // 00004D81  FF7608            push word [bp+0x8]
-  // 00004D84  FF364E2B          push word [0x2b4e]
-  // 00004D88  9AFFFF0000        call word 0x0:word 0xffff
-  // 00004D8D  FF7606            push word [bp+0x6]
-  // 00004D90  FF76FC            push word [bp-0x4]
-  // 00004D93  FF76FA            push word [bp-0x6]
-  // 00004D96  6A10              push word 0x10
-  // 00004D98  6A10              push word 0x10
-  // 00004D9A  FF7608            push word [bp+0x8]
-  // 00004D9D  56                push si
-  // 00004D9E  57                push di
-  // 00004D9F  68CC00            push word 0xcc
-  // 00004DA2  6A20              push word 0x20
-  // 00004DA4  9AFFFF0000        call word 0x0:word 0xffff
-  // 00004DA9  5F                pop di
-  // 00004DAA  5E                pop si
-  // 00004DAB  C9                leave
-  // 00004DAC  C3                ret
-  // 00004DAD  83FA17            cmp dx,0x17
-  // 00004DB0  7C0E              jl 0x4dc0
-  // 00004DB2  8BF2              mov si,dx
-  // 00004DB4  C1E604            shl si,byte 0x4
-  // 00004DB7  81C690FE          add si,0xfe90
-  // 00004DBB  BF4000            mov di,0x40
-  // 00004DBE  EB07              jmp 0x4dc7
-  // 00004DC0  8BF2              mov si,dx
-  // 00004DC2  C1E604            shl si,byte 0x4
-  // 00004DC5  33FF              xor di,di
-  // 00004DC7  83FA32            cmp dx,0x32
-  // 00004DCA  7C11              jl 0x4ddd
-  // 00004DCC  83FA3B            cmp dx,0x3b
-  // 00004DCF  7F0C              jg 0x4ddd
-  // 00004DD1  8BF2              mov si,dx
-  // 00004DD3  C1E604            shl si,byte 0x4
-  // 00004DD6  81C6E0FC          add si,0xfce0
-  // 00004DDA  BF1000            mov di,0x10
-  // 00004DDD  FF7608            push word [bp+0x8]
-  // 00004DE0  FF36502B          push word [0x2b50]
-  // 00004DE4  9AFFFF0000        call word 0x0:word 0xffff
-  // 00004DE9  FF7606            push word [bp+0x6]
-  // 00004DEC  FF76FC            push word [bp-0x4]
-  // 00004DEF  FF76FA            push word [bp-0x6]
-  // 00004DF2  6A10              push word 0x10
-  // 00004DF4  6A10              push word 0x10
-  // 00004DF6  FF7608            push word [bp+0x8]
-  // 00004DF9  56                push si
-  // 00004DFA  57                push di
-  // 00004DFB  68CC00            push word 0xcc
-  // 00004DFE  6A20              push word 0x20
-  // 00004E00  9AFFFF0000        call word 0x0:word 0xffff
-  // 00004E05  5F                pop di
-  // 00004E06  5E                pop si
-  // 00004E07  C9                leave
-  // 00004E08  C3                ret
-  // 00004E09  FF7608            push word [bp+0x8]
-  // 00004E0C  FF36522B          push word [0x2b52]
-  // 00004E10  9AFFFF0000        call word 0x0:word 0xffff
-  // 00004E15  FF7606            push word [bp+0x6]
-  // 00004E18  FF76FC            push word [bp-0x4]
-  // 00004E1B  FF76FA            push word [bp-0x6]
-  // 00004E1E  6A10              push word 0x10
-  // 00004E20  6A10              push word 0x10
-  // 00004E22  FF7608            push word [bp+0x8]
-  // 00004E25  6A00              push word 0x0
-  // 00004E27  6A00              push word 0x0
-  // 00004E29  68CC00            push word 0xcc
-  // 00004E2C  6A20              push word 0x20
-  // 00004E2E  9AFFFF0000        call word 0x0:word 0xffff
-  // 00004E33  5F                pop di
-  // 00004E34  5E                pop si
-  // 00004E35  C9                leave
-  // 00004E36  C3                ret
-}
-// A 3-entry branch table follows.
+// CS:4C37 - ***CODE MATCH!***
+void cs_4C37(int idx, HDC dc, HDC bmpDC) {
+  // Some of these are probably spilt values.
+  // Either way, it compiles to the correct code.
+  int mode; // [bp-0x2].w
+  int type; // DX
+  int px; // [bp-0x4].w
+  int py; // [bp-0x6].w
+  int cy; // [bp-0x8].w
+  int cx; // [bp-0xA].w
+  RECT r; // [bp-0x12]/0x8
+  HBRUSH brush; // [bp-0x14].w
+  int src_px; // SI
+  int src_py; // DI
 
-// CS:4E3F
-void cs_4E3F(int a0) {
-  // TODO! --GM
-  // 00004E3F  55                push bp
-  // 00004E40  8BEC              mov bp,sp
-  // 00004E42  83EC02            sub sp,0x2
-  // 00004E45  56                push si
-  // 00004E46  57                push di
-  // 00004E47  8B7E04            mov di,[bp+0x4]
-  // 00004E4A  57                push di
-  // 00004E4B  9AFFFF0000        call word 0x0:word 0xffff
-  // 00004E50  8946FE            mov [bp-0x2],ax
-  // 00004E53  33F6              xor si,si
-  // 00004E55  FF76FE            push word [bp-0x2]
-  // 00004E58  57                push di
-  // 00004E59  56                push si
-  // 00004E5A  E8DAFD            call 0x4c37
-  // 00004E5D  83C406            add sp,0x6
-  // 00004E60  46                inc si
-  // 00004E61  83FE40            cmp si,0x40
-  // 00004E64  7CEF              jl 0x4e55
-  // 00004E66  FF76FE            push word [bp-0x2]
-  // 00004E69  9AFFFF0000        call word 0x0:word 0xffff
-  // 00004E6E  5F                pop di
-  // 00004E6F  5E                pop si
-  // 00004E70  C9                leave
-  // 00004E71  C3                ret
+  cx = idx/16;
+  cy = idx%16;
+  px = cx*(TILE_LX+(2*2))+2;
+  py = cy*(TILE_LY+(2*2))+2;
+
+  if (idx == g_0D38) {
+    brush = g_hbrBlack;
+  } else {
+    brush = g_hbrWhite;
+  }
+
+  SetRect(&r,
+    cx*(TILE_LX+(2*2)),
+    cy*(TILE_LX+(2*2)),
+    (cx*(TILE_LX+(2*2)))+(TILE_LX+(2*2)),
+    (cy*(TILE_LX+(2*2)))+(TILE_LX+(2*2)));
+  FrameRect(dc, &r, brush);
+  InflateRect(&r, -1, -1);
+  FrameRect(dc, &r, brush);
+
+  if (g_06B8[idx].tx == 0) {
+    cs_4BCE(idx, dc);
+    return;
+  }
+
+  mode = g_06B8[idx].mode;
+  type = (g_06B8[idx].type);
+  switch (mode) {
+    case 0:
+      cs_4BCE(idx, dc);
+      return;
+
+    case 1:
+      if (type <= T_WALL1 && type >= T_WALL9) {
+        src_px = (abs(type) - abs(T_WALL1) + 3)*TILE_LX;
+        src_py = 0*TILE_LY;
+      } else if (type == T_EARTH) {
+        src_px = 0*TILE_LY;
+        src_py = 0*TILE_LY;
+      } else if (type == T_DIAMOND) {
+        src_px = 12*TILE_LY;
+        src_py = 0*TILE_LY;
+      } else if (type == T_DOOR_W_E || type == T_DOOR_E_W) {
+        src_px = 14*TILE_LY;
+        src_py = 0*TILE_LY;
+      } else if (type == T_DOOR_N_S || type == T_DOOR_S_N) {
+        src_px = 13*TILE_LY;
+        src_py = 0*TILE_LY;
+      }
+      SelectObject(bmpDC, g_hbmpWall);
+      BitBlt(dc, px, py, TILE_LX, TILE_LY, bmpDC, src_px, src_py, SRCCOPY);
+      return;
+
+    case 2:
+      if (type >= T_AUTOSLIDER1) {
+        src_px = (type-23)*TILE_LX;
+        src_py = 4*TILE_LY;
+      } else {
+        src_px = type*TILE_LX;
+        src_py = 0*TILE_LY;
+      }
+
+      if (type >= T_TIMER_0 && type <= T_TIMER_9) {
+        src_px = (type-50)*TILE_LX;
+        src_py = 1*TILE_LY;
+      }
+
+      SelectObject(bmpDC, g_hbmpBlock);
+      BitBlt(dc, px, py, TILE_LX, TILE_LY, bmpDC, src_px, src_py, SRCCOPY);
+      return;
+
+    case 3:
+      SelectObject(bmpDC, g_hbmpKye);
+      BitBlt(dc, px, py, TILE_LX, TILE_LY, bmpDC, 0, 0, SRCCOPY);
+      return;
+  }
 }
 
-// CS:4E72
+// CS:4E3F - ***CODE MATCH!***
+void cs_4E3F(HDC dc) {
+  HDC compatDC; // [bp-0x2].w
+  int i; // SI
+
+  compatDC = CreateCompatibleDC(dc);
+
+  for (i = 0; i < 4*16; i++) {
+    cs_4C37(i, dc, compatDC);
+  }
+
+  DeleteDC(compatDC);
+}
+
+// CS:4E72 - ***CODE MATCH!***
 void cs_4E72(void) {
-  // TODO! --GM
-  // 00004E72  55                push bp
-  // 00004E73  8BEC              mov bp,sp
-  // 00004E75  83EC20            sub sp,0x20
-  // 00004E78  56                push si
-  // 00004E79  FF36902E          push word [0x2e90]
-  // 00004E7D  16                push ss
-  // 00004E7E  8D46E0            lea ax,[bp-0x20]
-  // 00004E81  50                push ax
-  // 00004E82  9AFFFF0000        call word 0x0:word 0xffff
-  // BeginPaint();
+  HDC dc; // SI
+  PAINTSTRUCT paint; // [bp-0x20]/0020
 
-  // 00004E87  8BF0              mov si,ax
-  // 00004E89  50                push ax
-  // 00004E8A  FF36562B          push word [0x2b56]
-  // 00004E8E  9AFFFF0000        call word 0x0:word 0xffff
-  // SelectObject();
+  dc = BeginPaint(g_2E90, &paint);
+  SelectObject(dc, g_hpenWhite);
 
-  // 00004E93  56                push si
-  // 00004E94  E8A8FF            call 0x4e3f
-  // 00004E97  83C402            add sp,0x2
-  // 00004E9A  FF36902E          push word [0x2e90]
-  // 00004E9E  56                push si
-  // 00004E9F  9AFFFF0000        call word 0x0:word 0xffff
-  // ReleaseDC();
+  cs_4E3F(dc);
 
-  // 00004EA4  FF36902E          push word [0x2e90]
-  // 00004EA8  16                push ss
-  // 00004EA9  8D46E0            lea ax,[bp-0x20]
-  // 00004EAC  50                push ax
-  // 00004EAD  9AFFFF0000        call word 0x0:word 0xffff
-  // EndPaint();
-
-  // 00004EB2  5E                pop si
-  // 00004EB3  C9                leave
-  // 00004EB4  C3                ret
+  ReleaseDC(g_2E90, dc);
+  EndPaint(g_2E90, &paint);
 }
 
 // CS:4EB5
