@@ -744,6 +744,10 @@ void tick_game_state(void) {
 
         if (!apply_sticky_blocks(ai)) {
           if (!actor_held_by_sticky_block(ai)) {
+            register int newx; // CX
+            int newy; // [BP-0x12]
+            int fw;
+
             // Compute direction
             if (random(2) == 1) {
               cs_3251(ai, g_kye_main_cx, g_kye_main_cy, &cx, &cy);
@@ -756,11 +760,12 @@ void tick_game_state(void) {
             }
 
             // Apply direction
-            register int newx = cx + dx; // CX
-            int newy = cy + dy; // [BP-0x12]
+            newx = cx + dx; // CX
+            newy = cy + dy; // [BP-0x12]
 
             // TODO: Work out how to get this into sync WAIT THIS OLD COMPILER STILL LETS ME DEFINE VARIABLES MID-BLOCK?!?! --GM
-            int fw = g_level_tiles[newx][newy];
+            // UPDATE: No, that's a C++ special feature. In C, you can't.
+            fw = g_level_tiles[newx][newy];
             if (fw == T_EMPTY || (0 <= fw && g_actors[fw].type == T_BLACKY1)) {
               cx = newx;
               cy = newy;

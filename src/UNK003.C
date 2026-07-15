@@ -10,7 +10,7 @@
 #include "kyeprocs.h"
 #include "kyevars.h"
 
-int g_has_maintimer; // DS:0458
+int g_has_maintimer = 0; // DS:0458
 // DS:045A contains strings.
 
 // int // DS:06A9 == 0x5C

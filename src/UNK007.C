@@ -78,8 +78,8 @@ tilespec_s g_06B8[64] = {
   {0, 0, 1, ""},
   {0, 0, 1, ""},
 };
-int g_0D38; // DS:0D38
-int g_0D3A; // DS:0D3A
+int g_0D38 = 10; // DS:0D38
+int g_0D3A = 0; // DS:0D3A
 char g_0D3C[20] = "Kye-Tools"; // DS:0D3C
 
 // CS:49F2 - ***CODE MATCH!***

@@ -12,16 +12,16 @@ int g_tile_under_kye = T_EMPTY; // DS:02A4
 int g_tile_lx = TILE_LX; // DS:02A6
 int g_tile_ly = TILE_LY; // DS:02A8
 int g_02AA = 0; // DS:02AA -- TODO! --GM
-int g_kye_target_cx; // DS:02AC
-int g_kye_target_cy; // DS:02AE
-int g_kye_needs_update; // DS:02B0
+int g_kye_target_cx = 0; // DS:02AC
+int g_kye_target_cy = 0; // DS:02AE
+int g_kye_needs_update = 0; // DS:02B0
 int g_moving_by_mouse = 0; // DS:02B2
-int g_kye_fizzle_in = 0; // DS:02B4
-int g_kye_injured; // DS:02B6
+int g_kye_fizzle_in = 1; // DS:02B4
+int g_kye_injured = 0; // DS:02B6
 int g_kye_lives = 3; // DS:02B8
-int g_actor_count; // DS:02BA
+int g_actor_count = 0; // DS:02BA
 int g_02BC = 0; // DS:02BC
-int g_tick_counter; // DS:02BE
+int g_tick_counter = 0; // DS:02BE
 
 // This map is at DS:02C0
 tileconv_map_entry_s TILECONV_MAP[] = {

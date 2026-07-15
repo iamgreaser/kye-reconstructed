@@ -13,9 +13,9 @@
 // DS: string constant addresses vs variable addresses mandates that somewhere around here starts this module.
 
 // DS:050C pertains to some kind of file open dialogue?
-char g_050C[128]; // DS:050C
-char g_058C[128]; // DS:058C
-char g_060C[128]; // DS:060C TODO CONFIRM SIZE
+char g_050C[128] = ""; // DS:050C
+char g_058C[128] = ""; // DS:058C
+char g_060C[128] = ""; // DS:060C TODO CONFIRM SIZE
 
 char g_068C[13] = "*.kye"; // DS:068C
 char g_0699[5] = ".kye"; // DS:0699

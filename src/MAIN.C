@@ -10,7 +10,7 @@
 #include "kyeprocs.h"
 #include "kyevars.h"
 
-int g_is_in_editor; // DS:03F2
+int g_is_in_editor = 0; // DS:03F2
 // DS:03F4 contains strings.
 
 // CS:0F78 - ***CODE MATCH!***
@@ -80,12 +80,14 @@ void deinit_brushes_and_stuff(void) {
 
 // CS:1124 - ***CODE MATCH!***
 void compute_window_geometry(void) {
+  int textheight; // SI
+
   GetWindowRect(g_mainwnd, &g_r_mainfrm);
   GetClientRect(g_mainwnd, &g_r_maincli);
 
   // SI = 16 as a constant used twice for optimisation
   // However, we do this plus 1 in each case?
-  int textheight = 16; // SI
+  textheight = 16;
   SetRect(
     &g_r_playfield,
     g_r_maincli.left,

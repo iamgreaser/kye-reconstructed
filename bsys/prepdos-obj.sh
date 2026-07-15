@@ -2,7 +2,7 @@
 set -e
 
 for C_NAME in $@; do
-  C_SRC="D:\\SRC\\${C_NAME}.CPP"
+  C_SRC="D:\\SRC\\${C_NAME}.C"
   C_OBJ="D:\\BUILD\\${C_NAME}.OBJ"
   case "${C_NAME}" in
     UNK004)
