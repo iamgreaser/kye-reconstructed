@@ -342,8 +342,7 @@ void animate_diamonds(void) {
           py = cy * g_tile_ly;
           src_px = 12 * TILE_LX;
           src_py = 0 * TILE_LY;
-          // TODO: Work out how rand() is used --GM
-          if (rand() % 2 == 0) {
+          if (random(2) == 0) {
             src_py = 1 * TILE_LY;
           }
           BitBlt(g_maindc,
