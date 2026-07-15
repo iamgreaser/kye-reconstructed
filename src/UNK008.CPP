@@ -144,16 +144,16 @@ void move_kye(int dx, int dy) {
   repaint_kye(0);
 }
 
-// CS:5395
-void try_move_kye(int dx, int dy) {
+// CS:5395 - FIXME: This uses the wrong register in one place. Otherwise it matches? --GM
+void try_move_kye(int indx, int indy) {
   // Stack: 0x2E bytes (BP/D2 start)
   int i; // BP/FE
   int ai; // BP/FC
-  // BP/FA
+  int other; // BP/FA
   int blocked; // BP/F8
   int pushdiagblocked; // BP/F6
   int newx; // BP/F4
-  register int newy; // CX
+  int newy; // CX
   int pushx; // BP/F2
   int pushy; // BP/F0
   int didmove; // BP/EE
@@ -163,11 +163,11 @@ void try_move_kye(int dx, int dy) {
   int circle_y[4] = {0,1,0,-1}; // BP/DA const from DS:0D62
   //int v28; // BP/D8 - pointer premultiplier
   // BP/D6 - pointer premultiplier
-  int dx2; // BP/D4
-  int dy2; // BP/D2
+  //int dx2; // BP/D4
+  //int dy2; // BP/D2
   // BP+0x00
-  register int newdx; // DI
-  register int newdy; // SI
+  int dx; // DI
+  int dy; // SI
 
   // DX = dx;
   // BX = dy;
@@ -176,10 +176,10 @@ void try_move_kye(int dx, int dy) {
   pushdiagblocked = 0;
   // DI = dx;
   // SI = dy;
-  newdx = dx;
-  newdy = dy;
-  newx = g_kye_main_cx + newdx;
-  newy = g_kye_main_cy + newdy;
+  dx = indx;
+  dy = indy;
+  newx = g_kye_main_cx + dx;
+  newy = g_kye_main_cy + dy;
 
   // Check if diagonal is valid
   if ((dx != 0) & (dy != 0)) {
@@ -237,18 +237,17 @@ void try_move_kye(int dx, int dy) {
       // Then we get into actor handling...
       if (g_level_tiles[newx][newy] >= 0) {
         ai = g_level_tiles[newx][newy];
-        switch (g_actors[ai].type) {
-          case T_BLACKY1:
-            g_kye_lives--;
-            respawn_kye();
-            repaint_status_left();
-            return;
-          case T_BLACKY2:
-            return;
+        if (g_actors[ai].type == T_BLACKY1) {
+          g_kye_lives = g_kye_lives - 1;
+          respawn_kye();
+          repaint_status_left();
+          return;
+        } else if (g_actors[ai].type == T_BLACKY2) {
+          return;
         }
         pushx = g_actors[ai].cx + dx;
         pushy = g_actors[ai].cy + dy;
-        if (dx != 0 && dy != 0) {
+        if ((dx != 0) & (dy != 0)) {
           pushdiagblocked = !(g_level_tiles[pushx][g_actors[ai].cy] == T_EMPTY
                            && g_level_tiles[g_actors[ai].cx][pushy] == T_EMPTY);
         }
@@ -259,111 +258,47 @@ void try_move_kye(int dx, int dy) {
             move_kye(dx, dy);
             didmove = 1;
           }
-        } else if (g_level_tiles[pushx][pushy] >= 0
-            && g_actors[g_level_tiles[pushx][pushy]].type == T_BLACKY1
-            && !pushdiagblocked) {
-          // POTENTIAL BUG: If try_enter_blacky fails then this breaks.
-          // An actor will clobber an actor, or Kye will clobber an actor.
-          if (!try_enter_blacky(ai, pushx, pushy)) {
-            move_actor(ai, pushx, pushy);
+        } else {
+          if (g_level_tiles[pushx][pushy] >= 0) {
+            other = g_level_tiles[pushx][pushy];
+            if (g_actors[other].type == T_BLACKY1 && !pushdiagblocked) {
+              // POTENTIAL BUG: If try_enter_blacky fails then this breaks.
+              // An actor will clobber an actor, or Kye will clobber an actor.
+              if (!try_enter_blacky(ai, pushx, pushy)) {
+                move_actor(ai, pushx, pushy);
+              }
+              move_kye(dx, dy);
+              didmove = 1;
+            }
           }
-          move_kye(dx, dy);
         }
       }
     }
   }
-  // 00005730  833EB20200        cmp word [0x2b2],0x0
-  // 00005735  7503              jnz 0x573a
-  // 00005737  E9B700            jmp 0x57f1
-  // 0000573A  837EEE00          cmp word [bp-0x12],0x0
-  // 0000573E  7403              jz 0x5743
-  // 00005740  E9AE00            jmp 0x57f1
+
   if (g_moving_by_mouse != 0 && !didmove) {
-    // 00005743  A1AC02            mov ax,[0x2ac]
-    // 00005746  2B06F829          sub ax,[0x29f8]
-    // 0000574A  8946D4            mov [bp-0x2c],ax
-    dx2 = g_kye_target_cx - g_kye_main_cx;
-    // 0000574D  F76ED4            imul word [bp-0x2c]
-    // 00005750  50                push ax
-      // 00005751  A1AE02            mov ax,[0x2ae]
-      // 00005754  2B06F629          sub ax,[0x29f6]
-      // 00005758  8946D2            mov [bp-0x2e],ax
-    dy2 = g_kye_target_cy - g_kye_main_cy;
-      // 0000575B  F76ED2            imul word [bp-0x2e]
-    // 0000575E  5A                pop dx
-    // 0000575F  03D0              add dx,ax
-    // 00005761  8956EA            mov [bp-0x16],dx
+    #define dx2 (g_kye_target_cx - g_kye_main_cx)
+    #define dy2 (g_kye_target_cy - g_kye_main_cy)
     distsqr = (dx2*dx2)+(dy2*dy2);
-    // 00005764  C746EC0000        mov word [bp-0x14],0x0
+    #undef dx2;
+    #undef dy2;
+
     foundmousedir = 0;
-    // 00005769  C746FE0000        mov word [bp-0x2],0x0
-    // 0000576E  C746D80000        mov word [bp-0x28],0x0
-    // 00005773  EB62              jmp 0x57d7
-    // --------
-    // 000057D7  837EEC00          cmp word [bp-0x14],0x0
-    // 000057DB  7506              jnz 0x57e3
-    // 000057DD  837EFE04          cmp word [bp-0x2],0x4
-    // 000057E1  7C92              jl 0x5775
-    // --------
-    // 000057CC  8B46FE            mov ax,[bp-0x2]
-    // 000057CF  8346D802          add word [bp-0x28],0x2
-    // 000057D3  40                inc ax
-    // 000057D4  8946FE            mov [bp-0x2],ax
-    for (i = 0; foundmousedir && i < 4; i++) {
-      // 00005775  8B5ED8            mov bx,[bp-0x28]
-      // 00005778  8D46E2            lea ax,[bp-0x1e]
-      // 0000577B  03D8              add bx,ax
-      // 0000577D  8B3F              mov di,[bx]
-      newdx = circle_x[i];
-      // 0000577F  8B5ED8            mov bx,[bp-0x28]
-      // 00005782  8D46DA            lea ax,[bp-0x26]
-      // 00005785  03D8              add bx,ax
-      // 00005787  8B37              mov si,[bx]
-      newdy = circle_y[i];
-      // 00005789  A1F829            mov ax,[0x29f8]
-      // 0000578C  03C7              add ax,di
-      // 0000578E  8946F4            mov [bp-0xc],ax
-      newx = g_kye_main_cx + newdx;
-      // 00005791  8B0EF629          mov cx,[0x29f6]
-      // 00005795  03CE              add cx,si
-      newy = g_kye_main_cy + newdy;
-      // 00005797  BA2800            mov dx,0x28
-      // 0000579A  F7EA              imul dx
-      // 0000579C  8BD1              mov dx,cx
-      // 0000579E  D1E2              shl dx,1
-      // 000057A0  03C2              add ax,dx
-      // 000057A2  8BD8              mov bx,ax
-      // 000057A4  83BF7E12FF        cmp word [bx+0x127e],0xffffffffffffffff
-      // 000057A9  7521              jnz 0x57cc
+    for (i = 0; (!foundmousedir) && i < 4; i = i + 1) {
+      dx = circle_x[i];
+      dy = circle_y[i];
+      newx = g_kye_main_cx + dx;
+      newy = g_kye_main_cy + dy;
       if (g_level_tiles[newx][newy] == T_EMPTY) {
-        // 000057AB  A1AC02            mov ax,[0x2ac]
-        // 000057AE  2B46F4            sub ax,[bp-0xc]
-        // 000057B1  8BD0              mov dx,ax
-        // 000057B3  F7EA              imul dx
-        // 000057B5  50                push ax
-        // 000057B6  A1AE02            mov ax,[0x2ae]
-        // 000057B9  2BC1              sub ax,cx
-        // 000057BB  8BD0              mov dx,ax
-        // 000057BD  F7EA              imul dx
-        // 000057BF  5B                pop bx
-        // 000057C0  03D8              add bx,ax
-        // 000057C2  3B5EEA            cmp bx,[bp-0x16]
-        // 000057C5  7D05              jnl 0x57cc
+        // FIXME: Why does it pop DX at CS:57BF, instead of BX like it should? --GM
         if (((g_kye_target_cx-newx)*(g_kye_target_cx-newx)) + ((g_kye_target_cy-newy)*(g_kye_target_cy-newy)) < distsqr) {
-          // 000057C7  C746EC0100        mov word [bp-0x14],0x1
             foundmousedir = 1;
         }
       }
     }
 
-    // 000057E3  837EEC00          cmp word [bp-0x14],0x0
-    // 000057E7  7408              jz 0x57f1
     if (foundmousedir != 0) {
-      // 000057E9  56                push si
-      // 000057EA  57                push di
-      // 000057EB  E8FCFA            call 0x52ea
-      // 000057EE  83C404            add sp,0x4
-      move_kye(newdx, newdy);
+      move_kye(dx, dy);
     }
   }
 }
