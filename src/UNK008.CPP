@@ -147,25 +147,27 @@ void move_kye(int dx, int dy) {
 // CS:5395
 void try_move_kye(int dx, int dy) {
   // Stack: 0x2E bytes (BP/D2 start)
-  // BP/FE
+  int i; // BP/FE
   int ai; // BP/FC
   // BP/FA
   int blocked; // BP/F8
   int pushdiagblocked; // BP/F6
   int newx; // BP/F4
+  register int newy; // CX
   int pushx; // BP/F2
   int pushy; // BP/F0
   int didmove; // BP/EE
-  // BP/EC
-  // BP/EA
+  int mousenotblocked; // BP/EC
+  int distsqr; // BP/EA
   int circle_x[4] = {1,0,-1,0}; // BP/E2 const from DS:0D5A
   int circle_y[4] = {0,1,0,-1}; // BP/DA const from DS:0D62
-  // BP/D8
+  //int v28; // BP/D8 - pointer premultiplier
   // BP/D6 - pointer premultiplier
   int dx2; // BP/D4
   int dy2; // BP/D2
   // BP+0x00
-  int newy; // CX
+  register int newdx; // DI
+  register int newdy; // SI
 
   // DX = dx;
   // BX = dy;
@@ -174,11 +176,13 @@ void try_move_kye(int dx, int dy) {
   pushdiagblocked = 0;
   // DI = dx;
   // SI = dy;
-  newx = g_kye_main_cx + dx;
-  newy = g_kye_main_cy + dy;
+  newdx = dx;
+  newdy = dy;
+  newx = g_kye_main_cx + newdx;
+  newy = g_kye_main_cy + newdy;
 
   // Check if diagonal is valid
-  if (dx != 0 && dy != 0) {
+  if ((dx != 0) & (dy != 0)) {
     blocked = !(g_level_tiles[newx][g_kye_main_cy] == T_EMPTY
              && g_level_tiles[g_kye_main_cx][newy] == T_EMPTY);
     if (blocked) {
@@ -187,7 +191,7 @@ void try_move_kye(int dx, int dy) {
           dy = 0;
           newy = g_kye_main_cy;
           blocked = 0;
-        } else if (g_level_tiles[g_kye_main_cx][newy]) {
+        } else if (g_level_tiles[g_kye_main_cx][newy] == T_EMPTY) {
           dx = 0;
           newx = g_kye_main_cx;
           blocked = 0;
@@ -197,49 +201,40 @@ void try_move_kye(int dx, int dy) {
   }
 
   if (!blocked) {
-    switch(g_level_tiles[newx][newy]) {
-    case T_EMPTY:
+    if (g_level_tiles[newx][newy] == T_EMPTY) {
       move_kye(dx, dy);
       didmove = 1;
-      break;
-    case T_EARTH:
+    } else if (g_level_tiles[newx][newy] == T_EARTH) {
       move_kye(dx, dy);
       g_tile_under_kye = T_EMPTY;
       didmove = 1;
-      break;
-    case T_DIAMOND:
+    } else if (g_level_tiles[newx][newy] == T_DIAMOND) {
       move_kye(dx, dy);
       g_tile_under_kye = T_EMPTY;
       didmove = 1;
       count_all_diamonds();
       repaint_status_left();
-      break;
-
-    // These don't set didmove.
-    // There may be a reason for it...
-    case T_DOOR_W_E:
+    } else if (g_level_tiles[newx][newy] == T_DOOR_W_E) {
+      // These don't set didmove.
+      // There may be a reason for it...
       if (dy == 0 && dx == 1) {
-        move_kye(1, 0);
+        move_kye(dx, dy);
       }
-      break;
-    case T_DOOR_E_W:
+    } else if (g_level_tiles[newx][newy] == T_DOOR_E_W) {
       if (dy == 0 && dx == -1) {
-        move_kye(-1, 0);
+        move_kye(dx, dy);
       }
-      break;
-    case T_DOOR_N_S:
+    } else if (g_level_tiles[newx][newy] == T_DOOR_N_S) {
       if (dy == 1 && dx == 0) {
-        move_kye(0, 1);
+        move_kye(dx, dy);
       }
-      break;
-    case T_DOOR_S_N:
+    } else if (g_level_tiles[newx][newy] == T_DOOR_S_N) {
       if (dy == -1 && dx == 0) {
-        move_kye(0, -1);
+        move_kye(dx, dy);
       }
-      break;
 
-    // Then we get into actor handling...
-    default:
+    } else {
+      // Then we get into actor handling...
       if (g_level_tiles[newx][newy] >= 0) {
         ai = g_level_tiles[newx][newy];
         switch (g_actors[ai].type) {
@@ -277,10 +272,99 @@ void try_move_kye(int dx, int dy) {
       }
     }
   }
-  // TODO: Handle the weird thing here --GM
-  // (this uses circle_x, circle_y to detect various movements?)
+  // 00005730  833EB20200        cmp word [0x2b2],0x0
+  // 00005735  7503              jnz 0x573a
+  // 00005737  E9B700            jmp 0x57f1
+  // 0000573A  837EEE00          cmp word [bp-0x12],0x0
+  // 0000573E  7403              jz 0x5743
+  // 00005740  E9AE00            jmp 0x57f1
   if (g_moving_by_mouse != 0 && !didmove) {
-    // TODO! --GM
+    // 00005743  A1AC02            mov ax,[0x2ac]
+    // 00005746  2B06F829          sub ax,[0x29f8]
+    // 0000574A  8946D4            mov [bp-0x2c],ax
+    dx2 = g_kye_target_cx - g_kye_main_cx;
+    // 0000574D  F76ED4            imul word [bp-0x2c]
+    // 00005750  50                push ax
+      // 00005751  A1AE02            mov ax,[0x2ae]
+      // 00005754  2B06F629          sub ax,[0x29f6]
+      // 00005758  8946D2            mov [bp-0x2e],ax
+    dy2 = g_kye_target_cy - g_kye_main_cy;
+      // 0000575B  F76ED2            imul word [bp-0x2e]
+    // 0000575E  5A                pop dx
+    // 0000575F  03D0              add dx,ax
+    // 00005761  8956EA            mov [bp-0x16],dx
+    distsqr = (dx2*dx2)+(dy2*dy2);
+    // 00005764  C746EC0000        mov word [bp-0x14],0x0
+    mousenotblocked = 0;
+    // 00005769  C746FE0000        mov word [bp-0x2],0x0
+    // 0000576E  C746D80000        mov word [bp-0x28],0x0
+    // 00005773  EB62              jmp 0x57d7
+    // --------
+    // 000057D7  837EEC00          cmp word [bp-0x14],0x0
+    // 000057DB  7506              jnz 0x57e3
+    // 000057DD  837EFE04          cmp word [bp-0x2],0x4
+    // 000057E1  7C92              jl 0x5775
+    // --------
+    // 000057CC  8B46FE            mov ax,[bp-0x2]
+    // 000057CF  8346D802          add word [bp-0x28],0x2
+    // 000057D3  40                inc ax
+    // 000057D4  8946FE            mov [bp-0x2],ax
+    for (i = 0; i < 4; i++) {
+      // 00005775  8B5ED8            mov bx,[bp-0x28]
+      // 00005778  8D46E2            lea ax,[bp-0x1e]
+      // 0000577B  03D8              add bx,ax
+      // 0000577D  8B3F              mov di,[bx]
+      newdx = circle_x[i];
+      // 0000577F  8B5ED8            mov bx,[bp-0x28]
+      // 00005782  8D46DA            lea ax,[bp-0x26]
+      // 00005785  03D8              add bx,ax
+      // 00005787  8B37              mov si,[bx]
+      newdy = circle_y[i];
+      // 00005789  A1F829            mov ax,[0x29f8]
+      // 0000578C  03C7              add ax,di
+      // 0000578E  8946F4            mov [bp-0xc],ax
+      newx = g_kye_main_cx + newdx;
+      // 00005791  8B0EF629          mov cx,[0x29f6]
+      // 00005795  03CE              add cx,si
+      newy = g_kye_main_cy + newdy;
+      // 00005797  BA2800            mov dx,0x28
+      // 0000579A  F7EA              imul dx
+      // 0000579C  8BD1              mov dx,cx
+      // 0000579E  D1E2              shl dx,1
+      // 000057A0  03C2              add ax,dx
+      // 000057A2  8BD8              mov bx,ax
+      // 000057A4  83BF7E12FF        cmp word [bx+0x127e],0xffffffffffffffff
+      // 000057A9  7521              jnz 0x57cc
+      if (g_level_tiles[newx][newy] == T_EMPTY) {
+        // 000057AB  A1AC02            mov ax,[0x2ac]
+        // 000057AE  2B46F4            sub ax,[bp-0xc]
+        // 000057B1  8BD0              mov dx,ax
+        // 000057B3  F7EA              imul dx
+        // 000057B5  50                push ax
+        // 000057B6  A1AE02            mov ax,[0x2ae]
+        // 000057B9  2BC1              sub ax,cx
+        // 000057BB  8BD0              mov dx,ax
+        // 000057BD  F7EA              imul dx
+        // 000057BF  5B                pop bx
+        // 000057C0  03D8              add bx,ax
+        // 000057C2  3B5EEA            cmp bx,[bp-0x16]
+        // 000057C5  7D05              jnl 0x57cc
+        if (((g_kye_target_cx-newx)*(g_kye_target_cx-newx)) + ((g_kye_target_cy-newy)*(g_kye_target_cy-newy)) < distsqr) {
+          // 000057C7  C746EC0100        mov word [bp-0x14],0x1
+            mousenotblocked = 1;
+        }
+      }
+    }
+
+    // 000057E3  837EEC00          cmp word [bp-0x14],0x0
+    // 000057E7  7408              jz 0x57f1
+    if (mousenotblocked != 0) {
+      // 000057E9  56                push si
+      // 000057EA  57                push di
+      // 000057EB  E8FCFA            call 0x52ea
+      // 000057EE  83C404            add sp,0x4
+      move_kye(newdx, newdy);
+    }
   }
 }
 
