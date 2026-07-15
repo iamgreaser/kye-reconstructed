@@ -90,8 +90,8 @@ typedef struct {
 typedef struct {
   int mode;
   int type;
-  int tx, ty;
-  char __pad0001[26-(2*4)];
+  int tx;
+  char name[20];
 } tilespec_s;
 
 typedef struct {
