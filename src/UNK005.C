@@ -608,7 +608,7 @@ void repaint_all_actors(void) {
   DeleteDC(dc);
 }
 
-// CS:24BA - MISMATCH FIXME: 2 extra write-only bytes on the stack, use of the wrong register, and 2 bytes of extra code so we're out of phase. Using a kludge to at least get this back into phase. --GM
+// CS:24BA - ***CODE MATCH!***
 void draw_wall(int cx, int cy, HDC dc) {
   // stack: 0x04 bytes
   // BP/FE
@@ -620,7 +620,7 @@ void draw_wall(int cx, int cy, HDC dc) {
 
   int px; // SI
   int py; // DI
-  register int src_px; // DX - MISMATCH FIXME: This needs to be DX! Not AX! --GM
+  int src_px; // DX
 
 #define tile (g_level_tiles[cx][cy])
 
@@ -629,18 +629,7 @@ void draw_wall(int cx, int cy, HDC dc) {
     // Draw actual wall
     px = cx * g_tile_lx;
     py = cy * g_tile_ly;
-    //
-    // MISMATCH: There's a dummy register spill here.
-    //
-    // Original: [bp-0x2] gets set to DX which is set after calculating all this crap.
-    //
-    // This code: [bp-0x2] gets set to AX which is set to tile which is g_level_tiles[cx][cy].
-    // In doing so, the second abs() calculation adds in an extra MOV DX,AX.
-    //
-    // This particular kludging constrains the mismatch to this if() block.
-    //
-    src_px = abs(tile);
-    src_px = TILE_LX * (src_px - abs(T_WALL1) + 3);
+    src_px = TILE_LX * (abs(tile) - abs(T_WALL1) + 3);
     BitBlt(g_maindc, px, py, TILE_LX, TILE_LY, dc, src_px, 0 * TILE_LY, SRCCOPY);
     return;
   }
