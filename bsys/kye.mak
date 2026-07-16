@@ -1,7 +1,7 @@
-KYE_C_NAMES:=WNDPROC GLOBALS1 MAIN UNK003 UNK004 UNK005 UNK005A UNK006 UNK007 UNK008 EXTRA_DS
-KYE_C_SRCS:=$(patsubst %,${SRCDIR}%.C,${KYE_C_NAMES})
-KYE_C_OBJS:=$(patsubst %,${BUILDDIR}%.OBJ,${KYE_C_NAMES})
-KYE_C_HEADERS:=$(wildcard ${SRCDIR}*.H)
+KYE_C_NAMES:=wndproc globals1 main unk003 unk004 unk005 unk005a unk006 unk007 unk008 extra_ds
+KYE_C_SRCS:=$(patsubst %,${SRCDIR}%.c,${KYE_C_NAMES})
+KYE_C_OBJS:=$(patsubst %,${BUILDDIR}%.OBJ,${KYE_C_NAMES^^})
+KYE_C_HEADERS:=$(wildcard ${SRCDIR}*.h)
 
 # fastbioslogo, startbanner: remove ads at startup
 # joysticktype=none: SDL gamepad detection is a notorious source of startup delay, skip it
@@ -33,7 +33,7 @@ ${OUTDIR}KYE.EXE: ${BUILDDIR}BUILDDOS.BAT | ${OUTDIR} ${BUILDDIR}
 	env SDL_VIDEODRIVER=dummy LIBGL_ALWAYS_SOFTWARE=yes dosbox-x ${DBXFLAGS} -c "ctty lpt1" -c "mount d ." -c "D:\\BUILD\\BUILDDOS.BAT" -exit 2>/dev/null
 	[ -e $@ ]
 
-${BUILDDIR}BUILDDOS.BAT: ${KYE_C_SRCS} ${KYE_C_HEADERS} src/KYE.RC $(wildcard ./bsys/prepdos-*.sh) | ${BUILDDIR}
+${BUILDDIR}BUILDDOS.BAT: ${KYE_C_SRCS} ${KYE_C_HEADERS} src/kye.rc $(wildcard ./bsys/prepdos-*.sh) | ${BUILDDIR}
 	rm $@ || true
 	echo "" > $@.tmp || (rm $@.tmp && false)
 	./bsys/prepdos-init.sh >> $@.tmp || (rm $@.tmp && false)
