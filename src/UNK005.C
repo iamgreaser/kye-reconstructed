@@ -195,20 +195,68 @@ void cs_1CCB(void) {
 
 // CS:1CD2 - MISMATCH FIXME: Registers are loaded in the wrong order and I need a hack to force the type into a register so the rest of the code can mostly match --GM
 int create_actor(int type, int cx, int cy) {
-  register int atype = type; // CX
+  register int atype; // CX
+
+  // 00001CD2  55                push bp
+  // 00001CD3  8BEC              mov bp,sp
+  // 00001CD5  56                push si
+  // 00001CD6  57                push di
+
+  // 00001CD7  8B4E04            mov cx,[bp+0x4]
+  atype = type;
+  // 00001CDA  8B7606            mov si,[bp+0x6]
+  // 00001CDD  8B7E08            mov di,[bp+0x8]
+
+  // 00001CE0  813EBA025802      cmp word [0x2ba],0x258
+  // 00001CE6  7D51              jnl 0x1d39
   if (g_actor_count < MAX_ACTORS) {
     // CX = type
     // SI = cx
     // DI = cy
+    // 00001CE8  8BC6              mov ax,si
+    // 00001CEA  BA2800            mov dx,0x28
+    // 00001CED  F7EA              imul dx
+    // 00001CEF  8BD7              mov dx,di
+    // 00001CF1  D1E2              shl dx,1
+    // 00001CF3  03C2              add ax,dx
+    // 00001CF5  8B16BA02          mov dx,[0x2ba]
+    // 00001CF9  8BD8              mov bx,ax
+    // 00001CFB  89977E12          mov [bx+0x127e],dx
     g_level_tiles[cx][cy] = g_actor_count;
+    // 00001CFF  8B1EBA02          mov bx,[0x2ba]
+    // 00001D03  C1E303            shl bx,byte 0x3
+    // 00001D06  898F2E17          mov [bx+0x172e],cx
     g_actors[g_actor_count].type = atype;
+    // 00001D0A  8B1EBA02          mov bx,[0x2ba]
+    // 00001D0E  C1E303            shl bx,byte 0x3
+    // 00001D11  89B73017          mov [bx+0x1730],si
     g_actors[g_actor_count].cx = cx;
+    // 00001D15  8B1EBA02          mov bx,[0x2ba]
+    // 00001D19  C1E303            shl bx,byte 0x3
+    // 00001D1C  89BF3217          mov [bx+0x1732],di
     g_actors[g_actor_count].cy = cy;
+    // 00001D20  8B1EBA02          mov bx,[0x2ba]
+    // 00001D24  C1E303            shl bx,byte 0x3
+    // 00001D27  C78734170000      mov word [bx+0x1734],0x0
     g_actors[g_actor_count].var0 = 0;
+    // 00001D2D  A1BA02            mov ax,[0x2ba]
+    // 00001D30  40                inc ax
+    // 00001D31  A3BA02            mov [0x2ba],ax
     g_actor_count = g_actor_count + 1;
+    // 00001D34  48                dec ax
+    // 00001D35  5F                pop di
+    // 00001D36  5E                pop si
+    // 00001D37  5D                pop bp
+    // 00001D38  C3                ret
     return g_actor_count - 1;
+  } else {
+    // 00001D39  B8FFFF            mov ax,0xffff
+    // 00001D3C  5F                pop di
+    // 00001D3D  5E                pop si
+    // 00001D3E  5D                pop bp
+    // 00001D3F  C3                ret
+    return -1;
   }
-  return -1;
 }
 
 // CS:1D40 - ***CODE MATCH!***
