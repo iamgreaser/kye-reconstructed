@@ -89,5 +89,5 @@ tileconv_map_entry_s TILECONV_MAP[] = {
   {2, T_TIMER_1, '}'},
   {2, T_TIMER_0, '}'},
 
-  {-1, 0, 0},
+  {-1, 0, ' '},
 };

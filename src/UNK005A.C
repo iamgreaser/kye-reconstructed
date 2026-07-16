@@ -19,7 +19,7 @@ char g_060C[128] = ""; // DS:060C TODO CONFIRM SIZE
 
 char g_068C[13] = "*.kye"; // DS:068C
 char g_0699[5] = ".kye"; // DS:0699
-char g_069E[11] = "~~~~~~~~.*\\"; // DS:069E
+char g_069E[11] = "~~~~~~~~.*"; // DS:069E
 
 // CS:2A48 - ***CODE MATCH!***
 void cs_2A48(HWND hDlg) {

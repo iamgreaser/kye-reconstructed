@@ -8,5 +8,10 @@ done
   echo "-y -M -O2 -1 -W -ms -LC:\\BORLANDC\\LIB -eD:\\OUT\\KYE.EXE ${C_OBJ_LIST}" >build/MKEXE.ARG
 echo "bcc @D:\\BUILD\\MKEXE.ARG"
 echo "if errorlevel 1 goto fail"
-echo "rc D:\\SRC\\KYE.RES D:\\OUT\\KYE.EXE"
+echo "rc -?"
+echo "cd D:\\SRC\\"
+echo "rc -r -i C:\\BORLANDC\\INCLUDE -fo D:\\BUILD\\KYE.RES D:\\SRC\\KYE.RC"
+echo "if errorlevel 1 goto fail"
+echo "cd \\"
+echo "rc D:\\BUILD\\KYE.RES D:\\OUT\\KYE.EXE"
 echo "if errorlevel 1 goto fail"
