@@ -308,12 +308,26 @@ int try_enter_blacky(int ai, int cx, int cy) {
   return 0;
 }
 
-// CS:3684 - TODO: Doesn't quite sync, likely needs work on variable placement. --GM
+// CS:3684 - ***CODE MATCH!***
 void tick_game_state(void) {
   // stack: 0x12 bytes
   register int ai; // SI
   int cx; // [BP-0x2]
   int cy; // [BP-0x4]
+  register int dx; // DI
+  int dy; // [BP-0x6]
+  int slide_right;
+  register int slide_left;
+  int slide_fw_right;
+  int slide_fw_left;
+  int hitting_rocky;
+  int hitting_rblock;
+  register int can_slide_left;
+  register int can_slide_right;
+  int other;
+  //register int newx; // CX
+  //int newy; // [BP-0x12]
+
 
   // BUG: Counter wraparound is not seamless.
   // We cover 32001 different values.
@@ -340,7 +354,7 @@ void tick_game_state(void) {
     case T_AUTOSLIDER2:
     case T_AUTOSLIDER3:
     case T_AUTOSLIDER4:
-      if (apply_sticky_blocks(ai)) {
+      if (!apply_sticky_blocks(ai)) {
         // Do nothing
       }
       break;
@@ -354,7 +368,7 @@ void tick_game_state(void) {
     case T_TIMER_7:
     case T_TIMER_8:
     case T_TIMER_9:
-      if (apply_sticky_blocks(ai)) {
+      if (!apply_sticky_blocks(ai)) {
         // Do nothing
       }
       break;
@@ -362,7 +376,7 @@ void tick_game_state(void) {
     // BUG: North-facing sliders do not redraw on rotation.
     case T_SLIDER_N:
       if ((!apply_sticky_blocks(ai)) && (!actor_held_by_sticky_block(ai))) {
-        register int other = g_level_tiles[cx][cy-1];
+        other = g_level_tiles[cx][cy-1];
         if (other == T_EMPTY) {
           move_actor(ai, cx, cy-1);
         } else {
@@ -381,7 +395,7 @@ void tick_game_state(void) {
 
     case T_SLIDER_S:
       if ((!apply_sticky_blocks(ai)) && (!actor_held_by_sticky_block(ai))) {
-        int other = g_level_tiles[cx][cy+1];
+        other = g_level_tiles[cx][cy+1];
         if (other == T_EMPTY) {
           move_actor(ai, cx, cy+1);
         } else {
@@ -400,7 +414,7 @@ void tick_game_state(void) {
 
     case T_SLIDER_W:
       if ((!apply_sticky_blocks(ai)) && (!actor_held_by_sticky_block(ai))) {
-        int other = g_level_tiles[cx-1][cy];
+        other = g_level_tiles[cx-1][cy];
         if (other == T_EMPTY) {
           move_actor(ai, cx-1, cy);
         } else {
@@ -419,7 +433,7 @@ void tick_game_state(void) {
 
     case T_SLIDER_E:
       if ((!apply_sticky_blocks(ai)) && (!actor_held_by_sticky_block(ai))) {
-        int other = g_level_tiles[cx+1][cy];
+        other = g_level_tiles[cx+1][cy];
         if (other == T_EMPTY) {
           move_actor(ai, cx+1, cy);
         } else {
@@ -441,31 +455,31 @@ void tick_game_state(void) {
         if (actor_held_by_sticky_block(ai)) {
           // Do nothing
         } else {
-          int fw = g_level_tiles[cx][cy-1];
-          if (fw == T_EMPTY) {
+          other = g_level_tiles[cx][cy-1];
+          if (other == T_EMPTY) {
             move_actor(ai, cx, cy-1);
           } else if (try_enter_blacky(ai, cx, cy-1)) {
             // Do nothing
           } else {
             // CX = row offset
-            int slide_right = g_level_tiles[cx+1][cy];
-            register int slide_left = g_level_tiles[cx-1][cy];
-            int slide_fw_right = g_level_tiles[cx+1][cy-1];
-            int slide_fw_left = g_level_tiles[cx-1][cy-1];
-            int hitting_rocky = (fw >= 0 && g_actors[fw].type >= T_ROCKY_N && g_actors[fw].type <= T_ROCKY_E);
-            int hitting_rblock = (fw >= 0 && g_actors[fw].type == T_RBLOCK);
-            register int can_slide_left = (slide_left == T_EMPTY && slide_fw_left == T_EMPTY && (fw == T_WALL1 || fw == T_WALL2 || fw == T_WALL4 || hitting_rocky || hitting_rblock));
-            register int can_slide_right = (slide_right == T_EMPTY && slide_fw_right == T_EMPTY && (fw == T_WALL3 || fw == T_WALL2 || fw == T_WALL6 || hitting_rocky || hitting_rblock));
+            slide_right = g_level_tiles[cx+1][cy];
+            slide_left = g_level_tiles[cx-1][cy];
+            slide_fw_right = g_level_tiles[cx+1][cy-1];
+            slide_fw_left = g_level_tiles[cx-1][cy-1];
+            hitting_rocky = (other >= 0 && g_actors[other].type >= T_ROCKY_N && g_actors[other].type <= T_ROCKY_E);
+            hitting_rblock = (other >= 0 && g_actors[other].type == T_RBLOCK);
+            can_slide_left = (slide_left == T_EMPTY && slide_fw_left == T_EMPTY && (other == T_WALL1 || other == T_WALL2 || other == T_WALL4 || hitting_rocky || hitting_rblock));
+            can_slide_right = (slide_right == T_EMPTY && slide_fw_right == T_EMPTY && (other == T_WALL3 || other == T_WALL2 || other == T_WALL6 || hitting_rocky || hitting_rblock));
             if (can_slide_right && can_slide_left) {
               move_actor(ai, cx+1-(random(2)*2), cy-1);
             } else if (can_slide_right) {
               move_actor(ai, cx+1, cy-1);
             } else if (can_slide_left) {
               move_actor(ai, cx-1, cy-1);
-            } else if (fw >= 0 && g_actors[fw].type == T_ROT_A) {
+            } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
               g_actors[ai].type = T_ROCKY_E;
               move_actor(ai, cx, cy);
-            } else if (fw >= 0 && g_actors[fw].type == T_ROT_C) {
+            } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
               g_actors[ai].type = T_ROCKY_W;
               move_actor(ai, cx, cy);
             }
@@ -479,31 +493,31 @@ void tick_game_state(void) {
         if (actor_held_by_sticky_block(ai)) {
           // Do nothing
         } else {
-          int fw = g_level_tiles[cx][cy+1];
-          if (fw == T_EMPTY) {
+          other = g_level_tiles[cx][cy+1];
+          if (other == T_EMPTY) {
             move_actor(ai, cx, cy+1);
           } else if (try_enter_blacky(ai, cx, cy+1)) {
             // Do nothing
           } else {
             // CX = row offset
-            int slide_right = g_level_tiles[cx-1][cy];
-            register int slide_left = g_level_tiles[cx+1][cy];
-            int slide_fw_right = g_level_tiles[cx-1][cy+1];
-            int slide_fw_left = g_level_tiles[cx+1][cy+1];
-            int hitting_rocky = (fw >= 0 && g_actors[fw].type >= T_ROCKY_N && g_actors[fw].type <= T_ROCKY_E);
-            int hitting_rblock = (fw >= 0 && g_actors[fw].type == T_RBLOCK);
-            register int can_slide_left = (slide_left == T_EMPTY && slide_fw_left == T_EMPTY && (fw == T_WALL9 || fw == T_WALL8 || fw == T_WALL6 || hitting_rocky || hitting_rblock));
-            register int can_slide_right = (slide_right == T_EMPTY && slide_fw_right == T_EMPTY && (fw == T_WALL7 || fw == T_WALL8 || fw == T_WALL4 || hitting_rocky || hitting_rblock));
+            slide_right = g_level_tiles[cx-1][cy];
+            slide_left = g_level_tiles[cx+1][cy];
+            slide_fw_right = g_level_tiles[cx-1][cy+1];
+            slide_fw_left = g_level_tiles[cx+1][cy+1];
+            hitting_rocky = (other >= 0 && g_actors[other].type >= T_ROCKY_N && g_actors[other].type <= T_ROCKY_E);
+            hitting_rblock = (other >= 0 && g_actors[other].type == T_RBLOCK);
+            can_slide_left = (slide_left == T_EMPTY && slide_fw_left == T_EMPTY && (other == T_WALL9 || other == T_WALL8 || other == T_WALL6 || hitting_rocky || hitting_rblock));
+            can_slide_right = (slide_right == T_EMPTY && slide_fw_right == T_EMPTY && (other == T_WALL7 || other == T_WALL8 || other == T_WALL4 || hitting_rocky || hitting_rblock));
             if (can_slide_right && can_slide_left) {
               move_actor(ai, cx+1-(random(2)*2), cy+1);
             } else if (can_slide_right) {
               move_actor(ai, cx-1, cy+1);
             } else if (can_slide_left) {
               move_actor(ai, cx+1, cy+1);
-            } else if (fw >= 0 && g_actors[fw].type == T_ROT_A) {
+            } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
               g_actors[ai].type = T_ROCKY_W;
               move_actor(ai, cx, cy);
-            } else if (fw >= 0 && g_actors[fw].type == T_ROT_C) {
+            } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
               g_actors[ai].type = T_ROCKY_E;
               move_actor(ai, cx, cy);
             }
@@ -517,31 +531,31 @@ void tick_game_state(void) {
         if (actor_held_by_sticky_block(ai)) {
           // Do nothing
         } else {
-          int fw = g_level_tiles[cx-1][cy];
-          if (fw == T_EMPTY) {
+          other = g_level_tiles[cx-1][cy];
+          if (other == T_EMPTY) {
             move_actor(ai, cx-1, cy);
           } else if (try_enter_blacky(ai, cx-1, cy)) {
             // Do nothing
           } else {
             // CX = row offset
-            int slide_right = g_level_tiles[cx][cy-1];
-            register int slide_left = g_level_tiles[cx][cy+1];
-            int slide_fw_right = g_level_tiles[cx-1][cy-1];
-            int slide_fw_left = g_level_tiles[cx-1][cy+1];
-            int hitting_rocky = (fw >= 0 && g_actors[fw].type >= T_ROCKY_N && g_actors[fw].type <= T_ROCKY_E);
-            int hitting_rblock = (fw >= 0 && g_actors[fw].type == T_RBLOCK);
-            register int can_slide_left = (slide_left == T_EMPTY && slide_fw_left == T_EMPTY && (fw == T_WALL3 || fw == T_WALL6 || fw == T_WALL2 || hitting_rocky || hitting_rblock));
-            register int can_slide_right = (slide_right == T_EMPTY && slide_fw_right == T_EMPTY && (fw == T_WALL9 || fw == T_WALL6 || fw == T_WALL8 || hitting_rocky || hitting_rblock));
+            slide_right = g_level_tiles[cx][cy-1];
+            slide_left = g_level_tiles[cx][cy+1];
+            slide_fw_right = g_level_tiles[cx-1][cy-1];
+            slide_fw_left = g_level_tiles[cx-1][cy+1];
+            hitting_rocky = (other >= 0 && g_actors[other].type >= T_ROCKY_N && g_actors[other].type <= T_ROCKY_E);
+            hitting_rblock = (other >= 0 && g_actors[other].type == T_RBLOCK);
+            can_slide_left = (slide_left == T_EMPTY && slide_fw_left == T_EMPTY && (other == T_WALL3 || other == T_WALL6 || other == T_WALL2 || hitting_rocky || hitting_rblock));
+            can_slide_right = (slide_right == T_EMPTY && slide_fw_right == T_EMPTY && (other == T_WALL9 || other == T_WALL6 || other == T_WALL8 || hitting_rocky || hitting_rblock));
             if (can_slide_right && can_slide_left) {
               move_actor(ai, cx-1, cy+1-(random(2)*2));
             } else if (can_slide_right) {
               move_actor(ai, cx-1, cy-1);
             } else if (can_slide_left) {
               move_actor(ai, cx-1, cy+1);
-            } else if (fw >= 0 && g_actors[fw].type == T_ROT_A) {
+            } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
               g_actors[ai].type = T_ROCKY_N;
               move_actor(ai, cx, cy);
-            } else if (fw >= 0 && g_actors[fw].type == T_ROT_C) {
+            } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
               g_actors[ai].type = T_ROCKY_S;
               move_actor(ai, cx, cy);
             }
@@ -555,31 +569,31 @@ void tick_game_state(void) {
         if (actor_held_by_sticky_block(ai)) {
           // Do nothing
         } else {
-          int fw = g_level_tiles[cx+1][cy];
-          if (fw == T_EMPTY) {
+          other = g_level_tiles[cx+1][cy];
+          if (other == T_EMPTY) {
             move_actor(ai, cx+1, cy);
           } else if (try_enter_blacky(ai, cx+1, cy)) {
             // Do nothing
           } else {
             // CX = row offset
-            int slide_right = g_level_tiles[cx][cy+1];
-            register int slide_left = g_level_tiles[cx][cy-1];
-            int slide_fw_right = g_level_tiles[cx+1][cy+1];
-            int slide_fw_left = g_level_tiles[cx+1][cy-1];
-            int hitting_rocky = (fw >= 0 && g_actors[fw].type >= T_ROCKY_N && g_actors[fw].type <= T_ROCKY_E);
-            int hitting_rblock = (fw >= 0 && g_actors[fw].type == T_RBLOCK);
-            register int can_slide_left = (slide_left == T_EMPTY && slide_fw_left == T_EMPTY && (fw == T_WALL7 || fw == T_WALL4 || fw == T_WALL8 || hitting_rocky || hitting_rblock));
-            register int can_slide_right = (slide_right == T_EMPTY && slide_fw_right == T_EMPTY && (fw == T_WALL1 || fw == T_WALL4 || fw == T_WALL2 || hitting_rocky || hitting_rblock));
+            slide_right = g_level_tiles[cx][cy+1];
+            slide_left = g_level_tiles[cx][cy-1];
+            slide_fw_right = g_level_tiles[cx+1][cy+1];
+            slide_fw_left = g_level_tiles[cx+1][cy-1];
+            hitting_rocky = (other >= 0 && g_actors[other].type >= T_ROCKY_N && g_actors[other].type <= T_ROCKY_E);
+            hitting_rblock = (other >= 0 && g_actors[other].type == T_RBLOCK);
+            can_slide_left = (slide_left == T_EMPTY && slide_fw_left == T_EMPTY && (other == T_WALL7 || other == T_WALL4 || other == T_WALL8 || hitting_rocky || hitting_rblock));
+            can_slide_right = (slide_right == T_EMPTY && slide_fw_right == T_EMPTY && (other == T_WALL1 || other == T_WALL4 || other == T_WALL2 || hitting_rocky || hitting_rblock));
             if (can_slide_right && can_slide_left) {
               move_actor(ai, cx+1, cy+1-(random(2)*2));
             } else if (can_slide_right) {
               move_actor(ai, cx+1, cy+1);
             } else if (can_slide_left) {
               move_actor(ai, cx+1, cy-1);
-            } else if (fw >= 0 && g_actors[fw].type == T_ROT_A) {
+            } else if (other >= 0 && g_actors[other].type == T_ROT_A) {
               g_actors[ai].type = T_ROCKY_S;
               move_actor(ai, cx, cy);
-            } else if (fw >= 0 && g_actors[fw].type == T_ROT_C) {
+            } else if (other >= 0 && g_actors[other].type == T_ROT_C) {
               g_actors[ai].type = T_ROCKY_N;
               move_actor(ai, cx, cy);
             }
@@ -599,7 +613,7 @@ void tick_game_state(void) {
           g_actors[ai].type = T_BOUNCER_S;
           move_actor(ai, cx, cy);
           if (g_level_tiles[cx][cy-1] >= 0) {
-            int other = g_level_tiles[cx][cy-1];
+            other = g_level_tiles[cx][cy-1];
             cx = g_actors[other].cx;
             cy = g_actors[other].cy - 1;
             if (g_level_tiles[cx][cy] == T_EMPTY
@@ -626,7 +640,7 @@ void tick_game_state(void) {
           g_actors[ai].type = T_BOUNCER_N;
           move_actor(ai, cx, cy);
           if (g_level_tiles[cx][cy+1] >= 0) {
-            int other = g_level_tiles[cx][cy+1];
+            other = g_level_tiles[cx][cy+1];
             cx = g_actors[other].cx;
             cy = g_actors[other].cy + 1;
             if (g_level_tiles[cx][cy] == T_EMPTY
@@ -653,7 +667,7 @@ void tick_game_state(void) {
           g_actors[ai].type = T_BOUNCER_E;
           move_actor(ai, cx, cy);
           if (g_level_tiles[cx-1][cy] >= 0) {
-            int other = g_level_tiles[cx-1][cy];
+            other = g_level_tiles[cx-1][cy];
             cx = g_actors[other].cx - 1;
             cy = g_actors[other].cy;
             if (g_level_tiles[cx][cy] == T_EMPTY
@@ -680,7 +694,7 @@ void tick_game_state(void) {
           g_actors[ai].type = T_BOUNCER_W;
           move_actor(ai, cx, cy);
           if (g_level_tiles[cx+1][cy] >= 0) {
-            int other = g_level_tiles[cx+1][cy];
+            other = g_level_tiles[cx+1][cy];
             cx = g_actors[other].cx + 1;
             cy = g_actors[other].cy;
             if (g_level_tiles[cx][cy] == T_EMPTY
@@ -739,15 +753,11 @@ void tick_game_state(void) {
     case T_B_SPIKE:
       // BUG: If a monster kills kye on its tick, it loses that tick
       if ((!try_killing_adjacent_kye(ai)) && g_tick_counter % 3 == 0) {
-        register int dx = 0; // DI
-        int dy = 0; // [BP-0x6]
+        dx = 0; // DI
+        dy = 0; // [BP-0x6]
 
         if (!apply_sticky_blocks(ai)) {
           if (!actor_held_by_sticky_block(ai)) {
-            register int newx; // CX
-            int newy; // [BP-0x12]
-            int fw;
-
             // Compute direction
             if (random(2) == 1) {
               cs_3251(ai, g_kye_main_cx, g_kye_main_cy, &cx, &cy);
@@ -757,19 +767,12 @@ void tick_game_state(void) {
               } else {
                 dy = random(3)-1;
               }
-            }
 
-            // Apply direction
-            newx = cx + dx; // CX
-            newy = cy + dy; // [BP-0x12]
-
-            // TODO: Work out how to get this into sync WAIT THIS OLD COMPILER STILL LETS ME DEFINE VARIABLES MID-BLOCK?!?! --GM
-            // UPDATE: No, that's a C++ special feature. In C, you can't.
-            fw = g_level_tiles[newx][newy];
-            if (fw == T_EMPTY || (0 <= fw && g_actors[fw].type == T_BLACKY1)) {
-              cx = newx;
-              cy = newy;
-              cx++;cx++;cx-=2; // FIXME RESYNCING HACK --GM
+              // Apply direction
+              if (g_level_tiles[cx+dx][cy+dy] == T_EMPTY || (0 <= g_level_tiles[cx+dx][cy+dy] && g_actors[g_level_tiles[cx+dx][cy+dy]].type == T_BLACKY1)) {
+                cx = cx + dx;
+                cy = cy + dy;
+              }
             }
           }
 
