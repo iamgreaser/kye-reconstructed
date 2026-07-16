@@ -12,6 +12,7 @@
 
 // Word alignment mandates that this starts the module.
 // CS:18FE - ***CODE MATCH!*** (if and only if -Ov is not set)
+#pragma option -O-v
 int convert_char_to_internal(int *subgroup_out, int *internal_type_out, char external_char_in) {
   // DI = subgroup_out
   int i; // CX
@@ -27,7 +28,7 @@ int convert_char_to_internal(int *subgroup_out, int *internal_type_out, char ext
   return 0;
 }
 
-// CS:1942 - ***CODE MATCH!*** (maybe if and only if -Ov is not set?)
+// CS:1942 - ***CODE MATCH!*** (if and only if -Ov is not set)
 int convert_internal_to_char(int subgroup_in, int internal_type_in, char *external_char_out) {
   int i; // CX
 
