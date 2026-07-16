@@ -364,7 +364,7 @@ void cs_4EB5(HWND hWnd, int mouse_x, int mouse_y, int wParam) {
 }
 
 // CS:4FA6 - ToolboxWndProc(), Ordinal 10 - ***CODE MATCH!***
-LONG FAR PASCAL _export ToolboxWndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
+LONG FAR PASCAL_EXPORT ToolboxWndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
   switch (msg) {
     case WM_CREATE:
       break;

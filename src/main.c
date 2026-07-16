@@ -14,7 +14,7 @@ int g_is_in_editor = 0; // DS:03F2
 // DS:03F4 contains strings.
 
 // CS:0F78 - ***CODE MATCH!***
-int FAR PASCAL _export DLG_ERR1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
+int FAR PASCAL_EXPORT DLG_ERR1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
   // Seems to be unused?
   switch (msg) {
   case WM_COMMAND:
@@ -147,7 +147,7 @@ int show_text_input_dialog(const char *msg, char *buf) {
 }
 
 // CS:12CB - ***CODE MATCH!***
-int FAR PASCAL _export DLG_LVLDUN_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
+int FAR PASCAL_EXPORT DLG_LVLDUN_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
   switch (msg) {
   case WM_COMMAND:
     // TODO: Name the items --GM
@@ -187,7 +187,7 @@ void show_level_done(void) {
 }
 
 // CS:1395 - ***CODE MATCH!***
-int FAR PASCAL _export DLG_LVLNEW_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
+int FAR PASCAL_EXPORT DLG_LVLNEW_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
   switch (msg) {
   case WM_COMMAND:
     // TODO: Name the items --GM
@@ -226,7 +226,7 @@ void show_next_level_name(void) {
 }
 
 // CS:1453 - ***CODE MATCH!***
-int FAR PASCAL _export DLG_KYESGONE_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
+int FAR PASCAL_EXPORT DLG_KYESGONE_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
   (void)lParam;
   switch (msg) {
   case WM_COMMAND:
@@ -264,7 +264,7 @@ void show_game_over(void) {
 }
 
 // CS:14F7 - ***CODE MATCH!***
-int FAR PASCAL _export DLG_INPNAM_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
+int FAR PASCAL_EXPORT DLG_INPNAM_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
   (void)lParam;
   switch (msg) {
   case WM_COMMAND:
@@ -308,7 +308,7 @@ void show_level_name_input(void) {
 }
 
 // CS:15FD - ***CODE MATCH!***
-int FAR PASCAL _export DLG_OK_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
+int FAR PASCAL_EXPORT DLG_OK_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
   (void)lParam;
   switch (msg) {
   case WM_COMMAND:
@@ -355,7 +355,7 @@ void show_last_level_ending(void) {
 }
 
 // CS:16E6 - ***CODE MATCH!***
-int FAR PASCAL _export DLG_INP1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
+int FAR PASCAL_EXPORT DLG_INP1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
   switch (msg) {
   case WM_COMMAND:
     // TODO: Name the items --GM

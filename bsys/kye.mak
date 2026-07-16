@@ -41,3 +41,18 @@ ${BUILDDIR}BUILDDOS.BAT: ${KYE_C_SRCS} ${KYE_C_HEADERS} src/kye.rc $(wildcard ./
 	./bsys/prepdos-exe.sh ${KYE_C_NAMES} >> $@.tmp || (rm $@.tmp && false)
 	./bsys/prepdos-final.sh >> $@.tmp || (rm $@.tmp && false)
 	mv $@.tmp $@
+
+.PHONY: build-kye-win32
+build-kye-win32: ${OUTDIR}kye32.exe
+BUILDDIR32::=${BUILDDIR}32/
+${BUILDDIR32}:
+	install -D -d $@
+
+${OUTDIR}kye32.exe: ${KYE_C_SRCS} ${BUILDDIR32}kye32.res.o ${KYE_C_HEADERS} | ${OUTDIR}
+	i386-win32-tcc -o $@ ${KYE_C_SRCS} ${BUILDDIR32}kye32.res.o
+
+${BUILDDIR32}kye32.res.o: ${BUILDDIR32}kye32.res | ${BUILDDIR32}
+	i686-w64-mingw32-windres -O coff -o $@ $<
+
+${BUILDDIR32}kye32.res: ${SRCDIR}kye.rc | ${BUILDDIR32}
+	zig rc /fo $@ $<

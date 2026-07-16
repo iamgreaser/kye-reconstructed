@@ -1,3 +1,23 @@
+#ifdef WIN32
+// Win32 port.
+#define FAR
+#define PASCAL_EXPORT WINAPI
+#define HANDLE_HINSTANCE HINSTANCE
+
+#define CloseSound()
+#define DlgDirSelect(dlg, buf, id) DlgDirSelectEx((dlg), (buf), sizeof((buf)), (id))
+#define MoveTo(dc, x, y) MoveToEx((dc), (x), (y), NULL)
+#define OpenSound()
+
+// TODO: Probably not quite right, this should actually reimplement the Borland PRNG. --GM
+#define random(x) (rand()/((RAND_MAX/(x))-(x)))
+
+#else
+// Original Win16 code.
+#define PASCAL_EXPORT PASCAL _export
+#define HANDLE_HINSTANCE HANDLE
+
+#endif
 
 // WNDPROC.CPP
 void repaint_main_playfield(void);
@@ -12,8 +32,8 @@ void main_wm_mousemove(HWND hWnd, LONG lParam);
 void on_key_press(HWND hWnd, WORD wParam);
 void update_edit_menu_item(void);
 int main_wm_command(HWND hWnd, WORD wParam);
-LONG FAR PASCAL _export WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam);
-int PASCAL _export WinMain(HANDLE hInstance, HANDLE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
+LONG FAR PASCAL_EXPORT WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam);
+int PASCAL_EXPORT WinMain(HANDLE_HINSTANCE hInstance, HANDLE_HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
 
 // MAIN.CPP
 void msgbox_error(char *m1, char *m2);
@@ -22,19 +42,19 @@ void deinit_brushes_and_stuff(void);
 void compute_window_geometry(void);
 int mouse_is_in_playfield(int x, int y);
 int show_text_input_dialog(const char *msg, char *buf);
-int FAR PASCAL _export DLG_LVLDUN_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
+int FAR PASCAL_EXPORT DLG_LVLDUN_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
 void show_level_done(void);
-int FAR PASCAL _export DLG_LVLNEW_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
+int FAR PASCAL_EXPORT DLG_LVLNEW_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
 void show_next_level_name(void);
-int FAR PASCAL _export DLG_KYESGONE_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
+int FAR PASCAL_EXPORT DLG_KYESGONE_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
 void show_game_over(void);
 void set_status_msg(const char *msg);
-int FAR PASCAL _export DLG_INPNAM_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
+int FAR PASCAL_EXPORT DLG_INPNAM_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
 void show_level_name_input(void);
-int FAR PASCAL _export DLG_OK_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
+int FAR PASCAL_EXPORT DLG_OK_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
 void show_charity_dialog(void);
 void show_last_level_ending(void);
-int FAR PASCAL _export DLG_INP1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
+int FAR PASCAL_EXPORT DLG_INP1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
 void update_window_title(void);
 
 // UNK003.CPP

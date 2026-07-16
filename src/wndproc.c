@@ -521,7 +521,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
 }
 
 // CS:0C19 - ***CODE MATCH!***
-LONG FAR PASCAL _export WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
+LONG FAR PASCAL_EXPORT WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
   // The compiler does some funky less-than/greater-than optimisation,
   // instead of using a LUT.
   // Maybe it was aiming to work nicely on a 486?
@@ -579,10 +579,10 @@ LONG FAR PASCAL _export WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
 }
 
 // CS:0D6A - ***CODE MATCH!***
-int PASCAL _export WinMain(HANDLE hInstance,
-                           HANDLE hPrevInstance,
-                           LPSTR lpCmdLine,
-                           int nCmdShow) {
+int PASCAL_EXPORT WinMain(HANDLE_HINSTANCE hInstance,
+                          HANDLE_HINSTANCE hPrevInstance,
+                          LPSTR lpCmdLine,
+                          int nCmdShow) {
   // needs 0x60 (96) extra bytes on stack
   HWND mainwnd; // /FE BP-0x02
   WNDCLASS maincls; // /E4 BP-0x1C

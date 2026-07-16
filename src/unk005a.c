@@ -101,7 +101,7 @@ void cs_2C83(char *a0, const char *a1) {
 }
 
 // CS:2CFB - ***CODE MATCH!***
-int FAR PASCAL _export DLG_FOPEN_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
+int FAR PASCAL_EXPORT DLG_FOPEN_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
   switch (msg) {
     case WM_COMMAND:
       switch (wParam) {
