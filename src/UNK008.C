@@ -140,7 +140,7 @@ void move_kye(int dx, int dy) {
   repaint_kye(0);
 }
 
-// CS:5395 - ***CODE MATCH!***
+// CS:5395 - FIXME: Register autoallocation uses DX instead of BX in one case when comparing against distsqr --GM
 void try_move_kye(int indx, int indy) {
   // Stack: 0x2E bytes (BP/D2 start)
   int i; // BP/FE
