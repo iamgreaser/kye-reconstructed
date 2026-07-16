@@ -579,10 +579,10 @@ LONG FAR PASCAL_EXPORT WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
 }
 
 // CS:0D6A - ***CODE MATCH!***
-int PASCAL_EXPORT WinMain(HANDLE_HINSTANCE hInstance,
-                          HANDLE_HINSTANCE hPrevInstance,
-                          LPSTR lpCmdLine,
-                          int nCmdShow) {
+int PASCAL_NOEXPORT WinMain(HANDLE_HINSTANCE hInstance,
+                            HANDLE_HINSTANCE hPrevInstance,
+                            LPSTR lpCmdLine,
+                            int nCmdShow) {
   // needs 0x60 (96) extra bytes on stack
   HWND mainwnd; // /FE BP-0x02
   WNDCLASS maincls; // /E4 BP-0x1C

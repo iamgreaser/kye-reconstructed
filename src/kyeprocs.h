@@ -2,6 +2,7 @@
 // Win32 port.
 #define FAR
 #define PASCAL_EXPORT WINAPI
+#define PASCAL_NOEXPORT WINAPI
 #define HANDLE_HINSTANCE HINSTANCE
 
 #define CloseSound()
@@ -15,6 +16,7 @@
 #else
 // Original Win16 code.
 #define PASCAL_EXPORT PASCAL _export
+#define PASCAL_NOEXPORT PASCAL
 #define HANDLE_HINSTANCE HANDLE
 
 #endif
@@ -33,7 +35,7 @@ void on_key_press(HWND hWnd, WORD wParam);
 void update_edit_menu_item(void);
 int main_wm_command(HWND hWnd, WORD wParam);
 LONG FAR PASCAL_EXPORT WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam);
-int PASCAL_EXPORT WinMain(HANDLE_HINSTANCE hInstance, HANDLE_HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
+int PASCAL_NOEXPORT WinMain(HANDLE_HINSTANCE hInstance, HANDLE_HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
 
 // MAIN.CPP
 void msgbox_error(char *m1, char *m2);
