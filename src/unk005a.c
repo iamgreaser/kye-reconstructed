@@ -40,6 +40,8 @@ void cs_2AE1(HWND hDlg, LPSTR a1, LPSTR a3, LPSTR a5) {
   LPSTR fol;
   char tmpc0;
 
+  (void)hDlg;
+
   fol = a5 + lstrlen(a5);
   while (*fol != ':' && *fol != '\\' && fol > a5) {
     fol = AnsiPrev(a5, fol);
