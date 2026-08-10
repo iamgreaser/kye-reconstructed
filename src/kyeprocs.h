@@ -123,6 +123,8 @@ void repaint_kye(int fizzle_mode);
 void move_kye(int dx, int dy);
 void try_move_kye(int dx, int dy);
 void tick_kye(void);
+
+// unk009.c
 void animate_diamonds(void);
 void animate_doors(void);
 void animate_autospawners(void);

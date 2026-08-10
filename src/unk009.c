@@ -1,6 +1,4 @@
 // vim: set syntax=cpp :
-// Any globals that have yet to be placed in the right module.
-
 #include <windows.h>
 #include <stdio.h>
 
