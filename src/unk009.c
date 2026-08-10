@@ -316,9 +316,20 @@ void animate_monsters(void) {
 
 // CS:5E61 - ***CODE MATCH!***
 void animate_everything(void) {
+#if APPLY_BUGFIXES
+  int had_maindc = g_has_maindc;
+  if (had_maindc == 0) {
+    acquire_main_dc();
+  }
+#endif
   animate_monsters();
   animate_diamonds();
   animate_doors();
   animate_autospawners();
   animate_blackies();
+#if APPLY_BUGFIXES
+  if (had_maindc == 0) {
+    release_main_dc();
+  }
+#endif
 }

@@ -19,6 +19,12 @@
 #define COMMAND_hWndCtl(wParam, lParam) ((HWND)(lParam))
 #define COMMAND_wNotifyCode(wParam, lParam) (HIWORD(wParam))
 
+// These bugfixes are needed for the 32-bit build to function correctly, they are:
+// - use-after-free of g_maindc which results in CreateCompatibleDC() failing and animations not working
+#ifndef APPLY_BUGFIXES
+#define APPLY_BUGFIXES 1
+#endif
+
 #else
 // Original Win16 code.
 #define PASCAL_EXPORT PASCAL _export
@@ -28,6 +34,10 @@
 #define COMMAND_idItem(wParam, lParam) (wParam)
 #define COMMAND_hWndCtl(wParam, lParam) ((HWND)(LOWORD(lParam)))
 #define COMMAND_wNotifyCode(wParam, lParam) (HIWORD(lParam))
+
+#ifndef APPLY_BUGFIXES
+#define APPLY_BUGFIXES 0
+#endif
 
 #endif
 

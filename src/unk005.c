@@ -627,12 +627,23 @@ void repaint_all_actors(void) {
   int ai; // SI
 
   // BUG: DC not checked for null handle
+#if APPLY_BUGFIXES
+  int had_maindc = g_has_maindc;
+  if (had_maindc == 0) {
+    acquire_main_dc();
+  }
+#endif
   dc = CreateCompatibleDC(g_maindc);
   SelectObject(dc, g_hbmpBlock);
   for (ai = 0; ai < g_actor_count; ai++) {
     draw_actor(g_maindc, dc, ai);
   }
   DeleteDC(dc);
+#if APPLY_BUGFIXES
+  if (had_maindc == 0) {
+    release_main_dc();
+  }
+#endif
 }
 
 // CS:24BA - ***CODE MATCH!***
