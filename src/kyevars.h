@@ -90,8 +90,8 @@ extern HPEN g_hpenRed;   // DS:2B54
 extern HBITMAP g_hbmpKye; // DS:2B52
 extern HBITMAP g_hbmpBlock; // DS:2B50
 extern HBITMAP g_hbmpWall; // DS:2B4E
-extern char g_2AFE[80]; // DS:2AFE
-extern char g_2AAE[80]; // DS:2AAE
+extern char g_unused_err_line_1[80]; // DS:2AFE
+extern char g_unused_err_line_2[80]; // DS:2AAE
 extern char g_level_name[20]; // DS:2A9A
 extern char g_level_congrats[80]; // DS:2A4A
 extern char g_level_hint[80]; // DS:29FA

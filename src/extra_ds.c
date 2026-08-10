@@ -41,8 +41,8 @@ HPEN g_hpenRed;  // DS:2B54
 HBITMAP g_hbmpKye; // DS:2B52
 HBITMAP g_hbmpBlock; // DS:2B50
 HBITMAP g_hbmpWall; // DS:2B4E
-char g_2AFE[80]; // DS:2AFE
-char g_2AAE[80]; // DS:2AAE
+char g_unused_err_line_1[80]; // DS:2AFE
+char g_unused_err_line_2[80]; // DS:2AAE
 char g_level_name[20]; // DS:2A9A
 char g_level_congrats[80]; // DS:2A4A
 char g_level_hint[80]; // DS:29FA

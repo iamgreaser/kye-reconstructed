@@ -10,6 +10,8 @@
 #include "kyeprocs.h"
 #include "kyevars.h"
 
+#include "resdefs.h"
+
 int g_is_in_editor = 0; // DS:03F2
 // DS:03F4 contains strings.
 
@@ -19,9 +21,8 @@ int FAR PASCAL_EXPORT DLG_ERR1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lPara
   // Seems to be unused?
   switch (msg) {
   case WM_COMMAND:
-    // TODO: Name the items --GM
     switch (wParam) {
-    case 1:
+    case ERR1_OK_BUTTON:
       EndDialog(hDlg, 0);
       return 1;
     default:
@@ -34,9 +35,8 @@ int FAR PASCAL_EXPORT DLG_ERR1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lPara
     return 1;
 
   case WM_INITDIALOG:
-    // TODO: Name the items --GM
-    SetDlgItemText(hDlg, 101, g_2AFE);
-    SetDlgItemText(hDlg, 102, g_2AAE);
+    SetDlgItemText(hDlg, ERR1_LINE1, g_unused_err_line_1);
+    SetDlgItemText(hDlg, ERR1_LINE2, g_unused_err_line_2);
     SetFocus(GetDlgItem(hDlg, 1));
     return 0;
   default:
