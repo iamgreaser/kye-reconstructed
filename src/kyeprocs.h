@@ -21,7 +21,7 @@
 
 #endif
 
-// WNDPROC.CPP
+// wndproc.c
 void repaint_main_playfield(void);
 void actual_main_paint(void);
 void tick_game(void);
@@ -37,7 +37,7 @@ int main_wm_command(HWND hWnd, WORD wParam);
 LONG FAR PASCAL_EXPORT WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam);
 int PASCAL_NOEXPORT WinMain(HANDLE_HINSTANCE hInstance, HANDLE_HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
 
-// MAIN.CPP
+// main.c
 void msgbox_error(char *m1, char *m2);
 void init_brushes_and_stuff(void);
 void deinit_brushes_and_stuff(void);
@@ -59,18 +59,18 @@ void show_last_level_ending(void);
 int FAR PASCAL_EXPORT DLG_INP1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam);
 void update_window_title(void);
 
-// UNK003.CPP
+// unk003.c
 void acquire_main_dc(void);
 void release_main_dc(void);
-void cs_18A1(RECT FAR *lprc);
+void unused_18A1(RECT FAR *lprc);
 void init_timer(void);
 void deinit_timer(void);
 
-// UNK004.CPP
+// unk004.c
 int convert_char_to_internal(int *subgroup_out, int *internal_type_out, char external_char_in);
 int convert_internal_to_char(int subgroup_in, int internal_type_in, char *external_char_out);
 
-// UNK005.CPP
+// unk005.c
 void clear_level(void);
 void process_loaded_level(void);
 void read_line(FILE *fp, char *buf, int max_len);
@@ -94,9 +94,12 @@ void repaint_all_walls(void);
 void draw_fizzled_kye(int fizzle_level);
 void paint_tile_in_editor(int cx, int cy);
 void repaint_status_left(void);
-void cs_2A48(HWND hDlg);
-// TODO: Other functions --GM
-void cs_2F89(char *fname_buf);
+
+// unk005a.c
+void reinit_fileopen_dialog(HWND hDlg);
+void show_file_open_dialog(char *fname_buf);
+
+// unk006.c
 void move_actor(int ai, int newx, int newy);
 int apply_sticky_blocks(int ai);
 int actor_held_by_sticky_block(int ai);
@@ -105,9 +108,13 @@ int try_killing_adjacent_kye(int ai);
 void tick_all_timer_blocks(void);
 int try_enter_blacky(int ai, int cx, int cy);
 void tick_game_state(void);
+
+// unk007.c
 void cs_4B7A(int cx, int cy);
 int cs_501F(void);
 int cs_5119(void);
+
+// unk008.c
 void count_all_diamonds(void);
 void draw_kye_mouse_ghost(void);
 void clear_kye_mouse_ghost(void);

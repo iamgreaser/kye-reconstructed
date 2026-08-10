@@ -434,7 +434,7 @@ int main_wm_command(HWND hWnd, WORD wParam) {
 
   case IDC_LEVEL_FILE:
     if (g_is_in_editor == 0) {
-      cs_2F89(g_levelset_fname);
+      show_file_open_dialog(g_levelset_fname);
       load_level(g_levelidx);
       set_status_msg(g_level_hint);
       update_edit_menu_item();

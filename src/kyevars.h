@@ -41,11 +41,10 @@ extern int g_has_maintimer; // DS:0458
 // int // DS:06A9 == 0x5C
 // DS:06AB contains strings.
 
-extern char g_060C[128]; // DS:060C TODO CONFIRM SIZE
-extern char g_068C[13]; // DS:068C
+extern char g_060C[128]; // DS:060C
+extern char g_kye_file_pattern[13]; // DS:068C
 
 // This map is at DS:06B8
-// TODO: Editor entity spec --GM
 extern tilespec_s g_06B8[];
 
 // DS:0D38 = 0x000A

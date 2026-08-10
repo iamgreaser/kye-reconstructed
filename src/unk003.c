@@ -44,7 +44,7 @@ void release_main_dc(void) {
 
 // CS:18A1 - ***CODE MATCH!***
 // UNUSED FUNCTION
-void cs_18A1(RECT FAR *lprc) {
+void unused_18A1(RECT FAR *lprc) {
   HRGN rgn; // SI
 
   // Apparently this is not marked as const in 3.0, but is in 3.1

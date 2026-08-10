@@ -189,7 +189,7 @@ int write_level(FILE *fp, file_level_s *lvl) {
 
 // CS:1CCB - ***CODE MATCH!***
 // UNUSED FUNCTION
-void cs_1CCB(void) {
+void unused_1CCB(void) {
   g_actor_count = 0;
 }
 
