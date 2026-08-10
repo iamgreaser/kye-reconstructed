@@ -502,12 +502,12 @@ int main_wm_command(HWND hWnd, WORD wParam) {
   case IDC_301:
     // Unused, not defined. Could this be sound? Who knows...
     menu = GetMenu(g_mainwnd);
-    if (g_02BC != 0) {
+    if (unused_02BC != 0) {
       CheckMenuItem(menu, IDC_301, MF_BYCOMMAND | MF_UNCHECKED);
-      g_02BC = 0;
+      unused_02BC = 0;
     } else {
       CheckMenuItem(menu, IDC_301, MF_BYCOMMAND | MF_CHECKED);
-      g_02BC = 1;
+      unused_02BC = 1;
     }
     break;
 

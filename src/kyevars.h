@@ -15,7 +15,7 @@ extern int g_levelcount; // DS:02A2
 extern int g_tile_under_kye; // DS:02A4
 extern int g_tile_lx; // DS:02A6
 extern int g_tile_ly; // DS:02A8
-extern int g_02AA; // DS:02AA -- TODO! --GM
+extern int g_drawing_kye_mouse_ghost; // DS:02AA
 extern int g_kye_target_cx; // DS:02AC
 extern int g_kye_target_cy; // DS:02AE
 extern int g_kye_needs_update; // DS:02B0
@@ -24,7 +24,7 @@ extern int g_kye_fizzle_in; // DS:02B4
 extern int g_kye_injured; // DS:02B6
 extern int g_kye_lives; // DS:02B8
 extern int g_actor_count; // DS:02BA
-extern int g_02BC; // DS:02BC
+extern int unused_02BC; // DS:02BC
 extern int g_tick_counter; // DS:02BE
 
 // This map is at DS:02C0

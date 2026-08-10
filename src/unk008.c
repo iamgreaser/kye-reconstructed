@@ -58,10 +58,10 @@ void draw_kye_mouse_ghost(void) {
 
 // CS:51B9 - ***CODE MATCH!***
 void clear_kye_mouse_ghost(void) {
-  if (g_02AA != 0 && g_level_tiles[g_kye_mouse_cx][g_kye_mouse_cy] == T_EMPTY) {
+  if (g_drawing_kye_mouse_ghost != 0 && g_level_tiles[g_kye_mouse_cx][g_kye_mouse_cy] == T_EMPTY) {
     delete_and_draw_unacting_tile(g_kye_mouse_cx, g_kye_mouse_cy);
   }
-  g_02AA = 0;
+  g_drawing_kye_mouse_ghost = 0;
 }
 
 // CS:51EE - ***CODE MATCH!***
@@ -69,14 +69,14 @@ void update_kye_mouse_target(int cx, int cy) {
   register int t0, t1;
   // SI = cx
   // DI = cy
-  if (g_02AA == 0 || g_kye_mouse_cx != cx || g_kye_mouse_cy != cy) {
+  if (g_drawing_kye_mouse_ghost == 0 || g_kye_mouse_cx != cx || g_kye_mouse_cy != cy) {
     clear_kye_mouse_ghost();
     g_kye_mouse_cx = cx;
     g_kye_mouse_cy = cy;
     if (abs(cx - g_kye_main_cx) > 1 || abs(cy - g_kye_main_cy) > 1) {
       if (g_level_tiles[g_kye_mouse_cx][g_kye_mouse_cy] == T_EMPTY) {
         draw_kye_mouse_ghost();
-        g_02AA = 1;
+        g_drawing_kye_mouse_ghost = 1;
       }
     }
   }

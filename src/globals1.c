@@ -11,7 +11,7 @@ int g_levelcount = 1; // DS:02A2
 int g_tile_under_kye = T_EMPTY; // DS:02A4
 int g_tile_lx = TILE_LX; // DS:02A6
 int g_tile_ly = TILE_LY; // DS:02A8
-int g_02AA = 0; // DS:02AA -- TODO! --GM
+int g_drawing_kye_mouse_ghost = 0; // DS:02AA
 int g_kye_target_cx = 0; // DS:02AC
 int g_kye_target_cy = 0; // DS:02AE
 int g_kye_needs_update = 0; // DS:02B0
@@ -20,7 +20,7 @@ int g_kye_fizzle_in = 1; // DS:02B4
 int g_kye_injured = 0; // DS:02B6
 int g_kye_lives = 3; // DS:02B8
 int g_actor_count = 0; // DS:02BA
-int g_02BC = 0; // DS:02BC
+int unused_02BC = 0; // DS:02BC - unused variable which might be to enable/disable sound in the menu?
 int g_tick_counter = 0; // DS:02BE
 
 // This map is at DS:02C0
