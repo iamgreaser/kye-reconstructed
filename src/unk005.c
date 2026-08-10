@@ -10,6 +10,8 @@
 #include "kyeprocs.h"
 #include "kyevars.h"
 
+char g_toolname[50]; // DS:2D5E
+
 // Weird compiler flags from the previous module seems to mandate that this starts the module.
 // CS:1986 - ***CODE MATCH!***
 void clear_level(void) {

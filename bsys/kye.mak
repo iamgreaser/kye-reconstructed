@@ -1,4 +1,4 @@
-KYE_C_NAMES:=wndproc globals1 main unk003 unk004 unk005 unk005a unk006 unk007 unk008 extra_ds
+KYE_C_NAMES:=wndproc globals1 main unk003 unk004 unk005 unk005a unk006 unk007 unk008 unk009
 KYE_C_SRCS:=$(patsubst %,${SRCDIR}%.c,${KYE_C_NAMES})
 KYE_C_OBJS:=$(patsubst %,${BUILDDIR}%.OBJ,${KYE_C_NAMES^^})
 KYE_C_HEADERS:=$(wildcard ${SRCDIR}*.h)

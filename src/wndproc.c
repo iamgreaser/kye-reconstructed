@@ -16,6 +16,17 @@ int unused_0054[4] = {-1, -1, -1, -1}; // DS:0054
 int g_mouse_captured = 0; // DS:005C
 int g_key_pressed = 0; // DS:005E
 
+int g_kye_main_cx; // DS:29F8
+int g_kye_main_cy; // DS:29F6
+int g_kye_spawn_cx; // DS:29F4
+int g_kye_spawn_cy; // DS:29F2
+int g_kye_mouse_cx; // DS:29F0
+int g_kye_mouse_cy; // DS:29EE
+
+actor_s g_actors[MAX_ACTORS]; // DS:172E
+int g_level_tiles[LEVEL_LX][LEVEL_LY]; // DS:127E
+int unused_127C; // DS:127C
+
 // CS:016A - ***CODE MATCH!***
 // requirements, somewhat: -k- -G -O2 -1 -W -ms
 void repaint_main_playfield(void) {

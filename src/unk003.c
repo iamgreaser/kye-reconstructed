@@ -10,6 +10,31 @@
 #include "kyeprocs.h"
 #include "kyevars.h"
 
+// NOTE: Not sure if these should go here.
+HWND g_mainwnd; // DS:2D5C
+HANDLE g_hInstance; // DS:2D5A
+HDC g_maindc; // DS:2D58
+int g_has_maindc; // DS:2D56
+
+// NOTE: These should probably go in main.c or earlier but it causes a mismatch.
+PAINTSTRUCT g_paint; // DS:2D36
+HCURSOR g_hcArrow; // DS:2D34
+HCURSOR g_hcCross; // DS:2D32
+
+// This is used here.
+WORD g_maintimer; // DS:2D30
+
+// NOTE: These should probably go in main.c or earlier but it causes a mismatch.
+char g_statusmsg[256]; // DS:2C30
+char g_dialog_message[80]; // DS:2BE0
+char g_dialog_text[80]; // DS:2B90
+RECT g_r_mainfrm; // DS:2B88
+RECT g_r_playfield; // DS:2B80
+RECT g_r_status_right; // DS:2B78
+RECT g_r_status_left; // DS:2B70
+RECT g_r_maincli; // DS:2B68
+int unused_2B66; // DS:2B66
+
 int g_has_maintimer = 0; // DS:0458
 // DS:045A contains strings.
 

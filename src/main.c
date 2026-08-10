@@ -15,6 +15,25 @@
 int g_is_in_editor = 0; // DS:03F2
 // DS:03F4 contains strings.
 
+HBRUSH g_hbrBlack; // DS:2B64
+HBRUSH g_hbrWhite; // DS:2B62
+HBRUSH g_hbrRed;   // DS:2B60
+HBRUSH g_hbrGreen; // DS:2B5E
+HBRUSH g_hbrBlue;  // DS:2B5C
+HPEN g_saved_hpen; // DS:2B5A
+HPEN g_hpenBlack; // DS:2B58
+HPEN g_hpenWhite; // DS:2B56
+HPEN g_hpenRed;  // DS:2B54
+HBITMAP g_hbmpKye; // DS:2B52
+HBITMAP g_hbmpBlock; // DS:2B50
+HBITMAP g_hbmpWall; // DS:2B4E
+
+char g_unused_err_line_1[80]; // DS:2AFE
+char g_unused_err_line_2[80]; // DS:2AAE
+char g_level_name[20]; // DS:2A9A
+char g_level_congrats[80]; // DS:2A4A
+char g_level_hint[80]; // DS:29FA
+
 // CS:0F78 - ***CODE MATCH!***
 int FAR PASCAL_EXPORT DLG_ERR1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
   (void)lParam;

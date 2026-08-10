@@ -82,6 +82,8 @@ int g_0D38 = 10; // DS:0D38
 int g_0D3A = 0; // DS:0D3A
 char g_0D3C[20] = "Kye-Tools"; // DS:0D3C
 
+HWND g_editor_tools; // DS:2E90
+
 // CS:49F2 - ***CODE MATCH!***
 int kye_is_in_level(void) {
   int x, y;

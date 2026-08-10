@@ -23,6 +23,8 @@ char g_kye_file_pattern[13] = "*.kye"; // DS:068C
 char g_kye_file_extension[5] = ".kye"; // DS:0699
 char g_069E[11] = "~~~~~~~~.*"; // DS:069E
 
+char g_2D90[256]; // DS:2D90
+
 // CS:2A48 - ***CODE MATCH!***
 void reinit_fileopen_dialog(HWND hDlg) {
   // [BP-2].w = temporary storage for segment for strcat
