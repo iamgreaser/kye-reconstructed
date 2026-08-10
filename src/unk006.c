@@ -107,7 +107,7 @@ int actor_held_by_sticky_block(int ai) {
 
 // CS:3251 - ***CODE MATCH!***
 // This function calculates the movement delta to use when doing mouse movement. I think. OK, it's used for monsters at least.
-void cs_3251(int ai, int targx, int targy, int *newxptr, int *newyptr) {
+void calc_random_target_dir(int ai, int targx, int targy, int *newxptr, int *newyptr) {
   int cx; // [bp-0x2].w
   int cy; // DI
   int dx; // CX
@@ -760,7 +760,7 @@ void tick_game_state(void) {
           if (!actor_held_by_sticky_block(ai)) {
             // Compute direction
             if (random(2) == 1) {
-              cs_3251(ai, g_kye_main_cx, g_kye_main_cy, &cx, &cy);
+              calc_random_target_dir(ai, g_kye_main_cx, g_kye_main_cy, &cx, &cy);
             } else {
               if (random(2) == 1) {
                 dx = random(3)-1;
