@@ -40,7 +40,7 @@ int FAR PASCAL_EXPORT DLG_ERR1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lPara
   // Seems to be unused?
   switch (msg) {
   case WM_COMMAND:
-    switch (wParam) {
+    switch (COMMAND_idItem(wParam, lParam)) {
     case ERR1_OK_BUTTON:
       EndDialog(hDlg, 0);
       return 1;
@@ -172,7 +172,7 @@ int FAR PASCAL_EXPORT DLG_LVLDUN_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lPa
   switch (msg) {
   case WM_COMMAND:
     // TODO: Name the items --GM
-    switch (wParam) {
+    switch (COMMAND_idItem(wParam, lParam)) {
     case 1:
       EndDialog(hDlg, 0);
       return 1;
@@ -213,7 +213,7 @@ int FAR PASCAL_EXPORT DLG_LVLNEW_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lPa
   switch (msg) {
   case WM_COMMAND:
     // TODO: Name the items --GM
-    switch (wParam) {
+    switch (COMMAND_idItem(wParam, lParam)) {
     case 1:
       EndDialog(hDlg, 0);
       return 1;
@@ -253,7 +253,7 @@ int FAR PASCAL_EXPORT DLG_KYESGONE_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG l
   switch (msg) {
   case WM_COMMAND:
     // TODO: Name the items --GM
-    switch (wParam) {
+    switch (COMMAND_idItem(wParam, lParam)) {
     case 1:
       EndDialog(hDlg, 0);
       return 1;
@@ -291,7 +291,7 @@ int FAR PASCAL_EXPORT DLG_INPNAM_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lPa
   switch (msg) {
   case WM_COMMAND:
     // TODO: Name the items --GM
-    switch (wParam) {
+    switch (COMMAND_idItem(wParam, lParam)) {
     case 1:
       GetDlgItemText(hDlg, 101, g_dialog_text, 80);
       EndDialog(hDlg, 0);
@@ -335,7 +335,7 @@ int FAR PASCAL_EXPORT DLG_OK_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam)
   switch (msg) {
   case WM_COMMAND:
     // TODO: Name the items --GM
-    switch (wParam) {
+    switch (COMMAND_idItem(wParam, lParam)) {
     case 1:
       EndDialog(hDlg, 0);
       return 1;
@@ -382,7 +382,7 @@ int FAR PASCAL_EXPORT DLG_INP1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lPara
   switch (msg) {
   case WM_COMMAND:
     // TODO: Name the items --GM
-    switch (wParam) {
+    switch (COMMAND_idItem(wParam, lParam)) {
     case 1:
       GetDlgItemText(hDlg, 103, g_dialog_text, 80);
       EndDialog(hDlg, 0);

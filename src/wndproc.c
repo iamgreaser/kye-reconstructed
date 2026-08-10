@@ -5,6 +5,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "kyetypes.h"
 #include "kyeprocs.h"
@@ -360,14 +361,14 @@ void update_edit_menu_item(void) {
 }
 
 // CS:06D6 - ***CODE MATCH!***
-int main_wm_command(HWND hWnd, WORD wParam) {
+int main_wm_command(HWND hWnd, WORD idItem) {
   // Needs 0x50 bytes of stack (BP/B0)
   char textbuf[80]; // BP/B0
 
   HMENU menu; // SI
   int selected_level; // DX
 
-  switch (wParam) {
+  switch (idItem) {
   case IDC_GAME_EXIT:
     PostQuitMessage(0);
     break;
@@ -550,7 +551,7 @@ LONG FAR PASCAL_EXPORT WndProc(HWND hWnd, WORD msg, WORD wParam, LONG lParam) {
 
   switch(msg) {
   case WM_COMMAND:
-    return main_wm_command(hWnd, wParam);
+    return main_wm_command(hWnd, COMMAND_idItem(wParam, lParam));
   case WM_LBUTTONDOWN:
     main_wm_lbuttondown(hWnd, lParam, wParam);
     break;

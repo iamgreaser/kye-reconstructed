@@ -13,11 +13,21 @@
 // TODO: Probably not quite right, this should actually reimplement the Borland PRNG. --GM
 #define random(x) (rand()/((RAND_MAX/(x))-(x)))
 
+// Wrapper for possibly the most infamous Win16-Win32 API breakage.
+// WM_COMMAND changed how wParam and lParam are encoded, so we have to wrap around the differences.
+#define COMMAND_idItem(wParam, lParam) (LOWORD(wParam))
+#define COMMAND_hWndCtl(wParam, lParam) ((HWND)(lParam))
+#define COMMAND_wNotifyCode(wParam, lParam) (HIWORD(wParam))
+
 #else
 // Original Win16 code.
 #define PASCAL_EXPORT PASCAL _export
 #define PASCAL_NOEXPORT PASCAL
 #define HANDLE_HINSTANCE HANDLE
+
+#define COMMAND_idItem(wParam, lParam) (wParam)
+#define COMMAND_hWndCtl(wParam, lParam) ((HWND)(LOWORD(lParam)))
+#define COMMAND_wNotifyCode(wParam, lParam) (HIWORD(lParam))
 
 #endif
 

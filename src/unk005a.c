@@ -110,9 +110,9 @@ void cs_2C83(char *a0, const char *a1) {
 int FAR PASCAL_EXPORT DLG_FOPEN_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
   switch (msg) {
     case WM_COMMAND:
-      switch (wParam) {
+      switch (COMMAND_idItem(wParam, lParam)) {
         case OPENFILE_404: // 2D42
-          switch (HIWORD(lParam)) {
+          switch (COMMAND_wNotifyCode(wParam, lParam)) {
             case 1:
               if (!DlgDirSelect(hDlg, g_2D90, OPENFILE_404)) {
                 SetDlgItemText(hDlg, OPENFILE_401, g_2D90);
@@ -126,7 +126,7 @@ int FAR PASCAL_EXPORT DLG_FOPEN_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lPar
           return 1;
 
         case OPENFILE_405: // 2D99
-          switch (HIWORD(lParam)) {
+          switch (COMMAND_wNotifyCode(wParam, lParam)) {
             case 1: // 2DA8
               if (!DlgDirSelect(hDlg, g_2D90, OPENFILE_405)) {
                 break;
