@@ -613,6 +613,9 @@ int PASCAL_NOEXPORT WinMain(HANDLE_HINSTANCE hInstance,
 
   register int i; // SI - has to be `register` otherwise it gets assigned to DI instead
 
+  #if APPLY_BUGFIXES
+  RECT r;
+  #endif
 
   for (i = 0; lpCmdLine[i] != 0 && i < 50; i++) {
     cmdlinebuf[i] = lpCmdLine[i];
@@ -640,6 +643,15 @@ int PASCAL_NOEXPORT WinMain(HANDLE_HINSTANCE hInstance,
       return 0;
     }
   }
+  #if APPLY_BUGFIXES
+    r.left = 0;
+    r.top = 0;
+    r.right = 480;
+    r.bottom = 320+1+18;
+    AdjustWindowRect(&r,
+      WS_CAPTION|WS_MINIMIZEBOX|WS_SYSMENU|WS_SYSMENU, // 0x00CA0000
+      TRUE);
+  #endif
   mainwnd = CreateWindow(
     "Kye", // DS:017E
     "Kye", // DS:0182
@@ -651,8 +663,13 @@ int PASCAL_NOEXPORT WinMain(HANDLE_HINSTANCE hInstance,
     // - Wine with large fonts completely gobbles the status bar.
     //   - Speaking of Wine, 16-bit code runs really nicely on 64-bit OSes.
     //     - Hey Microsoft, have you tried not sucking? No? OK then.
-    1+480+1, // 482
-    320+59,  // 379 - TODO work out status bar + NC geometry --GM
+    #if APPLY_BUGFIXES
+      r.right - r.left,
+      r.bottom - r.top,
+    #else
+      1+480+1, // 482
+      320+1+18+40,  // 379
+    #endif
     NULL,
     NULL,
     hInstance,

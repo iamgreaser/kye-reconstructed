@@ -397,6 +397,10 @@ LONG FAR PASCAL_EXPORT ToolboxWndProc(HWND hWnd, WORD msg, WORD wParam, LONG lPa
 int cs_501F(void) {
   WNDCLASS wcls; // [bp-0x1a]/001A
 
+  #if APPLY_BUGFIXES
+  RECT r;
+  #endif
+
   if (g_0D3A == 0) {
     wcls.style = CS_VREDRAW|CS_HREDRAW|CS_DBLCLKS; // 0x000B
     wcls.lpfnWndProc = ToolboxWndProc;
@@ -412,14 +416,29 @@ int cs_501F(void) {
       return 0;
     }
 
+    #if APPLY_BUGFIXES
+      r.left = 0;
+      r.top = 0;
+      r.right = ((TILE_LX+(2*2))*4);
+      r.bottom = ((TILE_LY+(2*2))*16);
+      AdjustWindowRect(&r,
+        WS_POPUP|WS_CAPTION, // 0x80C00000
+        FALSE);
+    #endif
+
     g_editor_tools = CreateWindow(
       g_0D3C, // DS:0D3C
       "Kye-Tools", // DS:0D50
       WS_POPUP|WS_CAPTION, // 0x80C00000
       50,
       90,
-      ((TILE_LX+(2*2))*4)+2,
-      ((TILE_LY+(2*2))*16)+20,
+      #if APPLY_BUGFIXES
+        r.right - r.left,
+        r.bottom - r.top,
+      #else
+        ((TILE_LX+(2*2))*4)+2,
+        ((TILE_LY+(2*2))*16)+20,
+      #endif
       g_mainwnd,
       NULL,
       g_hInstance,
