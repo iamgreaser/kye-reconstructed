@@ -105,9 +105,9 @@ void cs_4A1F(void) {
     g_06B8[0].tx = 1;
   }
 
-  GetClientRect(g_2E90, &r);
-  InvalidateRect(g_2E90, &r, 0);
-  UpdateWindow(g_2E90);
+  GetClientRect(g_editor_tools, &r);
+  InvalidateRect(g_editor_tools, &r, 0);
+  UpdateWindow(g_editor_tools);
 }
 
 // CS:4A63 - ***CODE MATCH!***
@@ -309,13 +309,13 @@ void cs_4E72(void) {
   HDC dc; // SI
   PAINTSTRUCT paint; // [bp-0x20]/0020
 
-  dc = BeginPaint(g_2E90, &paint);
+  dc = BeginPaint(g_editor_tools, &paint);
   SelectObject(dc, g_hpenWhite);
 
   cs_4E3F(dc);
 
-  ReleaseDC(g_2E90, dc);
-  EndPaint(g_2E90, &paint);
+  ReleaseDC(g_editor_tools, dc);
+  EndPaint(g_editor_tools, &paint);
 }
 
 // CS:4EB5 - ***CODE MATCH!***
@@ -410,7 +410,7 @@ int cs_501F(void) {
       return 0;
     }
 
-    g_2E90 = CreateWindow(
+    g_editor_tools = CreateWindow(
       g_0D3C, // DS:0D3C
       "Kye-Tools", // DS:0D50
       WS_POPUP|WS_CAPTION, // 0x80C00000
@@ -422,7 +422,7 @@ int cs_501F(void) {
       NULL,
       g_hInstance,
       NULL);
-    if (g_2E90 == 0) {
+    if (g_editor_tools == 0) {
       return 0;
     }
     g_0D3A = 1;
@@ -430,7 +430,7 @@ int cs_501F(void) {
 
   cs_4A1F();
 
-  ShowWindow(g_2E90, SW_SHOW);
+  ShowWindow(g_editor_tools, SW_SHOW);
 
   strcpy(g_toolname, g_06B8[g_0D38].name);
 
@@ -443,6 +443,6 @@ int cs_501F(void) {
 
 // CS:5119 - ***CODE MATCH!***
 int cs_5119(void) {
-  ShowWindow(g_2E90, SW_HIDE);
+  ShowWindow(g_editor_tools, SW_HIDE);
   return 1;
 }

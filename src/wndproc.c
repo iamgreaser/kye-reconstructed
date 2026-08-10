@@ -131,8 +131,12 @@ void main_paint(HWND hWnd) {
 void main_wm_lbuttondown(HWND hWnd, LONG lParam, WORD wParam) {
   int x; // SI
   int y; // DI
+
+  (void)hWnd; (void)wParam;
+
   x = LOWORD(lParam);
   y = HIWORD(lParam);
+
   if (mouse_is_in_playfield(LOWORD(lParam), HIWORD(lParam))) {
     switch (g_is_in_editor) {
     case 0:
@@ -160,6 +164,7 @@ void main_wm_lbuttondown(HWND hWnd, LONG lParam, WORD wParam) {
 
 // CS:0432 - ***CODE MATCH!***
 void main_wm_lbuttonup(HWND hWnd, LONG lParam) {
+  (void)hWnd; (void)lParam;
   if (g_mouse_captured) {
     ReleaseCapture();
     g_mouse_captured = 0;
@@ -176,6 +181,7 @@ void main_wm_lbuttonup(HWND hWnd, LONG lParam) {
 
 // CS:045F - ***CODE MATCH!***
 void main_wm_lbuttondblclick(HWND hWnd, LONG lParam, WORD wParam) {
+  (void)hWnd; (void)wParam;
   // VESTIGAL BUG: This does nothing but acquires and releases g_maindc.
   if (mouse_is_in_playfield(LOWORD(lParam), HIWORD(lParam))) {
     switch(g_is_in_editor) {
@@ -195,6 +201,8 @@ void main_wm_rbuttondown(HWND hWnd, LONG lParam, WORD wParam) {
 
   int cx; // SI
   int cy; // DI
+
+  (void)hWnd; (void)wParam;
 
   px = LOWORD(lParam);
   py = HIWORD(lParam);
@@ -226,6 +234,8 @@ void main_wm_mousemove(HWND hWnd, LONG lParam) {
 
   int cx; // SI
   int cy; // DI
+
+  (void)hWnd;
 
   px = LOWORD(lParam);
   py = HIWORD(lParam);

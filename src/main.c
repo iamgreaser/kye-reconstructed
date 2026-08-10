@@ -15,6 +15,7 @@ int g_is_in_editor = 0; // DS:03F2
 
 // CS:0F78 - ***CODE MATCH!***
 int FAR PASCAL_EXPORT DLG_ERR1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
+  (void)lParam;
   // Seems to be unused?
   switch (msg) {
   case WM_COMMAND:
@@ -26,7 +27,7 @@ int FAR PASCAL_EXPORT DLG_ERR1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lPara
     default:
       return 0;
     }
-    break;
+    //break;
 
   case WM_CLOSE:
     EndDialog(hDlg, 0);
@@ -148,6 +149,7 @@ int show_text_input_dialog(const char *msg, char *buf) {
 
 // CS:12CB - ***CODE MATCH!***
 int FAR PASCAL_EXPORT DLG_LVLDUN_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
+  (void)lParam;
   switch (msg) {
   case WM_COMMAND:
     // TODO: Name the items --GM
@@ -158,7 +160,7 @@ int FAR PASCAL_EXPORT DLG_LVLDUN_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lPa
     default:
       return 0;
     }
-    break;
+    //break;
 
   case WM_CLOSE:
     EndDialog(hDlg, 0);
@@ -188,6 +190,7 @@ void show_level_done(void) {
 
 // CS:1395 - ***CODE MATCH!***
 int FAR PASCAL_EXPORT DLG_LVLNEW_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
+  (void)lParam;
   switch (msg) {
   case WM_COMMAND:
     // TODO: Name the items --GM
@@ -198,7 +201,7 @@ int FAR PASCAL_EXPORT DLG_LVLNEW_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lPa
     default:
       return 0;
     }
-    break;
+    //break;
 
   case WM_CLOSE:
     EndDialog(hDlg, 0);
@@ -238,7 +241,7 @@ int FAR PASCAL_EXPORT DLG_KYESGONE_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG l
     default:
       return 0;
     }
-    break;
+    //break;
 
   case WM_CLOSE:
     EndDialog(hDlg, 0);
@@ -281,7 +284,7 @@ int FAR PASCAL_EXPORT DLG_INPNAM_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lPa
     default:
       return 0;
     }
-    break;
+    //break;
 
   case WM_CLOSE:
     EndDialog(hDlg, 0);
@@ -320,7 +323,7 @@ int FAR PASCAL_EXPORT DLG_OK_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam)
     default:
       return 0;
     }
-    break;
+    //break;
 
   case WM_CLOSE:
     EndDialog(hDlg, 0);
@@ -356,6 +359,7 @@ void show_last_level_ending(void) {
 
 // CS:16E6 - ***CODE MATCH!***
 int FAR PASCAL_EXPORT DLG_INP1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lParam) {
+  (void)lParam;
   switch (msg) {
   case WM_COMMAND:
     // TODO: Name the items --GM
@@ -371,7 +375,7 @@ int FAR PASCAL_EXPORT DLG_INP1_FUNC(HWND hDlg, WORD msg, WORD wParam, LONG lPara
     default:
       return 0;
     }
-    break;
+    //break;
 
   case WM_CLOSE:
     EndDialog(hDlg, 0);

@@ -8,7 +8,7 @@
 // There's probably one more source file here.
 int g_door_anim_flag = 1; // DS:0D6A
 
-HWND g_2E90; // DS:2E90
+HWND g_editor_tools; // DS:2E90
 char g_2D90[256]; // DS:2D90
 char g_toolname[50]; // DS:2D5E
 HWND g_mainwnd; // DS:2D5C
