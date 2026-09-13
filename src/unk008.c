@@ -77,7 +77,6 @@ void clear_kye_mouse_ghost(void) {
 
 // CS:51EE - ***CODE MATCH!***
 void update_kye_mouse_target(int cx, int cy) {
-  register int t0, t1;
   // SI = cx
   // DI = cy
   #if APPLY_BUGFIXES
