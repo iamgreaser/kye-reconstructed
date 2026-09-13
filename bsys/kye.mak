@@ -33,7 +33,7 @@ ${OUTDIR}KYE.EXE: ${BUILDDIR}BUILDDOS.BAT | ${OUTDIR} ${BUILDDIR}
 	env SDL_VIDEODRIVER=dummy LIBGL_ALWAYS_SOFTWARE=yes dosbox-x ${DBXFLAGS} -c "ctty lpt1" -c "mount d ." -c "D:\\BUILD\\BUILDDOS.BAT" -exit 2>/dev/null
 	[ -e $@ ]
 
-${BUILDDIR}BUILDDOS.BAT: ${KYE_C_SRCS} ${KYE_C_HEADERS} src/kye.rc $(wildcard ./bsys/prepdos-*.sh) | ${BUILDDIR}
+${BUILDDIR}BUILDDOS.BAT: ${KYE_C_SRCS} ${KYE_C_HEADERS} src/kye.rc src/kye.def $(wildcard ./bsys/prepdos-*.sh) | ${BUILDDIR}
 	rm $@ || true
 	echo "" > $@.tmp || (rm $@.tmp && false)
 	./bsys/prepdos-init.sh >> $@.tmp || (rm $@.tmp && false)
