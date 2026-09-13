@@ -14,7 +14,6 @@ No, I will not fix the global tick counter wraparound problem, that is a feature
 Status
 ------------------------------
 
-- One function loads registers from the stack in the wrong order. (6 bytes difference)
 - One function uses the wrong register in a place. (3 bytes difference)
 - The app module name is not specified correctly (should be "Kye", ends up being "KYE" and/or "KYE.EXE").
 - The exported functions are not specified in the correct part of the NE executable.
