@@ -14,7 +14,8 @@ No, I will not fix the global tick counter wraparound problem, that is a feature
 Status
 ------------------------------
 
-- One function uses the wrong register in a place. (3 bytes difference)
+MILESTONE REACHED: The actual *code* is byte-exact! Hooray! There were 2 functions which were quite stubborn but I managed to convince them to behave.
+
 - The app module name is not specified correctly (should be "Kye", ends up being "KYE" and/or "KYE.EXE").
 - The exported functions are not specified in the correct part of the NE executable.
 - The resource compiler can't seem to get the correct mismatch of "1 plane 4 bits" vs "4 planes 1 bit".

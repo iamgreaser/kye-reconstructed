@@ -2,7 +2,7 @@
 # amidone.sh: Do we have a 100% match?
 set -e
 
-if false; then
+if true; then
   # Hex dump
   #hexdump -Xv ref/20/KYE.EXE >build/matchref.txt
   #hexdump -Xv out/KYE.EXE >build/matchnew.txt

@@ -161,7 +161,7 @@ void move_kye(int dx, int dy) {
   repaint_kye(0);
 }
 
-// CS:5395 - FIXME: Register autoallocation uses DX instead of BX in one case when comparing against distsqr --GM
+// CS:5395 - ***CODE MATCH!***
 void try_move_kye(int indx, int indy) {
   // Stack: 0x2E bytes (BP/D2 start)
   int i; // BP/FE
@@ -185,6 +185,7 @@ void try_move_kye(int indx, int indy) {
   // BP+0x00
   int dx; // DI
   int dy; // SI
+  int newdistsqr; // BX - THIS WAS THE LAST MISMATCH IN THE CODE *EVER*.
 
   // DX = dx;
   // BX = dy;
@@ -307,7 +308,8 @@ void try_move_kye(int indx, int indy) {
       newx = g_kye_main_cx + dx;
       newy = g_kye_main_cy + dy;
       if (g_level_tiles[newx][newy] == T_EMPTY) {
-        if (((g_kye_target_cx-newx)*(g_kye_target_cx-newx)) + ((g_kye_target_cy-newy)*(g_kye_target_cy-newy)) < distsqr) {
+        newdistsqr = ((g_kye_target_cx-newx)*(g_kye_target_cx-newx)) + ((g_kye_target_cy-newy)*(g_kye_target_cy-newy));
+        if (newdistsqr < distsqr) {
             foundmousedir = 1;
         }
       }
