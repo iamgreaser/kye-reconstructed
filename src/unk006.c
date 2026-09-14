@@ -311,23 +311,22 @@ int try_enter_blacky(int ai, int cx, int cy) {
 // CS:3684 - ***CODE MATCH!***
 void tick_game_state(void) {
   // stack: 0x12 bytes
-  register int ai; // SI
   int cx; // [BP-0x2]
   int cy; // [BP-0x4]
-  register int dx; // DI
+  int dx; // DI
   int dy; // [BP-0x6]
+  register int ai; // SI - needs to be `register` for now otherwise it gets assigned to DI
   int slide_right;
-  register int slide_left;
+  int slide_left;
   int slide_fw_right;
   int slide_fw_left;
   int hitting_rocky;
   int hitting_rblock;
-  register int can_slide_left;
-  register int can_slide_right;
+  int can_slide_left;
+  int can_slide_right;
   int other;
-  //register int newx; // CX
+  //int newx; // CX
   //int newy; // [BP-0x12]
-
 
   // BUG: Counter wraparound is not seamless.
   // We cover 32001 different values.
@@ -345,7 +344,6 @@ void tick_game_state(void) {
     cx = g_actors[ai].cx;
     cy = g_actors[ai].cy;
     switch (g_actors[ai].type) {
-    // TODO: Find how these are split so the switch conditions can be correct, because there are two identical code branches here! --GM
     case T_SBLOCK:
     case T_ROT_A:
     case T_ROT_C:
@@ -470,6 +468,7 @@ void tick_game_state(void) {
             hitting_rblock = (other >= 0 && g_actors[other].type == T_RBLOCK);
             can_slide_left = (slide_left == T_EMPTY && slide_fw_left == T_EMPTY && (other == T_WALL1 || other == T_WALL2 || other == T_WALL4 || hitting_rocky || hitting_rblock));
             can_slide_right = (slide_right == T_EMPTY && slide_fw_right == T_EMPTY && (other == T_WALL3 || other == T_WALL2 || other == T_WALL6 || hitting_rocky || hitting_rblock));
+            (void)can_slide_left; // this makes can_slide_left take the correct register it needs
             if (can_slide_right && can_slide_left) {
               move_actor(ai, cx+1-(random(2)*2), cy-1);
             } else if (can_slide_right) {

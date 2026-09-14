@@ -611,11 +611,12 @@ int PASCAL_NOEXPORT WinMain(HANDLE_HINSTANCE hInstance,
   MSG msg; // /D2 BP-0x2A
   char cmdlinebuf[50]; // /A0 BP-0x60
 
-  register int i; // SI - has to be `register` otherwise it gets assigned to DI instead
+  int i; // SI - has to be `register` otherwise it gets assigned to DI instead
 
   #if APPLY_BUGFIXES
   RECT r;
   #endif
+  (void)i; // this makes `i` get the SI register it needs to match
 
   for (i = 0; lpCmdLine[i] != 0 && i < 50; i++) {
     cmdlinebuf[i] = lpCmdLine[i];
