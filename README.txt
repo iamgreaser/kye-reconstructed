@@ -16,16 +16,12 @@ Status
 
 MILESTONE REACHED: The actual *code* is byte-exact! Hooray! There were 2 functions which were quite stubborn but I managed to convince them to behave.
 
-- The app module name is not specified correctly (should be "Kye", ends up being "KYE" and/or "KYE.EXE").
-  - Partially solved, but while the module name in one place is "Kye", the best I can do for the other place is "KYE.".
 - The resource compiler can't seem to get the correct mismatch of "1 plane 4 bits" vs "4 planes 1 bit".
 - Some relocations seem to be in a weird order.
 
 Functionalitywise it should be identical to Kye v2.0 unless:
 
 - the planes vs bits-per-plane mismatch causes a problem, or
-- it doesn't like the embedded executable resident name, or
-- the 1 byte offset of the resident names table causes a problem, or
 - somehow the reordered relocations cause a problem.
 
 ==============================

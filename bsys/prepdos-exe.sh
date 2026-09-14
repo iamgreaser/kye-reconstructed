@@ -15,11 +15,9 @@ else
   # Link with TLINK directly
   # NOTE: Probably not used unless there's a way to make 6-byte entry table entries appear.
   LIB_LIST="import cws"
-  echo "/Twe /m /s /LC:\\BORLANDC\\LIB c0ws ${C_OBJ_LIST},D:\\OUT\\Kye.,D:\\OUT\\KYE.MAP,${LIB_LIST},D:\\SRC\\KYE.DEF" >build/MKEXE.ARG
+  echo "/Twe /m /s /LC:\\BORLANDC\\LIB c0ws ${C_OBJ_LIST},D:\\OUT\\KYE.EXE,D:\\OUT\\KYE.MAP,${LIB_LIST},D:\\SRC\\KYE.DEF" >build/MKEXE.ARG
   echo "tlink"
   echo "tlink @D:\\BUILD\\MKEXE.ARG"
-  echo "if errorlevel 1 goto fail"
-  echo "copy D:\\OUT\\KYE D:\\OUT\\KYE.EXE"
   echo "if errorlevel 1 goto fail"
 fi
 
