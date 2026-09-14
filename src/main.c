@@ -280,7 +280,7 @@ void show_game_over(void) {
   FARPROC dlgproc; // BP/FC
 
   // BUG: Failure not checked
-  dlgproc = MakeProcInstance((FARPROC)DLG_LVLNEW_FUNC, g_hInstance);
+  dlgproc = MakeProcInstance((FARPROC)DLG_KYESGONE_FUNC, g_hInstance);
   DialogBox(g_hInstance, "DLG_GON1", g_mainwnd, dlgproc); // DS:041E
   FreeProcInstance(dlgproc);
 }
