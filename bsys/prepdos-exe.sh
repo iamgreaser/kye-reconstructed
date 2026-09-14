@@ -14,13 +14,13 @@ if false; then
 else
   # Link with TLINK directly
   # NOTE: Probably not used unless there's a way to make 6-byte entry table entries appear.
-  LIB_LIST=""
-  for LIB_NAME in CWS.LIB IMPORT.LIB; do
-    LIB_LIST="${LIB_LIST} C:\\BORLANDC\\LIB\\${LIB_NAME}"
-  done
-  echo "/Twe /m /s C:\\BORLANDC\\LIB\\C0WS.OBJ ${C_OBJ_LIST},D:\\OUT\\Kye.,D:\\OUT\\KYE.MAP,${LIB_LIST},D:\\SRC\\KYE.DEF" >build/MKEXE.ARG
+  LIB_LIST="import cws"
+  echo "/Twe /m /s /LC:\\BORLANDC\\LIB c0ws ${C_OBJ_LIST},D:\\OUT\\Kye.,D:\\OUT\\KYE.MAP,${LIB_LIST},D:\\SRC\\KYE.DEF" >build/MKEXE.ARG
+  echo "tlink"
   echo "tlink @D:\\BUILD\\MKEXE.ARG"
+  echo "if errorlevel 1 goto fail"
   echo "copy D:\\OUT\\KYE D:\\OUT\\KYE.EXE"
+  echo "if errorlevel 1 goto fail"
 fi
 
 echo "if errorlevel 1 goto fail"

@@ -54,3 +54,11 @@ because *that* has a Windows IDE.
 
 BC++ 3.1 seems too late (1992).
 
+----
+
+A FOLLOW-UP JUST IN CASE I TRY ANYTHING AGAIN:
+
+Borland C++ 3.1 was apparently released in 1992-11, and Kye 1.2 was released in 1992-01. So, too late.
+Borland C++ 2.0 has different startup code.
+It's 3.0. Don't bother with anything else.
+
