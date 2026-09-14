@@ -298,8 +298,8 @@ void try_move_kye(int indx, int indy) {
     #define dx2 (g_kye_target_cx - g_kye_main_cx)
     #define dy2 (g_kye_target_cy - g_kye_main_cy)
     distsqr = (dx2*dx2)+(dy2*dy2);
-    #undef dx2;
-    #undef dy2;
+    #undef dx2
+    #undef dy2
 
     foundmousedir = 0;
     for (i = 0; (!foundmousedir) && i < 4; i = i + 1) {
