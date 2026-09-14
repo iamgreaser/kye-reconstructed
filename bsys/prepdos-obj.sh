@@ -7,10 +7,10 @@ for C_NAME in $@; do
   case "${C_NAME}" in
     #unk004)
     #  # convert_char_to_internal() needs -Ov disabled in order to match (induction variable generation)
-    #  echo "bcc -O2 -O-v -1 -W -ms -IC:\\BORLANDC\\INCLUDE -ID:\\SRC -c -o${C_OBJ} ${C_SRC}"
+    #  echo "bcc -v -O2 -O-v -1 -W -ms -IC:\\BORLANDC\\INCLUDE -ID:\\SRC -c -o${C_OBJ} ${C_SRC}"
     #  ;;
     *)
-      echo "bcc -O2 -1 -W -ms -IC:\\BORLANDC\\INCLUDE -ID:\\SRC -c -o${C_OBJ} ${C_SRC}"
+      echo "bcc -v -O2 -1 -W -ms -IC:\\BORLANDC\\INCLUDE -ID:\\SRC -c -o${C_OBJ} ${C_SRC}"
       ;;
   esac
 
