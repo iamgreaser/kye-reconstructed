@@ -10,9 +10,6 @@
 #define MoveTo(dc, x, y) MoveToEx((dc), (x), (y), NULL)
 #define OpenSound()
 
-// TODO: Probably not quite right, this should actually reimplement the Borland PRNG. --GM
-#define random(x) (rand()/((RAND_MAX/(x))-(x)))
-
 // Wrapper for possibly the most infamous Win16-Win32 API breakage.
 // WM_COMMAND changed how wParam and lParam are encoded, so we have to wrap around the differences.
 #define COMMAND_idItem(wParam, lParam) (LOWORD(wParam))
@@ -24,6 +21,12 @@
 #ifndef APPLY_BUGFIXES
 #define APPLY_BUGFIXES 1
 #endif
+
+// A wrapper around MSVCRT.
+#include "compat/libc95.h"
+
+// TODO: Probably not quite right, this should actually reimplement the Borland PRNG. --GM
+#define random(x) (rand()/((RAND_MAX/(x))-(x)))
 
 #else
 // Original Win16 code.
