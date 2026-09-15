@@ -32,7 +32,7 @@ int unused_127C; // DS:127C
 // requirements, somewhat: -k- -G -O2 -1 -W -ms
 void repaint_main_playfield(void) {
   // BUG: Windows XP doesn't like it when you don't draw the background!
-#ifdef APPLY_BUGFIXES
+#if APPLY_BUGFIXES
   HPEN saved_hpen;
   HPEN saved_hbrush;
   saved_hpen = SelectObject(g_maindc, g_hpenWhite);
