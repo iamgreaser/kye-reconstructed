@@ -127,13 +127,13 @@ This produces the following files:
 
 There are some bugfixes applied:
 - The window size is calculated correctly, instead of assuming that the window surrounds and fonts are always going to be the same height (which is NOT the case on Japanese Windows 3.1).
-- There's a GDI object use-after-free pertaining to device contexts.
+- Normally there's a GDI object use-after-free pertaining to device contexts.
   - Apparently this isn't needed on Windows 95 RTM, but Wine refuses to actually use the released device contexts unless it's a 16-bit process in which case it works without issue despite being wrong.
   - This is the most likely cause of the Kye mouse ghost bug.
+- When doing a full playfield redraw, the background is now drawn over before doing this. On Windows XP (tested on the Japanese Pro version), whatever it's doing to blank the background clearly isn't working on this version. Might actually be caused by a DC use-after-free case.
 
 Known bugs remaining in the 32-bit port:
 - The "File..." dialogue box doesn't seem to pay any attention to the file selector part, you have to actually type in the file name.
-- On Windows XP (tested on the Japanese version), the empty tiles on the background don't get drawn properly. Probably a device context use-after-free problem I missed due to testing on Wine with a compositor active and thus getting a default background.
 
 ==============================
 Licence

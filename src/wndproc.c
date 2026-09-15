@@ -31,6 +31,21 @@ int unused_127C; // DS:127C
 // CS:016A - ***CODE MATCH!***
 // requirements, somewhat: -k- -G -O2 -1 -W -ms
 void repaint_main_playfield(void) {
+  // BUG: Windows XP doesn't like it when you don't draw the background!
+#ifdef APPLY_BUGFIXES
+  HPEN saved_hpen;
+  HPEN saved_hbrush;
+  saved_hpen = SelectObject(g_maindc, g_hpenWhite);
+  saved_hbrush = SelectObject(g_maindc, g_hbrWhite);
+  Rectangle(g_maindc,
+    0 * g_tile_lx,
+    0 * g_tile_ly,
+    LEVEL_LX * g_tile_lx,
+    LEVEL_LY * g_tile_ly);
+  SelectObject(g_maindc, saved_hbrush);
+  SelectObject(g_maindc, saved_hpen);
+#endif
+
   switch (g_is_in_editor) {
   case 0:
     repaint_all_walls();
