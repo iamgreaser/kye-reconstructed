@@ -1,14 +1,4 @@
-// vim: set syntax=cpp :
-#include <windows.h>
-#include <stdio.h>
-
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-
-#include "kyetypes.h"
-#include "kyeprocs.h"
-#include "kyevars.h"
+#include "kye.h"
 
 // NOTE: Not sure if these should go here.
 HWND g_mainwnd; // DS:2D5C

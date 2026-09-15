@@ -1,12 +1,4 @@
-// vim: set syntax=cpp :
-#include <windows.h>
-#include <stdio.h>
-
-#include <stdlib.h>
-
-#include "kyetypes.h"
-#include "kyeprocs.h"
-#include "kyevars.h"
+#include "kye.h"
 
 // This variable is why a module split is required after the CS:5395 function.
 // This is the first aligned point, and it seems to make sense.

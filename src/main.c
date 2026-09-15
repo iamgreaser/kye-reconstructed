@@ -1,16 +1,4 @@
-// vim: set syntax=cpp :
-#include <windows.h>
-#include <stdio.h>
-
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-
-#include "kyetypes.h"
-#include "kyeprocs.h"
-#include "kyevars.h"
-
-#include "resdefs.h"
+#include "kye.h"
 
 int g_is_in_editor = 0; // DS:03F2
 // DS:03F4 contains strings.

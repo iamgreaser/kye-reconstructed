@@ -1,17 +1,4 @@
-// vim: set syntax=cpp :
-
-#include <windows.h>
-#include <stdio.h>
-
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-
-#include "kyetypes.h"
-#include "kyeprocs.h"
-#include "kyevars.h"
-
-#include "resdefs.h"
+#include "kye.h"
 
 int unused_0054[4] = {-1, -1, -1, -1}; // DS:0054
 int g_mouse_captured = 0; // DS:005C

@@ -1,8 +1,4 @@
-// vim: set syntax=cpp :
-#include <windows.h>
-
-#include "kyetypes.h"
-#include "kyevars.h"
+#include "kye.h"
 
 int g_level_complete = 0; // DS:019E
 char g_levelset_fname[256] = "default.kye"; // DS:01A0

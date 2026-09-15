@@ -1,14 +1,4 @@
-// vim: set syntax=cpp :
-#include <windows.h>
-#include <stdio.h>
-
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-
-#include "kyetypes.h"
-#include "kyeprocs.h"
-#include "kyevars.h"
+#include "kye.h"
 
 // Data segment and the fact that this isn't the editor tool window code hints at a split around about here.
 
