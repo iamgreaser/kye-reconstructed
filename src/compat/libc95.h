@@ -12,5 +12,6 @@ typedef struct real_file {
   char buf[FILE_BUF_SZ];
   size_t buf_filled;
   size_t buf_read_idx;
+  int is_at_eof;
 } real_file_t;
 #define FILE real_file_t

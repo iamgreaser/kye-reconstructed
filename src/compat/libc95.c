@@ -41,7 +41,7 @@ void *memset(void *dst, int c, size_t len) {
 char *strcat(char *dst, const char *src) {
   char *target = dst;
   size_t i = 0;
-  while (*dst != 0) { dst += 1; }
+  while (*target != 0) { target += 1; }
   while (src[i] != 0) { target[i] = src[i]; i += 1; }
   target[i] = 0;
   return dst;
@@ -62,7 +62,10 @@ size_t strlen(const char *s) {
 
 char *strupr(char *s) {
   size_t i = 0;
-  while (s[i] != 0) { if (s[i] >= 'a' && s[i] <= 'z') { s[i] += 'A' - 'a'; } }
+  while (s[i] != 0) {
+    if (s[i] >= 'a' && s[i] <= 'z') { s[i] += 'A' - 'a'; }
+    i += 1;
+  }
   return s;
 }
 
@@ -81,9 +84,9 @@ int strcmp(const char *s1, const char *s2) {
 long atol(const char *s) {
   // FIXME doesn't care about overflow
   long result = 0;
-  size_t i;
+  size_t i = 0;
   while (s[i] >= '0' && s[i] <= '9') { result = (result*10L)+(long)(s[i]-'0'); i += 1; }
-  result = 1;
+  //{ char msgbuf[100]; sprintf(msgbuf, "result %d", (int)result); MessageBoxA(0, msgbuf, "libc95 debug", 0); }
   return result;
 }
 
@@ -134,35 +137,37 @@ time_t time(time_t *tloc) {
   return t;
 }
 
+static void append_decimal(char **dp, unsigned long v) {
+  if (v >= 10) { append_decimal(dp, v/10); }
+  *((*dp)++) = '0' + (v%10);
+}
+
 // Kye only uses `%d`, so that's all we're supporting right now
 int sprintf(char *dst, const char *fmt, ...) {
   char *d = dst;
-  char *s = fmt;
+  const char *s = fmt;
   va_list ap;
   va_start(ap, fmt);
 
   while (*s != 0) {
     if (*s == '%') {
       s += 1;
-      if (*s == 'd') {
-        s += 1;
-        #if 0
-          int v = va_arg(ap, int);
-          int den = 1;
-          while (den < v && den < 1000*1000*1000) {
-            den *= 10;
+      switch (*(s++)) {
+        case 'd':
+          {
+            int v = va_arg(ap, int);
+            if (v < 0) {
+              *(d++) = '-';
+              append_decimal(&d, (unsigned long)(-v));
+            } else {
+              append_decimal(&d, (unsigned long)v);
+            }
           }
-          while (den > 1) {
-            int dq = /den;
-            v -= dq*den;
-            *(d++) = (/den) + '0'
-          }
-        #else
-          // TODO get that working at some point
-          *(d++) = '0';
-        #endif
-      } else {
-        // TODO!
+          break;
+
+        default:
+          // TODO!
+          break;
       }
     } else {
       *(d++) = *(s++);
@@ -190,7 +195,10 @@ FILE *fopen(const char *path, const char *mode) {
       return NULL;
     }
     rf->h = h;
-    return rf;
+    rf->buf_filled = 0;
+    rf->buf_read_idx = 0;
+    rf->is_at_eof = 0;
+    return (FILE *)rf;
 
   } else if (!strcmp(mode, "w")) {
     // TODO WRITE FILES
@@ -210,10 +218,83 @@ int fclose(FILE *fp) {
   return 0;
 }
 
-char *fgets(char *s, int size, FILE *fp) {
+void top_up_read_buffer(real_file_t *rf) {
+  // If at EOF, don't attempt to fill up further.
+  if (rf->is_at_eof) { return; }
+
+  // Move buffer data back so we can read more data at the end
+  if (rf->buf_read_idx != 0) {
+    memmove(&rf->buf[0], &rf->buf[rf->buf_read_idx], rf->buf_filled - rf->buf_read_idx);
+    rf->buf_filled -= rf->buf_read_idx;
+    rf->buf_read_idx = 0;
+  }
+
+  // If we can read more data, then read more data.
+  if ((sizeof(rf->buf) - rf->buf_filled) >= 1) {
+    DWORD num_read = 0;
+    if (ReadFile(rf->h, &rf->buf[rf->buf_filled], (DWORD)(sizeof(rf->buf) - rf->buf_filled), &num_read, NULL)) {
+      rf->buf_filled += (size_t)num_read;
+    } else {
+      rf->is_at_eof = 1;
+    }
+  }
+}
+
+int ungetc(int c, FILE *fp) {
   real_file_t *rf = (real_file_t *)fp;
-  // TODO!
-  return NULL;
+
+  // "Only one push-back is guaranteed."
+  //
+  // If at start, only push back if we are at the end of the filled part of the buffer and the buffer is not full.
+  // Otherwise I might have just broken this guarantee. Oh well.
+  // Not sure if this lifeline is necessary.
+  if (rf->buf_read_idx < 1) {
+    if (rf->buf_filled == sizeof(rf->buf)) {
+      rf->buf_filled += 1;
+      rf->buf[rf->buf_read_idx] = (char)c;
+      return c;
+    } else {
+      return EOF;
+    }
+  }
+
+  rf->buf_read_idx -= 1;
+  rf->buf[rf->buf_read_idx] = (char)c;
+  return c;
+}
+
+int fgetc(FILE *fp) {
+  real_file_t *rf = (real_file_t *)fp;
+
+  while (1) {
+    // Attempt a top-up.
+    if ((rf->buf_filled - rf->buf_read_idx) < 1) { top_up_read_buffer(rf); }
+    // If we still can't fit it in, we've hit EOF.
+    if ((rf->buf_filled - rf->buf_read_idx) < 1) { return EOF; }
+
+    int c = (int)(unsigned char)(rf->buf[rf->buf_read_idx]);
+    // KLUDGE: Assume \r is always followed by \n and just strip the \r .
+    rf->buf_read_idx += 1;
+    if (c == '\r') { continue; }
+    return c;
+  }
+}
+
+char *fgets(char *s, int size, FILE *fp) {
+  if (size >= 1) {
+    size_t i = 0;
+    while (i+1 < (size_t)size) {
+      int c = fgetc(fp);
+      if (c == EOF) { break; }
+      s[i] = c;
+      i += 1;
+      // The newline is always included.
+      if (c == '\n') { break; }
+    }
+    s[i] = 0;
+    if (i == 0) { return NULL; }
+  }
+  return s;
 }
 
 int fputs(const char *s, FILE *fp) {
@@ -230,6 +311,24 @@ int fputc(int c, FILE *fp) {
 
 int fseek(FILE *fp, long offset, int whence) {
   real_file_t *rf = (real_file_t *)fp;
-  // TODO!
-  return -1;
+  switch (whence) {
+    // Kye only uses SEEK_SET, so that's the only one that's tested.
+    case SEEK_SET:
+      if (SetFilePointer(rf->h, (LONG)offset, NULL, FILE_BEGIN) == 0xFFFFFFFF) { return -1; }
+      break;
+    case SEEK_CUR:
+      if (SetFilePointer(rf->h, (LONG)offset, NULL, FILE_CURRENT) == 0xFFFFFFFF) { return -1; }
+      break;
+    case SEEK_END:
+      if (SetFilePointer(rf->h, (LONG)offset, NULL, FILE_END) == 0xFFFFFFFF) { return -1; }
+      break;
+    default:
+      // Invalid!
+      return -1;
+  }
+  // Now clear our buffers and return successfully!
+  rf->is_at_eof = 0;
+  rf->buf_read_idx = 0;
+  rf->buf_filled = 0;
+  return 0;
 }
