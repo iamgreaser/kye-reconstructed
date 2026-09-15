@@ -201,8 +201,20 @@ FILE *fopen(const char *path, const char *mode) {
     return (FILE *)rf;
 
   } else if (!strcmp(mode, "w")) {
-    // TODO WRITE FILES
-    return NULL;
+    // Allocate a buffer.
+    real_file_t *rf = (real_file_t *)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*rf));
+    if (rf == NULL) { return NULL; }
+    // Create the file, overwriting it if it exists already.
+    HANDLE h = CreateFile(path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (!h) {
+      (void)HeapFree(GetProcessHeap(), 0, rf);
+      return NULL;
+    }
+    rf->h = h;
+    rf->buf_filled = 0;
+    rf->buf_read_idx = 0;
+    rf->is_at_eof = 0;
+    return (FILE *)rf;
 
   } else {
     // Not supported (yet?)!
@@ -299,14 +311,24 @@ char *fgets(char *s, int size, FILE *fp) {
 
 int fputs(const char *s, FILE *fp) {
   real_file_t *rf = (real_file_t *)fp;
-  // TODO!
-  return -1;
+  size_t sz = strlen(s);
+  size_t i_written = 0;
+  while (i_written < sz) {
+    DWORD blk_written = 0;
+    if (!WriteFile(rf->h, &s[i_written], sz - i_written, &blk_written, NULL)) { return EOF; }
+    i_written += (size_t)blk_written;
+  }
+  // Success. 0 is non-negative. EOF is negative. We can return 0.
+  return 0;
 }
 
 int fputc(int c, FILE *fp) {
   real_file_t *rf = (real_file_t *)fp;
-  // TODO!
-  return -1;
+  char buf[1];
+  buf[0] = (char)c;
+  DWORD blk_written = 0;
+  if (!WriteFile(rf->h, &buf[0], 1, &blk_written, NULL)) { return EOF; }
+  return (int)(unsigned char)c;
 }
 
 int fseek(FILE *fp, long offset, int whence) {

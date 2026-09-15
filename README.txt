@@ -112,7 +112,7 @@ For confirming how munted the results are, see `scripts/amidone.sh`, but basical
 
 Run:
 
-    make out/kye32.exe
+    make build-kye-win32
 
 I use the following:
 
@@ -120,7 +120,20 @@ I use the following:
 - MinGW32-W64 2.46.0.20260210 for the `windres` utility
 - TinyCC 0.9.28rc 2025-11-04 mob@ab2ce3b1 as a C compiler
 
-I haven't confirmed Windows 95 compatibility yet. Once I start doing that I'll do whatever it takes to make sure it runs on there.
+This produces the following files:
+
+- out/kye32.exe: Basic TinyCC build depending on MSVCRT.DLL, tested and confirmed working in Windows 98SE with Visual Studio 6 installed
+- out/kye95.exe: Windows 95 RTM compatible build with a minimal libc wrapper so you don't need to hunt down the correct MSVCRT.DLL file to get this working
+
+There are some bugfixes applied:
+- The window size is calculated correctly, instead of assuming that the window surrounds and fonts are always going to be the same height (which is NOT the case on Japanese Windows 3.1).
+- There's a GDI object use-after-free pertaining to device contexts.
+  - Apparently this isn't needed on Windows 95 RTM, but Wine refuses to actually use the released device contexts unless it's a 16-bit process in which case it works without issue despite being wrong.
+  - This is the most likely cause of the Kye mouse ghost bug.
+
+Known bugs remaining in the 32-bit port:
+- The "File..." dialogue box doesn't seem to pay any attention to the file selector part, you have to actually type in the file name.
+- On Windows XP (tested on the Japanese version), the empty tiles on the background don't get drawn properly. Probably a device context use-after-free problem I missed due to testing on Wine with a compositor active and thus getting a default background.
 
 ==============================
 Licence
